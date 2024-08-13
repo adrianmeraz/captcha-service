@@ -5,7 +5,7 @@
 #
 # from py_aws_core import db_session
 # from py_aws_core.db_dynamo import DDBClient
-# from tests import const as test_const
+# from . import const as test_const
 #
 #
 # class DBSessionTests(TestCase):

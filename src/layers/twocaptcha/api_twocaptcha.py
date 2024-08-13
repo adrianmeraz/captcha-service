@@ -149,7 +149,7 @@ class ReportGoodCaptcha(ReportCaptcha):
         return r
 
 
-class RegisterPingback(TwoCaptchaAPI):
+class AddPingback(TwoCaptchaAPI):
     class Response(TwoCaptchaResponse):
         pass
 

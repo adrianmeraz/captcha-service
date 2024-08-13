@@ -3,6 +3,7 @@ import uuid
 
 from py_aws_core import decorators as aws_decorators, exceptions as aws_exceptions, entities
 from py_aws_core.db_dynamo import ABCCommonAPI, DDBClient
+
 from . import const, entities
 
 __db_client = DDBClient()
