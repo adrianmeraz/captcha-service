@@ -1,0 +1,28 @@
+{
+  "Items": [
+    {
+      "Type": {
+        "S": "SESSION"
+      },
+      "Base64Cookies": {
+        "B": "gASVigMAAAAAAABdlCiMDmh0dHAuY29va2llamFylIwGQ29va2lllJOUKYGUfZQojAd2ZXJzaW9u\nlEsAjARuYW1llIwISHR0cE9ubHmUjAV2YWx1ZZROjARwb3J0lE6MDnBvcnRfc3BlY2lmaWVklImM\nBmRvbWFpbpSMHWFwcHMubWlncmFjaW9uY29sb21iaWEuZ292LmNvlIwQZG9tYWluX3NwZWNpZmll\nZJSJjBJkb21haW5faW5pdGlhbF9kb3SUiYwEcGF0aJSMEC9wcmUtcmVnaXN0cm8vZXOUjA5wYXRo\nX3NwZWNpZmllZJSJjAZzZWN1cmWUiIwHZXhwaXJlc5ROjAdkaXNjYXJklIiMB2NvbW1lbnSUTowL\nY29tbWVudF91cmyUTowHcmZjMjEwOZSJjAVfcmVzdJR9lIwIU2FtZVNpdGWUjAZTdHJpY3SUc3Vi\naAMpgZR9lChoBksAaAeMFi5jaGVja21pZy5BbnRpZm9yZ2VyeS6UaAmMm0NmREo4Rl92WjdwbkRD\ncEFnRUdtTDFtSklUSVdld0Y4dXdtTDVaSE5uUTZLN1lDellPQmpEX21UUTZBY1l0YkNkRUFRcnRD\nUnVkNGM5cDFTNE1BUTFKWWdhRFZ0OEtFLWFJbFN3NjJxR21XWEFYcVBMcjZCay1HQVZ0djFjN0lO\nMk13M2ZKRFBmLWlnblZvdFBVNVVhd3JYZWFBlGgKTmgLiWgMjB1hcHBzLm1pZ3JhY2lvbmNvbG9t\nYmlhLmdvdi5jb5RoDoloD4loEIwNL3ByZS1yZWdpc3Ryb5RoEohoE4hoFEowwqVmaBWJaBZOaBdO\naBiJaBl9lCiMCHNhbWVzaXRllIwGc3RyaWN0lIwIaHR0cG9ubHmUTnV1YmgDKYGUfZQoaAZLAGgH\njAdST1VURUlElGgJjAYubm9kZTCUaApOaAuJaAyMHWFwcHMubWlncmFjaW9uY29sb21iaWEuZ292\nLmNvlGgOiWgPiWgQjAEvlGgSiGgTiGgUTmgViGgWTmgXTmgYiWgZfZSMCEh0dHBPbmx5lE5zdWJo\nAymBlH2UKGgGSwBoB4wNUk9VVEVJRFBSRVJFR5RoCYwGLm5vZGUwlGgKTmgLiWgMjB1hcHBzLm1p\nZ3JhY2lvbmNvbG9tYmlhLmdvdi5jb5RoDoloD4loEGgsaBKIaBOJaBROaBWIaBZOaBdOaBiJaBl9\nlHViZS4=\n"
+      }
+    }
+  ],
+  "Count": 1,
+  "ScannedCount": 1,
+  "ResponseMetadata": {
+    "RequestId": "52D2BQPQ5K6EGTGJ0PA8CJADP3VV4KQNSO5AEMVJF66Q9ASUAAJG",
+    "HTTPStatusCode": 200,
+    "HTTPHeaders": {
+      "server": "Server",
+      "date": "Sun, 28 Jul 2024 03:38:22 GMT",
+      "content-type": "application/x-amz-json-1.0",
+      "content-length": "1744",
+      "connection": "keep-alive",
+      "x-amzn-requestid": "52D2BQPQ5K6EGTGJ0PA8CJADP3VV4KQNSO5AEMVJF66Q9ASUAAJG",
+      "x-amz-crc32": "1403213889"
+    },
+    "RetryAttempts": 0
+  }
+}
