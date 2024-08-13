@@ -1,0 +1,116 @@
+name: Dev Push
+on:
+  push:
+    branches:
+      - dev
+    paths:
+      - '**.py'
+      - '**.yml'
+      - 'Dockerfile'
+      - 'poetry.lock'
+      - 'pyproject.toml'
+
+jobs:
+  main:
+    name: Build Image, Push to ECR, Apply Terraform Plan, Raise PR
+    runs-on: ubuntu-latest
+    env:
+      APP_NAME:              ${{ github.event.repository.name }}
+      AWS_ACCESS_KEY_ID:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_REGION:            ${{ secrets.AWS_REGION }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      ENVIRONMENT:           dev
+      GH_PAT:                ${{ secrets.GH_PAT }}
+    steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id:     ${{ env.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+        aws-region:            ${{ env.AWS_REGION }}
+    # Empty prefixes not supported yet, pending this PR:
+    # https://github.com/aws-actions/aws-secretsmanager-get-secrets/pull/16
+    # Using SSM for now
+    - name: Get Secrets
+      uses: aws-actions/aws-secretsmanager-get-secrets@v1
+      env:
+        SSM_SECRET_ID: ${{ env.APP_NAME }}/${{ env.ENVIRONMENT }}/secret
+      with:
+        secret-ids: |
+          SSM,${{ env.SSM_SECRET_ID }}
+        parse-json-secrets: true
+
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: ‘2’
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build image, cache layers, and push to ECR
+      env:
+        REPOSITORY_URL:  ${{ env.SSM_AWS_ECR_REPOSITORY_URL }}
+        IMAGE_TAG:       "latest"
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        provenance: false # Required per https://stackoverflow.com/a/75149347
+        tags: ${{ env.REPOSITORY_URL }}:${{ env.IMAGE_TAG }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Checkout Terraform Repo
+      uses: actions/checkout@v4
+      with:
+        ref: main
+        repository: 'adrianmeraz/am-terraform'
+        token: ${{ env.GH_PAT }}
+
+    # Caching Terraform plugin and modules per https://github.com/dflook/terraform-github-actions/issues/105
+    - name: Load Terraform cache
+      id: cache-virtualenv
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ runner.temp }}/_github_home/.terraform.d/plugin-cache
+          ${{ runner.temp }}/_github_home/.dflook-terraform-github-actions
+        key: ${{ runner.os }}-tf-${{ hashFiles('**/.terraform.lock.hcl') }}
+
+    - name: Terraform apply
+      uses: dflook/terraform-apply@v1
+      env:
+        GITHUB_TOKEN: ${{ env.GH_PAT }}
+        SSM_SHARED_SECRET_ID: expatmagic/dev/shared/secret
+      with:
+        path:  apps/${{ env.APP_NAME }}/environments/${{ env.ENVIRONMENT }}
+        auto_approve: true
+        variables: |
+          app_name                       = "${{ env.APP_NAME }}"
+          aws_access_key                 = "${{ env.AWS_ACCESS_KEY_ID }}"
+          aws_region                     = "${{ env.AWS_REGION }}"
+          aws_secret_key                 = "${{ env.AWS_SECRET_ACCESS_KEY }}"
+          environment                    = "${{ env.ENVIRONMENT }}"
+          shared_secret_id               = "${{ env.SSM_SHARED_SECRET_ID }}"
+
+    - name: Checkout Main Branch
+      uses: actions/checkout@v4
+      with:
+        ref: main
+
+    - name: Reset main branch
+      run: |
+        git fetch origin dev:dev
+        git reset --hard dev
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v6
+      with:
+        branch: main-promotion
+        delete-branch: true
+        title: Promote dev to main branch
