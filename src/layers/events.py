@@ -19,4 +19,4 @@ class TwoCaptchaGetVerificationEvent(HttpEvent):
 class TwoCaptchaAddPingbackEvent(HttpEvent):
     def __init__(self, data):
         super().__init__(data)
-        self.movement_type = self.body['movement_type']
+        self.pingback_url = self.body['pingback_url']

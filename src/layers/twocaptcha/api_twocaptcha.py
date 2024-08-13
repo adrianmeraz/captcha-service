@@ -161,19 +161,23 @@ class ReportGoodCaptcha(ReportCaptcha):
 
 
 class AddPingback(TwoCaptchaAPI):
+    class Request:
+        def __init__(self, pingback_url: str):
+            self.pingback_url = pingback_url
+
     class Response(TwoCaptchaResponse):
         pass
 
     @classmethod
     @aws_decorators.retry(retry_exceptions=(CaptchaNotReady,))
     @decorators.error_check
-    def call(cls, client: Client, pingback_url: str) -> Response:
+    def call(cls, client: Client, request: Request) -> Response:
         url = f'{cls.ROOT_URL}/res.php'
 
         params = {
             'key': cls.get_api_key(),
             'action': 'add_pingback',
-            'addr': pingback_url,
+            'addr': request.pingback_url,
             'json': '1',
         }
 
