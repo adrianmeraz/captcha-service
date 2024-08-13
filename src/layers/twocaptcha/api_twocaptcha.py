@@ -88,20 +88,24 @@ class PingCaptchaId(TwoCaptchaAPI):
 
 
 class GetSolvedToken(TwoCaptchaAPI):
+    class Request:
+        def __init__(self, captcha_id: int):
+            self.captcha_id = captcha_id
+
     class Response(TwoCaptchaResponse):
         pass
 
     @classmethod
     @aws_decorators.retry(retry_exceptions=(CaptchaNotReady,), tries=60, delay=5, backoff=1)
     @decorators.error_check
-    def call(cls, client: Client, captcha_id: int) -> Response:
+    def call(cls, client: Client, request: Request) -> Response:
         url = f'{cls.ROOT_URL}/res.php'
 
         params = {
             'key': cls.get_api_key(),
             'action': 'get',
-            'id': captcha_id,
-            'json': 1,
+            'id': request.captcha_id,
+            'json': '1',
         }
 
         r = client.get(url, params=params)
@@ -110,19 +114,24 @@ class GetSolvedToken(TwoCaptchaAPI):
 
 
 class ReportCaptcha(TwoCaptchaAPI):
+    class Request:
+        def __init__(self, captcha_id: int, is_good: bool):
+            self.captcha_id = captcha_id
+            self.is_good = is_good
+
     class Response(TwoCaptchaResponse):
         pass
 
     @classmethod
-    def call(cls, client: Client, captcha_id: int, is_good: bool) -> Response:
+    def call(cls, client: Client, request: Request) -> Response:
         url = f'{cls.ROOT_URL}/res.php'
 
-        action = 'reportgood' if is_good else 'reportbad'
+        action = 'reportgood' if request.is_good else 'reportbad'
 
         params = {
             'key': cls.get_api_key(),
             'action': action,
-            'id': captcha_id,
+            'id': request.captcha_id,
             'json': '1',
         }
 
@@ -135,7 +144,8 @@ class ReportBadCaptcha(ReportCaptcha):
     @classmethod
     @decorators.error_check
     def call(cls, client: Client, captcha_id: int, **kwargs):
-        r = super().call(client=client, captcha_id=captcha_id, is_good=False)
+        request = cls.Request(captcha_id=captcha_id, is_good=False)
+        r = super().call(client=client, request=request)
         logger.info(f'Reported bad captcha. id: {captcha_id}')
         return r
 
@@ -144,7 +154,8 @@ class ReportGoodCaptcha(ReportCaptcha):
     @classmethod
     @decorators.error_check
     def call(cls, client: Client, captcha_id: int, **kwargs):
-        r = super().call(client=client, captcha_id=captcha_id, is_good=True)
+        request = cls.Request(captcha_id=captcha_id, is_good=True)
+        r = super().call(client=client, request=request)
         logger.info(f'Reported good captcha. id: {captcha_id}')
         return r
 
@@ -156,13 +167,13 @@ class AddPingback(TwoCaptchaAPI):
     @classmethod
     @aws_decorators.retry(retry_exceptions=(CaptchaNotReady,))
     @decorators.error_check
-    def call(cls, client: Client, addr: str) -> Response:
+    def call(cls, client: Client, pingback_url: str) -> Response:
         url = f'{cls.ROOT_URL}/res.php'
 
         params = {
             'key': cls.get_api_key(),
             'action': 'add_pingback',
-            'addr': addr,
+            'addr': pingback_url,
             'json': '1',
         }
 

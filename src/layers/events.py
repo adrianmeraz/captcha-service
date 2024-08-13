@@ -14,3 +14,9 @@ class HttpEvent(LambdaEvent):
 
 class TwoCaptchaGetVerificationEvent(HttpEvent):
     pass
+
+
+class TwoCaptchaAddPingbackEvent(HttpEvent):
+    def __init__(self, data):
+        super().__init__(data)
+        self.movement_type = self.body['movement_type']

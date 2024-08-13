@@ -14,3 +14,7 @@ def lambda_handler(raw_event, context):
         status_code=200,
         body=twocaptcha_api.TwoCaptchaAPI.get_pingback_token(),
     )
+
+
+def add_pingback():
+    pass
