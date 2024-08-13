@@ -168,4 +168,3 @@ class AddPingback(TwoCaptchaAPI):
 
         r = client.get(url, params=params)
         return cls.Response(r.json())
-
