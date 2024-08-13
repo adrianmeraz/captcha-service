@@ -6,7 +6,7 @@ from src.layers import events, exceptions, logs
 logger = logs.logger
 
 
-@decorators.lambda_response_handler(raise_as=exceptions.CheckMigAPIException)
+@decorators.lambda_response_handler(raise_as=exceptions.CaptchaServiceException)
 def lambda_handler(raw_event, context):
     logger.info(f'{__name__}, Incoming event: {raw_event}')
     events.TwoCaptchaGetVerificationEvent(raw_event)
