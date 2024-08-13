@@ -15,7 +15,3 @@ class CaptchaServiceException(Exception):
 
 class APIException(CaptchaServiceException):
     ERROR_MESSAGE = 'A generic API error occurred'
-
-
-class TwoCaptchaException(APIException):
-    ERROR_MESSAGE = 'A 2captcha API error occurred'

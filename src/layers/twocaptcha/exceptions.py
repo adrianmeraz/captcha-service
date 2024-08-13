@@ -1,7 +1,7 @@
-from py_aws_core.spoofing.exceptions import SpoofingException
+from src.layers.exceptions import APIException
 
 
-class TwoCaptchaException(SpoofingException):
+class TwoCaptchaException(APIException):
     ERROR_MESSAGE = 'A 2Captcha Error has occurred'
 
 
