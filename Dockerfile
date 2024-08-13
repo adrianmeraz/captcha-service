@@ -19,4 +19,4 @@ COPY src ${LAMBDA_TASK_ROOT}/src
 RUN ls -R
 
 # Test the image
-CMD [ "src.lambdas.api_get_travel_countries.lambda_handler" ]
+CMD [ "src.lambdas.api_twocaptcha_get_verification.lambda_handler" ]
