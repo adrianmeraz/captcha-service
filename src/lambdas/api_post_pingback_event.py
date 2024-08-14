@@ -15,7 +15,7 @@ def lambda_handler(raw_event, context):
     process_event(event=event)
     return aws_utils.build_lambda_response(
         status_code=200,
-        body=twocaptcha_api.TwoCaptchaAPI.get_pingback_token(),
+        body='',
     )
 
 
