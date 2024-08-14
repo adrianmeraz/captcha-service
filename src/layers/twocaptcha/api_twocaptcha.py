@@ -2,9 +2,9 @@ import logging
 from urllib.parse import urlparse
 
 from httpx import Client
-
 from py_aws_core import decorators as aws_decorators
 from py_aws_core.secrets_manager import get_secrets_manager
+
 from . import decorators
 from .exceptions import CaptchaNotReady, TwoCaptchaException
 
