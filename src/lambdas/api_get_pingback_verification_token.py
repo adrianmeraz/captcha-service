@@ -1,7 +1,7 @@
 from py_aws_core import decorators, utils as aws_utils
-from py_aws_core.spoofing.twocaptcha import twocaptcha_api
 
 from src.layers import events, exceptions, logs
+from src.layers.twocaptcha import api_twocaptcha
 
 logger = logs.logger
 
@@ -17,4 +17,4 @@ def lambda_handler(raw_event, context):
 
 
 def get_pingback_verification_token():
-    return twocaptcha_api.TwoCaptchaAPI.get_pingback_token()
+    return api_twocaptcha.TwoCaptchaAPI.get_pingback_token()

@@ -24,6 +24,6 @@ def solve_captcha(event: events.TwoCaptchaSolveCaptchaEvent):
             site_key=event.site_key,
             page_url=event.page_url,
             proxy_url=event.proxy_url,
-            pingback=event.pingback
+            pingback_url=event.pingback_url
         )
         api_twocaptcha.SolveCaptcha.call(client=client, request=request)

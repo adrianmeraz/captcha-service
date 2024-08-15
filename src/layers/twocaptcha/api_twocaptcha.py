@@ -43,24 +43,30 @@ class SolveCaptcha(TwoCaptchaAPI):
             site_key: str,
             page_url: str,
             proxy_url: str = None,
-            pingback: str = None
+            pingback_url: str = None
         ):
             self.site_key = site_key
             self.page_url = page_url
             self.proxy_url = proxy_url
-            self.pingback = pingback
+            self.pingback_url = pingback_url
 
         @property
-        def proxy(self) -> str:
-            return self.proxy_url_parts.netloc
+        def proxy(self) -> str | None:
+            if self.proxy_url:
+                return self.proxy_url_parts.netloc
+            return None
 
         @property
-        def proxy_type(self) -> str:
-            return self.proxy_url_parts.scheme.upper()
+        def proxy_type(self) -> str | None:
+            if self.proxy_url:
+                return self.proxy_url_parts.scheme.upper()
+            return None
 
         @property
         def proxy_url_parts(self):
-            return urlparse(self.proxy_url)
+            if self.proxy_url:
+                return urlparse(self.proxy_url)
+            return None
 
     class Response(TwoCaptchaResponse):
         pass
@@ -76,11 +82,17 @@ class SolveCaptcha(TwoCaptchaAPI):
             'googlekey': request.site_key,
             'pageurl': request.page_url,
             'json': '1',
-            'proxy': request.proxy,
-            'proxytype': request.proxy_type,
         }
-        if request.pingback:
-            params['pingback'] = request.pingback
+        if request.proxy_url:
+            params |= {
+                'proxy': request.proxy,
+                'proxytype': request.proxy_type,
+            }
+
+        if request.pingback_url:
+            params |= {
+                'pingback': request.pingback_url
+            }
 
         r = client.post(url, params=params, follow_redirects=False)  # Disable redirects to network splash pages
         if not r.status_code == 200:

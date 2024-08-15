@@ -9,25 +9,27 @@ from src.lambdas import api_post_solve_captcha
 from src.layers.twocaptcha import api_twocaptcha
 from tests import const as test_const
 
+RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH
+
 
 class ApiPostSolveCaptchaTests(BaseTestFixture):
     @respx.mock
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_ok(
         self,
-        mocked_time,
+        mocked_get_api_key
     ):
-        mocked_time.return_value = 1062776008  # Fri, 05 Sep 2003 15:33:28 GMT
+        mocked_get_api_key.return_value = 'IPSUMKEY'
 
-        source = test_const.TEST_API_RESOURCE_PATH.joinpath('get_captcha_id.json')
-        with as_file(source) as get_details:
-            mocked_get_details = self.create_ok_route(
-                method='GET',
-                url__eq='https://apps.migracioncolombia.gov.co/pre-registro/es/DatosViaje',
-                text=get_details.read_text(encoding='utf-8')
+        source = RESOURCE_PATH.joinpath('get_captcha_id.json')
+        with as_file(source) as get_captcha_id_json:
+            mocked_solve_captcha = self.create_ok_route(
+                method='POST',
+                url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fwww.example.com&json=1&proxy=&proxytype=MEGAPROXY.ROTATING.PROXYRACK.NET&pingback=https%3A%2F%2Fwww.example.com%2Fcaptcha_pingback',
+                _json=json.loads(get_captcha_id_json.read_text(encoding='utf-8'))
             )
 
-        source = test_const.TEST_EVENT_RESOURCES_PATH.joinpath('event#travel_get_tokens.json')
+        source = test_const.TEST_EVENT_RESOURCE_PATH.joinpath('event#post_solve_captcha.json')
         with as_file(source) as event_json:
             mock_event = json.loads(event_json.read_text())
 
@@ -49,9 +51,4 @@ class ApiPostSolveCaptchaTests(BaseTestFixture):
             }
         )
 
-        self.assertEqual(mocked_time.call_count, 6)
-        self.assertEqual(mocked_get_details.call_count, 1)
-
-    def test_non_cached_countries(self):
-        # TODO Add the respx mock create_ok_route to all lambda tests
-        pass
+        self.assertEqual(mocked_solve_captcha.call_count, 1)

@@ -1,6 +1,5 @@
 from py_aws_core import decorators, utils as aws_utils
 from py_aws_core.clients import RetryClient
-from py_aws_core.spoofing.twocaptcha import twocaptcha_api
 
 from src.layers import events, exceptions, logs
 from src.layers.twocaptcha import api_twocaptcha
@@ -15,7 +14,7 @@ def lambda_handler(raw_event, context):
     add_pingback(event=event)
     return aws_utils.build_lambda_response(
         status_code=200,
-        body=twocaptcha_api.TwoCaptchaAPI.get_pingback_token(),
+        body=api_twocaptcha.TwoCaptchaAPI.get_pingback_token(),
     )
 
 

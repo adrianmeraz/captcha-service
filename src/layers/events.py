@@ -43,4 +43,4 @@ class TwoCaptchaSolveCaptchaEvent(HttpEvent):
         self.site_key = self.body['site_key']
         self.page_url = self.body['page_url']
         self.proxy_url = self.body.get('proxy_url')
-        self.pingback = self.body.get('pingback')
+        self.pingback_url = self.body.get('pingback_url')

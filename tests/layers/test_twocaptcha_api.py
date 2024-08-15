@@ -3,10 +3,10 @@ from importlib.resources import as_file
 from unittest import mock
 
 import respx
-
 from py_aws_core.clients import RetryClient
-from src.layers.twocaptcha import api_twocaptcha, exceptions
 from py_aws_core.testing import BaseTestFixture
+
+from src.layers.twocaptcha import api_twocaptcha, exceptions
 from tests import const as test_const
 
 RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH
@@ -78,7 +78,7 @@ class SolveCaptchaTests(BaseTestFixture):
 
         source = RESOURCE_PATH.joinpath('get_captcha_id.json')
         with as_file(source) as get_captcha_id_json:
-            mocked_ping_captcha_id = self.create_ok_route(
+            mocked_solve_captcha = self.create_ok_route(
                 method='POST',
                 url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&proxy=example.com%3A1000&proxytype=HTTP',
                 _json=json.loads(get_captcha_id_json.read_text(encoding='utf-8'))
@@ -94,7 +94,7 @@ class SolveCaptchaTests(BaseTestFixture):
         self.assertEqual(r.request, '2122988149')
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
-        self.assertEqual(mocked_ping_captcha_id.call_count, 1)
+        self.assertEqual(mocked_solve_captcha.call_count, 1)
 
     @respx.mock
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
@@ -103,7 +103,7 @@ class SolveCaptchaTests(BaseTestFixture):
 
         source = RESOURCE_PATH.joinpath('warn_error_status.json')
         with as_file(source) as warn_error_status_json:
-            mocked_ping_captcha_id = self.create_route(
+            mocked_solve_captcha = self.create_route(
                 method='POST',
                 url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&proxy=example.com%3A1000&proxytype=HTTP',
                 response_status_code=301,
@@ -120,7 +120,7 @@ class SolveCaptchaTests(BaseTestFixture):
                 api_twocaptcha.SolveCaptcha.call(client=client, request=request)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
-        self.assertEqual(mocked_ping_captcha_id.call_count, 1)
+        self.assertEqual(mocked_solve_captcha.call_count, 1)
 
     @respx.mock
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
@@ -129,7 +129,7 @@ class SolveCaptchaTests(BaseTestFixture):
 
         source = RESOURCE_PATH.joinpath('warn_error_status.json')
         with as_file(source) as warn_error_status_json:
-            mocked_ping_captcha_id = self.create_route(
+            mocked_solve_captcha = self.create_route(
                 method='POST',
                 url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&proxy=example.com%3A1000&proxytype=HTTP',
                 response_status_code=200,
@@ -145,7 +145,7 @@ class SolveCaptchaTests(BaseTestFixture):
                 )
                 api_twocaptcha.SolveCaptcha.call(client=client, request=request)
 
-        self.assertTrue(mocked_ping_captcha_id.call_count, 1)
+        self.assertTrue(mocked_solve_captcha.call_count, 1)
         self.assertTrue(mocked_get_api_key.call_count, 1)
 
     @respx.mock
@@ -153,7 +153,7 @@ class SolveCaptchaTests(BaseTestFixture):
     def test_warn_error(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
-        mocked_ping_captcha_id = self.create_route(
+        mocked_solve_captcha = self.create_route(
             method='POST',
             url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&proxy=example.com%3A1000&proxytype=HTTP',
             response_status_code=200,
@@ -173,14 +173,14 @@ class SolveCaptchaTests(BaseTestFixture):
                 api_twocaptcha.SolveCaptcha.call(client=client, request=request)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
-        self.assertEqual(mocked_ping_captcha_id.call_count, 1)
+        self.assertEqual(mocked_solve_captcha.call_count, 1)
 
     @respx.mock
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_critical_error(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
-        mocked_ping_captcha_id = self.create_route(
+        mocked_solve_captcha = self.create_route(
             method='POST',
             url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&proxy=example.com%3A1000&proxytype=HTTP',
             response_status_code=200,
@@ -200,14 +200,14 @@ class SolveCaptchaTests(BaseTestFixture):
                 api_twocaptcha.SolveCaptcha.call(client=client, request=request)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
-        self.assertEqual(mocked_ping_captcha_id.call_count, 1)
+        self.assertEqual(mocked_solve_captcha.call_count, 1)
 
     @respx.mock
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_captcha_unsolvable(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
-        mocked_ping_captcha_id = self.create_route(
+        mocked_solve_captcha = self.create_route(
             method='POST',
             url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&proxy=example.com%3A1000&proxytype=HTTP',
             response_status_code=200,
@@ -227,7 +227,7 @@ class SolveCaptchaTests(BaseTestFixture):
                 api_twocaptcha.SolveCaptcha.call(client=client, request=request)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
-        self.assertEqual(mocked_ping_captcha_id.call_count, 1)
+        self.assertEqual(mocked_solve_captcha.call_count, 1)
 
     @respx.mock
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
@@ -236,7 +236,7 @@ class SolveCaptchaTests(BaseTestFixture):
 
         source = RESOURCE_PATH.joinpath('captcha_not_ready.json')
         with as_file(source) as captcha_not_ready_json:
-            mocked_ping_captcha_id = self.create_route(
+            mocked_solve_captcha = self.create_route(
                 method='POST',
                 url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&proxy=example.com%3A1000&proxytype=HTTP',
                 response_status_code=200,
@@ -253,7 +253,7 @@ class SolveCaptchaTests(BaseTestFixture):
                 api_twocaptcha.SolveCaptcha.call(client=client, request=request)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
-        self.assertEqual(mocked_ping_captcha_id.call_count, 1)
+        self.assertEqual(mocked_solve_captcha.call_count, 1)
 
 
 class GetSolvedTokenTests(BaseTestFixture):
