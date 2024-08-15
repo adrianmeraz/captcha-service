@@ -1,5 +1,4 @@
 from py_aws_core import decorators, utils as aws_utils
-from py_aws_core.spoofing.twocaptcha import twocaptcha_api
 
 from src.layers import events, exceptions, logs
 from src.layers.twocaptcha.db_twocaptcha import TCDBAPI, get_db_client

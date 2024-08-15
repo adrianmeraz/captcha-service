@@ -141,22 +141,30 @@ class ReportCaptcha(TwoCaptchaAPI):
 
 
 class ReportBadCaptcha(ReportCaptcha):
+    class Request:
+        def __init__(self, captcha_id: int):
+            self.captcha_id = captcha_id
+            self.is_good = False
+
     @classmethod
     @decorators.error_check
-    def call(cls, client: Client, captcha_id: int, **kwargs):
-        request = cls.Request(captcha_id=captcha_id, is_good=False)
+    def call(cls, client: Client, request: Request, **kwargs):
         r = super().call(client=client, request=request)
-        logger.info(f'Reported bad captcha. id: {captcha_id}')
+        logger.info(f'Reported bad captcha. id: {request.captcha_id}')
         return r
 
 
 class ReportGoodCaptcha(ReportCaptcha):
+    class Request:
+        def __init__(self, captcha_id: int):
+            self.captcha_id = captcha_id
+            self.is_good = True
+
     @classmethod
     @decorators.error_check
-    def call(cls, client: Client, captcha_id: int, **kwargs):
-        request = cls.Request(captcha_id=captcha_id, is_good=True)
+    def call(cls, client: Client, request: Request, **kwargs):
         r = super().call(client=client, request=request)
-        logger.info(f'Reported good captcha. id: {captcha_id}')
+        logger.info(f'Reported good captcha. id: {request.captcha_id}')
         return r
 
 

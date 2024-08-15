@@ -22,6 +22,12 @@ class TwoCaptchaAddPingbackEvent(HttpEvent):
         self.pingback_url = self.body['pingback_url']
 
 
+class TwoCaptchaReportCaptchaEvent(HttpEvent):
+    def __init__(self, data):
+        super().__init__(data)
+        self.captcha_id = self.body['captcha_id']
+
+
 class TwoCaptchaPostPingbackEvent(HttpEvent):
     def __init__(self, data):
         super().__init__(data)
