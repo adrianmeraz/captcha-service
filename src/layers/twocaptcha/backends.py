@@ -6,7 +6,7 @@ from . import api_twocaptcha
 
 class TwoCaptchaBackend(CaptchaBackend):
     def get_captcha_id(self, client: Client, site_key: str, page_url: str, proxy: str = None, **kwargs):
-        r = api_twocaptcha.PingCaptchaId.call(
+        r = api_twocaptcha.SolveCaptchaId.call(
             client=client,
             proxy=proxy,
             site_key=site_key,

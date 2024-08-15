@@ -35,3 +35,12 @@ class TwoCaptchaPostPingbackEvent(HttpEvent):
         self.id = self.qs['id']
         self.code = self.qs['code']
         self.params = self.qs['params']
+
+
+class TwoCaptchaSolveCaptchaEvent(HttpEvent):
+    def __init__(self, data):
+        super().__init__(data)
+        self.site_key = self.body['site_key']
+        self.page_url = self.body['page_url']
+        self.proxy_url = self.body.get('proxy_url')
+        self.pingback = self.body.get('pingback')

@@ -35,17 +35,19 @@ class TwoCaptchaResponse:
         self.request = data['request']
         self.error_text = data.get('error_text')
 
-    @property
-    def is_captcha_reported(self):
-        return self.request == 'OK_REPORT_RECORDED'
 
-
-class PingCaptchaId(TwoCaptchaAPI):
+class SolveCaptchaId(TwoCaptchaAPI):
     class Request:
-        def __init__(self, site_key: str, page_url: str, proxy_url: str = None, pingback: str = None):
-            self.proxy_url = proxy_url
+        def __init__(
+            self,
+            site_key: str,
+            page_url: str,
+            proxy_url: str = None,
+            pingback: str = None
+        ):
             self.site_key = site_key
             self.page_url = page_url
+            self.proxy_url = proxy_url
             self.pingback = pingback
 
         @property
