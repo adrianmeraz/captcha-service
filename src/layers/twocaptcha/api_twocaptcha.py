@@ -36,7 +36,7 @@ class TwoCaptchaResponse:
         self.error_text = data.get('error_text')
 
 
-class SolveCaptchaId(TwoCaptchaAPI):
+class SolveCaptcha(TwoCaptchaAPI):
     class Request:
         def __init__(
             self,

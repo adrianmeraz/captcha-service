@@ -20,10 +20,10 @@ def lambda_handler(raw_event, context):
 
 def solve_captcha(event: events.TwoCaptchaSolveCaptchaEvent):
     with RetryClient() as client:
-        request = api_twocaptcha.SolveCaptchaId.Request(
+        request = api_twocaptcha.SolveCaptcha.Request(
             site_key=event.site_key,
             page_url=event.page_url,
             proxy_url=event.proxy_url,
             pingback=event.pingback
         )
-        api_twocaptcha.SolveCaptchaId.call(client=client, request=request)
+        api_twocaptcha.SolveCaptcha.call(client=client, request=request)

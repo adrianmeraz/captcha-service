@@ -5,9 +5,9 @@ from unittest import mock
 import respx
 
 from py_aws_core.clients import RetryClient
-from py_aws_core.spoofing.twocaptcha import exceptions, twocaptcha_api
+from src.layers.twocaptcha import api_twocaptcha, exceptions
 from py_aws_core.testing import BaseTestFixture
-from src.layers.twocaptcha._tests import const as test_const
+from tests import const as test_const
 
 RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH
 
@@ -18,7 +18,7 @@ class GetSolvedCaptchaTests(BaseTestFixture):
     """
 
     @respx.mock
-    @mock.patch.object(twocaptcha_api.TwoCaptchaAPI, 'get_api_key')
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_ok(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
@@ -31,7 +31,7 @@ class GetSolvedCaptchaTests(BaseTestFixture):
             )
 
         with RetryClient() as client:
-            r = twocaptcha_api.GetSolvedToken.call(
+            r = api_twocaptcha.GetSolvedToken.call(
                 client=client,
                 captcha_id=2122988149
             )
@@ -41,7 +41,7 @@ class GetSolvedCaptchaTests(BaseTestFixture):
         self.assertEqual(mocked_get_solved_token_route.call_count, 1)
 
     @respx.mock
-    @mock.patch.object(twocaptcha_api.TwoCaptchaAPI, 'get_api_key')
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_captcha_unsolvable(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
@@ -55,7 +55,7 @@ class GetSolvedCaptchaTests(BaseTestFixture):
 
         with self.assertRaises(exceptions.CaptchaUnsolvable):
             with RetryClient() as client:
-                twocaptcha_api.GetSolvedToken.call(
+                api_twocaptcha.GetSolvedToken.call(
                     client=client,
                     captcha_id=2122988149
                 )
@@ -64,13 +64,13 @@ class GetSolvedCaptchaTests(BaseTestFixture):
         self.assertEqual(mocked_get_solved_token_route.call_count, 1)
 
 
-class PingCaptchaIdTests(BaseTestFixture):
+class SolveCaptchaTests(BaseTestFixture):
     """
         Ping Captcha ID Tests
     """
 
     @respx.mock
-    @mock.patch.object(twocaptcha_api.TwoCaptchaAPI, 'get_api_key')
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_ok(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
@@ -83,19 +83,19 @@ class PingCaptchaIdTests(BaseTestFixture):
             )
 
         with RetryClient() as client:
-            request = twocaptcha_api.PingCaptchaId.Request(
+            request = api_twocaptcha.SolveCaptcha.Request(
                 proxy_url='http://example.com:1000',
                 site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
                 page_url='https://example.com',
             )
-            r = twocaptcha_api.PingCaptchaId.call(client=client, request=request)
+            r = api_twocaptcha.SolveCaptcha.call(client=client, request=request)
         self.assertEqual(r.request, '2122988149')
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_ping_captcha_id.call_count, 1)
 
     @respx.mock
-    @mock.patch.object(twocaptcha_api.TwoCaptchaAPI, 'get_api_key')
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_redirect(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
@@ -110,18 +110,18 @@ class PingCaptchaIdTests(BaseTestFixture):
 
         with self.assertRaises(exceptions.TwoCaptchaException):
             with RetryClient() as client:
-                request = twocaptcha_api.PingCaptchaId.Request(
+                request = api_twocaptcha.SolveCaptcha.Request(
                     proxy_url='http://example.com:1000',
                     site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
                     page_url='https://example.com',
                 )
-                twocaptcha_api.PingCaptchaId.call(client=client, request=request)
+                api_twocaptcha.SolveCaptcha.call(client=client, request=request)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_ping_captcha_id.call_count, 1)
 
     @respx.mock
-    @mock.patch.object(twocaptcha_api.TwoCaptchaAPI, 'get_api_key')
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_invalid_response(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
@@ -136,18 +136,18 @@ class PingCaptchaIdTests(BaseTestFixture):
 
         with self.assertRaises(exceptions.WarnError):
             with RetryClient() as client:
-                request = twocaptcha_api.PingCaptchaId.Request(
+                request = api_twocaptcha.SolveCaptcha.Request(
                     proxy_url='http://example.com:1000',
                     site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
                     page_url='https://example.com',
                 )
-                twocaptcha_api.PingCaptchaId.call(client=client, request=request)
+                api_twocaptcha.SolveCaptcha.call(client=client, request=request)
 
         self.assertTrue(mocked_ping_captcha_id.call_count, 1)
         self.assertTrue(mocked_get_api_key.call_count, 1)
 
     @respx.mock
-    @mock.patch.object(twocaptcha_api.TwoCaptchaAPI, 'get_api_key')
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_warn_error(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
@@ -163,18 +163,18 @@ class PingCaptchaIdTests(BaseTestFixture):
 
         with self.assertRaises(exceptions.TwoCaptchaException):
             with RetryClient() as client:
-                request = twocaptcha_api.PingCaptchaId.Request(
+                request = api_twocaptcha.SolveCaptcha.Request(
                     proxy_url='http://example.com:1000',
                     site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
                     page_url='https://example.com',
                 )
-                twocaptcha_api.PingCaptchaId.call(client=client, request=request)
+                api_twocaptcha.SolveCaptcha.call(client=client, request=request)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_ping_captcha_id.call_count, 1)
 
     @respx.mock
-    @mock.patch.object(twocaptcha_api.TwoCaptchaAPI, 'get_api_key')
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_critical_error(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
@@ -190,18 +190,18 @@ class PingCaptchaIdTests(BaseTestFixture):
 
         with self.assertRaises(exceptions.CriticalError):
             with RetryClient() as client:
-                request = twocaptcha_api.PingCaptchaId.Request(
+                request = api_twocaptcha.SolveCaptcha.Request(
                     proxy_url='http://example.com:1000',
                     site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
                     page_url='https://example.com',
                 )
-                twocaptcha_api.PingCaptchaId.call(client=client, request=request)
+                api_twocaptcha.SolveCaptcha.call(client=client, request=request)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_ping_captcha_id.call_count, 1)
 
     @respx.mock
-    @mock.patch.object(twocaptcha_api.TwoCaptchaAPI, 'get_api_key')
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_captcha_unsolvable(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
@@ -217,18 +217,18 @@ class PingCaptchaIdTests(BaseTestFixture):
 
         with self.assertRaises(exceptions.CaptchaUnsolvable):
             with RetryClient() as client:
-                request = twocaptcha_api.PingCaptchaId.Request(
+                request = api_twocaptcha.SolveCaptcha.Request(
                     proxy_url='http://example.com:1000',
                     site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
                     page_url='https://example.com',
                 )
-                twocaptcha_api.PingCaptchaId.call(client=client, request=request)
+                api_twocaptcha.SolveCaptcha.call(client=client, request=request)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_ping_captcha_id.call_count, 1)
 
     @respx.mock
-    @mock.patch.object(twocaptcha_api.TwoCaptchaAPI, 'get_api_key')
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_captcha_not_ready(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
@@ -243,12 +243,12 @@ class PingCaptchaIdTests(BaseTestFixture):
 
         with self.assertRaises(exceptions.CaptchaNotReady):
             with RetryClient() as client:
-                request = twocaptcha_api.PingCaptchaId.Request(
+                request = api_twocaptcha.SolveCaptcha.Request(
                     proxy_url='http://example.com:1000',
                     site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
                     page_url='https://example.com',
                 )
-                twocaptcha_api.PingCaptchaId.call(client=client, request=request)
+                api_twocaptcha.SolveCaptcha.call(client=client, request=request)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_ping_captcha_id.call_count, 1)
@@ -260,7 +260,7 @@ class GetSolvedTokenTests(BaseTestFixture):
     """
 
     @respx.mock
-    @mock.patch.object(twocaptcha_api.TwoCaptchaAPI, 'get_api_key')
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_ok(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
@@ -274,7 +274,7 @@ class GetSolvedTokenTests(BaseTestFixture):
             )
 
         with RetryClient() as client:
-            r = twocaptcha_api.GetSolvedToken.call(
+            r = api_twocaptcha.GetSolvedToken.call(
                 client=client,
                 captcha_id=2122988149,
             )
@@ -286,7 +286,7 @@ class GetSolvedTokenTests(BaseTestFixture):
         self.assertEqual(mocked_get_solved_token.call_count, 1)
 
     @respx.mock
-    @mock.patch.object(twocaptcha_api.TwoCaptchaAPI, 'get_api_key')
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_error_wrong_captcha_id(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
@@ -302,7 +302,7 @@ class GetSolvedTokenTests(BaseTestFixture):
 
         with self.assertRaises(exceptions.WarnError):
             with RetryClient() as client:
-                twocaptcha_api.GetSolvedToken.call(
+                api_twocaptcha.GetSolvedToken.call(
                     client=client,
                     captcha_id=2122988149
                 )
@@ -317,7 +317,7 @@ class ReportCaptchaTests(BaseTestFixture):
     """
 
     @respx.mock
-    @mock.patch.object(twocaptcha_api.TwoCaptchaAPI, 'get_api_key')
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_reportbad_ok(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
@@ -331,14 +331,14 @@ class ReportCaptchaTests(BaseTestFixture):
             )
 
         with RetryClient() as client:
-            r_report = twocaptcha_api.ReportBadCaptcha.call(client=client, captcha_id=2122988149)
+            r_report = api_twocaptcha.ReportBadCaptcha.call(client=client, captcha_id=2122988149)
 
         self.assertEqual(r_report.request, 'OK_REPORT_RECORDED')
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_report_bad_captcha.call_count, 1)
 
     @respx.mock
-    @mock.patch.object(twocaptcha_api.TwoCaptchaAPI, 'get_api_key')
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_reportgood_ok(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
@@ -352,14 +352,14 @@ class ReportCaptchaTests(BaseTestFixture):
             )
 
         with RetryClient() as client:
-            r_report = twocaptcha_api.ReportGoodCaptcha.call(client=client, captcha_id=2122988149)
+            r_report = api_twocaptcha.ReportGoodCaptcha.call(client=client, captcha_id=2122988149)
 
         self.assertEqual(r_report.request, 'OK_REPORT_RECORDED')
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_report_good_captcha.call_count, 1)
 
     @respx.mock
-    @mock.patch.object(twocaptcha_api.TwoCaptchaAPI, 'get_api_key')
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_reportbad_invalid_response(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
@@ -374,13 +374,13 @@ class ReportCaptchaTests(BaseTestFixture):
 
         with self.assertRaises(exceptions.InvalidResponse):
             with RetryClient() as client:
-                twocaptcha_api.ReportBadCaptcha.call(client=client, captcha_id=2122988149)
+                api_twocaptcha.ReportBadCaptcha.call(client=client, captcha_id=2122988149)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_report_bad_captcha.call_count, 1)
 
     @respx.mock
-    @mock.patch.object(twocaptcha_api.TwoCaptchaAPI, 'get_api_key')
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_invalid_report(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
@@ -395,25 +395,25 @@ class ReportCaptchaTests(BaseTestFixture):
 
         with self.assertRaises(exceptions.WarnError):
             with RetryClient() as client:
-                twocaptcha_api.ReportBadCaptcha.call(client=client, captcha_id=2122988149)
+                api_twocaptcha.ReportBadCaptcha.call(client=client, captcha_id=2122988149)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_report_bad_captcha.call_count, 1)
 
 
-class RegisterPingbackTests(BaseTestFixture):
+class AddPingbackTests(BaseTestFixture):
     """
-        Register Pingback Tests
+        Add Pingback Tests
     """
 
     @respx.mock
-    @mock.patch.object(twocaptcha_api.TwoCaptchaAPI, 'get_api_key')
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_ok(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
         source = test_const.TEST_API_RESOURCE_PATH.joinpath('add_pingback.json')
         with as_file(source) as warn_error_status_json:
-            mocked_register_pingback = self.create_route(
+            mocked_add_pingback = self.create_route(
                 method='GET',
                 url__eq='http://2captcha.com/res.php?key=IPSUMKEY&action=add_pingback&addr=http%3A%2F%2Fmysite.com%2Fpingback%2Furl%2F&json=1',
                 response_status_code=200,
@@ -421,7 +421,7 @@ class RegisterPingbackTests(BaseTestFixture):
             )
 
         with RetryClient() as client:
-            r_report = twocaptcha_api.RegisterPingback.call(
+            r_report = api_twocaptcha.AddPingback.call(
                 client=client,
                 addr='http://mysite.com/pingback/url/'
             )
@@ -429,4 +429,4 @@ class RegisterPingbackTests(BaseTestFixture):
         self.assertEqual(r_report.request, 'OK_PINGBACK')
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
-        self.assertEqual(mocked_register_pingback.call_count, 1)
+        self.assertEqual(mocked_add_pingback.call_count, 1)
