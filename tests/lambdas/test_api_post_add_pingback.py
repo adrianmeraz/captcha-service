@@ -30,7 +30,7 @@ class ApiPostAddPingbackTests(BaseTestFixture):
                 response_json=json.loads(warn_error_status_json.read_text(encoding='utf-8'))
             )
 
-        source = test_const.TEST_EVENT_RESOURCE_PATH.joinpath('event#post_add_pingback.json')
+        source = test_const.TEST_EVENT_RESOURCE_PATH.joinpath('event#api_post_add_pingback.json')
         with as_file(source) as event_json:
             mock_event = json.loads(event_json.read_text())
 

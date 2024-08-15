@@ -12,7 +12,8 @@ def lambda_handler(raw_event, context):
     events.TwoCaptchaGetVerificationEvent(raw_event)
     return aws_utils.build_lambda_response(
         status_code=200,
-        body=get_pingback_verification_token()
+        body=get_pingback_verification_token(),
+        content_type='text/plain;charset=utf-8'
     )
 
 

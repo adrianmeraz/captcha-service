@@ -29,7 +29,7 @@ class ApiPostSolveCaptchaTests(BaseTestFixture):
                 _json=json.loads(get_captcha_id_json.read_text(encoding='utf-8'))
             )
 
-        source = test_const.TEST_EVENT_RESOURCE_PATH.joinpath('event#post_solve_captcha.json')
+        source = test_const.TEST_EVENT_RESOURCE_PATH.joinpath('event#api_post_solve_captcha.json')
         with as_file(source) as event_json:
             mock_event = json.loads(event_json.read_text())
 
