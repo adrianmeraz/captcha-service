@@ -1,0 +1,87 @@
+{
+  "resource": "/pingback-event",
+  "path": "/pingback-event",
+  "httpMethod": "POST",
+  "headers": {
+    "Accept": "*/*",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Content-Type": "application/json",
+    "Host": "niw7lgbxdd.execute-api.us-west-2.amazonaws.com",
+    "Postman-Token": "c1d0aed5-8b61-41ad-9004-c94c6206087c",
+    "User-Agent": "PostmanRuntime/7.41.1",
+    "X-Amzn-Trace-Id": "Root=1-66be3c02-2472b3cf71795d0c1a485fa6",
+    "X-Forwarded-For": "107.213.20.204",
+    "X-Forwarded-Port": "443",
+    "X-Forwarded-Proto": "https"
+  },
+  "multiValueHeaders": {
+    "Accept": [
+      "*/*"
+    ],
+    "Accept-Encoding": [
+      "gzip, deflate, br"
+    ],
+    "Content-Type": [
+      "application/json"
+    ],
+    "Host": [
+      "niw7lgbxdd.execute-api.us-west-2.amazonaws.com"
+    ],
+    "Postman-Token": [
+      "c1d0aed5-8b61-41ad-9004-c94c6206087c"
+    ],
+    "User-Agent": [
+      "PostmanRuntime/7.41.1"
+    ],
+    "X-Amzn-Trace-Id": [
+      "Root=1-66be3c02-2472b3cf71795d0c1a485fa6"
+    ],
+    "X-Forwarded-For": [
+      "107.213.20.204"
+    ],
+    "X-Forwarded-Port": [
+      "443"
+    ],
+    "X-Forwarded-Proto": [
+      "https"
+    ]
+  },
+  "queryStringParameters": null,
+  "multiValueQueryStringParameters": null,
+  "pathParameters": null,
+  "stageVariables": null,
+  "requestContext": {
+    "resourceId": "2ggnex",
+    "resourcePath": "/pingback-event",
+    "operationName": "pingback-event-POST",
+    "httpMethod": "POST",
+    "extendedRequestId": "cj5QfFw0vHcEKcA=",
+    "requestTime": "15/Aug/2024:17:33:54 +0000",
+    "path": "/dev/pingback-event",
+    "accountId": "687272729792",
+    "protocol": "HTTP/1.1",
+    "stage": "dev",
+    "domainPrefix": "niw7lgbxdd",
+    "requestTimeEpoch": 1723743234857,
+    "requestId": "52c0a4d5-ebf0-4592-8edd-01c57a753289",
+    "identity": {
+      "cognitoIdentityPoolId": null,
+      "accountId": null,
+      "cognitoIdentityId": null,
+      "caller": null,
+      "sourceIp": "107.213.20.204",
+      "principalOrgId": null,
+      "accessKey": null,
+      "cognitoAuthenticationType": null,
+      "cognitoAuthenticationProvider": null,
+      "userArn": null,
+      "userAgent": "PostmanRuntime/7.41.1",
+      "user": null
+    },
+    "domainName": "niw7lgbxdd.execute-api.us-west-2.amazonaws.com",
+    "deploymentId": "7t9fht",
+    "apiId": "niw7lgbxdd"
+  },
+  "body": "{\"id\":\"0987654321\",\"code\":\"1234567890\",\"params\":\"\"}",
+  "isBase64Encoded": false
+}
