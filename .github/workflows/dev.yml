@@ -86,7 +86,8 @@ jobs:
       uses: dflook/terraform-apply@v1
       env:
         GITHUB_TOKEN: ${{ env.GH_PAT }}
-        SSM_SHARED_SECRET_ID: expatmagic/${{ env.ENVIRONMENT }}/shared/secret
+        SHARED_SECRET_ID: expatmagic/${{ env.ENVIRONMENT }}/shared/secret
+        DOMAIN_NAME: ${{ env.SSM_DOMAIN_NAME }}
       with:
         path:  apps/${{ env.APP_NAME }}/environments/${{ env.ENVIRONMENT }}
         auto_approve: true
@@ -95,8 +96,9 @@ jobs:
           aws_access_key                 = "${{ env.AWS_ACCESS_KEY_ID }}"
           aws_region                     = "${{ env.AWS_REGION }}"
           aws_secret_key                 = "${{ env.AWS_SECRET_ACCESS_KEY }}"
+          domain_name                    = "${{ env.DOMAIN_NAME }}"
           environment                    = "${{ env.ENVIRONMENT }}"
-          shared_secret_id               = "${{ env.SSM_SHARED_SECRET_ID }}"
+          shared_secret_id               = "${{ env.SHARED_SECRET_ID }}"
 
     - name: Checkout Main Branch
       uses: actions/checkout@v4
