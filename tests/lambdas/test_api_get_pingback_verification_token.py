@@ -5,7 +5,7 @@ from unittest import mock
 import respx
 from py_aws_core.testing import BaseTestFixture
 
-from src.lambdas import api_get_pingback_verification_token
+from src.lambdas import api_post_pingback_verification_token
 from src.layers.twocaptcha import api_twocaptcha
 from tests import const as test_const
 
@@ -25,7 +25,7 @@ class ApiGetPingbackVerificationTokenTests(BaseTestFixture):
         with as_file(source) as event_json:
             mock_event = json.loads(event_json.read_text())
 
-        val = api_get_pingback_verification_token.lambda_handler(raw_event=mock_event, context=None)
+        val = api_post_pingback_verification_token.lambda_handler(raw_event=mock_event, context=None)
         self.maxDiff = None
         self.assertEqual(
             val,
