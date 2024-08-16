@@ -86,7 +86,7 @@ jobs:
       uses: dflook/terraform-apply@v1
       env:
         GITHUB_TOKEN: ${{ env.GH_PAT }}
-        SSM_SHARED_SECRET_ID: expatmagic/dev/shared/secret
+        SSM_SHARED_SECRET_ID: expatmagic/${{ env.ENVIRONMENT }}/shared/secret
       with:
         path:  apps/${{ env.APP_NAME }}/environments/${{ env.ENVIRONMENT }}
         auto_approve: true
