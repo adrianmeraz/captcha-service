@@ -22,3 +22,4 @@ def add_pingback(event: events.TwoCaptchaAddPingbackEvent):
     with RetryClient() as client:
         request = api_twocaptcha.AddPingback.Request(pingback_url=event.pingback_url)
         api_twocaptcha.AddPingback.call(client=client, request=request)
+
