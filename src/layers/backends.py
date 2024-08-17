@@ -31,16 +31,20 @@ class ProxyBackend(ABC):
         return secrets_manager.get_secret(secret_name='PROXY_USERNAME')
 
 
-class CaptchaBackend(ABC):
+class CaptchaService(ABC):
 
-    def get_captcha_id(self, client: Client, site_key: str, page_url: str,  *args, **kwargs):
+    @classmethod
+    def solve_captcha(cls, client: Client, site_key: str, page_url: str, *args, **kwargs):
         raise NotImplemented
 
-    def get_gcaptcha_token(self, client: Client, captcha_id: str, *args, **kwargs):
+    @classmethod
+    def get_gcaptcha_token(cls, client: Client, captcha_id: str, *args, **kwargs):
         raise NotImplemented
 
-    def report_bad_captcha_id(self, client: Client, captcha_id: str, *args, **kwargs):
+    @classmethod
+    def report_bad_captcha_id(cls, client: Client, captcha_id: str, *args, **kwargs):
         raise NotImplemented
 
-    def report_good_captcha_id(self, client: Client, captcha_id: str, *args, **kwargs):
+    @classmethod
+    def report_good_captcha_id(cls, client: Client, captcha_id: str, *args, **kwargs):
         raise NotImplemented

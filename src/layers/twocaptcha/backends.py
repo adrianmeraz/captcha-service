@@ -1,16 +1,28 @@
 from httpx import Client
 
-from py_aws_core.spoofing.backends import CaptchaBackend
+from src.layers import secrets
+from src.layers.backends import CaptchaService
 from . import api_twocaptcha
 
 
-class TwoCaptchaBackend(CaptchaBackend):
-    def get_captcha_id(self, client: Client, site_key: str, page_url: str, proxy: str = None, **kwargs):
+class TwoCaptchaBackend(CaptchaService):
+    def solve_captcha(
+        self,
+        client: Client,
+        site_key: str,
+        page_url: str,
+        proxy_url: str = None,
+        **kwargs
+    ):
+        request = api_twocaptcha.SolveCaptcha.Request(
+            site_key=site_key,
+            page_url=page_url,
+            proxy_url=proxy_url,
+            pingback_url=secrets.get_webhook_url(),
+        )
         r = api_twocaptcha.SolveCaptcha.call(
             client=client,
-            proxy=proxy,
-            site_key=site_key,
-            page_url=page_url
+            request=request
         )
         return r.request
 

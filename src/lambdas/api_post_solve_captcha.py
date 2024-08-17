@@ -2,6 +2,7 @@ from py_aws_core import decorators, utils as aws_utils
 from py_aws_core.clients import RetryClient
 
 from src.layers import events, exceptions, logs, secrets
+from src.layers.backends import CaptchaService
 from src.layers.twocaptcha import api_twocaptcha
 
 logger = logs.logger
@@ -20,13 +21,13 @@ def lambda_handler(raw_event, context):
 
 def solve_captcha(event: events.TwoCaptchaSolveCaptchaEvent):
     with RetryClient() as client:
-        request = api_twocaptcha.SolveCaptcha.Request(
+        CaptchaService.solve_captcha(
+            client=client,
             site_key=event.site_key,
             page_url=event.page_url,
             proxy_url=event.proxy_url,
-            pingback_url=secrets.get_domain_name(),
+            pingback_url=secrets.get_webhook_url(),
             opt_data={
                 'webhook_url': event.webhook_url
             }
         )
-        api_twocaptcha.SolveCaptcha.call(client=client, request=request)
