@@ -194,7 +194,6 @@ class AddPingback(TwoCaptchaAPI):
         pass
 
     @classmethod
-    @aws_decorators.retry(retry_exceptions=(CaptchaNotReady,))
     @decorators.error_check
     def call(cls, client: Client, request: Request) -> Response:
         url = f'{cls.ROOT_URL}/res.php'
@@ -209,3 +208,20 @@ class AddPingback(TwoCaptchaAPI):
         r = client.get(url, params=params)
         return cls.Response(r.json())
 
+
+class PostWebhook(TwoCaptchaAPI):
+    class Request:
+        def __init__(self, webhook_url: str, opt_data: typing = None):
+            self.webhook_url = webhook_url
+            self.opt_data = opt_data
+
+    class Response:
+        def __init__(self, data):
+            self.data = data
+
+    @classmethod
+    def call(cls, client: Client, request: Request) -> Response:
+        url = request.webhook_url
+
+        r = client.post(url, data=request.opt_data)
+        return cls.Response(r.json())

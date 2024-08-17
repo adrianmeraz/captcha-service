@@ -23,7 +23,7 @@ def process_event(event: events.TwoCaptchaPostPingbackEvent):
         TCDBAPI.build_recaptcha_event_map(
             _id=event.id,
             code=event.code,
-            params=event.params
+            params=event.opt_data
         )
     ]
     db_client.write_maps_to_db(item_maps=c_maps)

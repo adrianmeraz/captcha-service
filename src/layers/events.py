@@ -34,7 +34,7 @@ class TwoCaptchaPostPingbackEvent(HttpEvent):
         self.qs = self.query_string_parameters
         self.id = self.qs['id']
         self.code = self.qs['code']
-        self.params = self.qs['params']
+        self.opt_data = self.qs['opt_data']
 
 
 class TwoCaptchaSolveCaptchaEvent(HttpEvent):
