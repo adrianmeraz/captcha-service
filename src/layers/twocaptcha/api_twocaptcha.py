@@ -1,4 +1,5 @@
 import logging
+import typing
 from urllib.parse import urlparse
 
 from httpx import Client
@@ -43,12 +44,14 @@ class SolveCaptcha(TwoCaptchaAPI):
             site_key: str,
             page_url: str,
             proxy_url: str = None,
-            pingback_url: str = None
+            pingback_url: str = None,
+            opt_data: typing.Dict = None
         ):
             self.site_key = site_key
             self.page_url = page_url
             self.proxy_url = proxy_url
             self.pingback_url = pingback_url
+            self.opt_data = opt_data
 
         @property
         def proxy(self) -> str | None:
@@ -94,7 +97,7 @@ class SolveCaptcha(TwoCaptchaAPI):
                 'pingback': request.pingback_url
             }
 
-        r = client.post(url, params=params, follow_redirects=False)  # Disable redirects to network splash pages
+        r = client.post(url, data=request.opt_data, params=params, follow_redirects=False)  # Disable redirects to network splash pages
         if not r.status_code == 200:
             raise TwoCaptchaException(f'Non 200 Response. Proxy: {request.proxy}, Response: {r.text}')
 

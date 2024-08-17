@@ -89,6 +89,6 @@
     "deploymentId": "pntl5b",
     "apiId": "owufix3875"
   },
-  "body": "{\"site_key\":\"6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-\",\"page_url\":\"https://www.example.com\",\"proxy_url\":\"megaproxy.rotating.proxyrack.net:10000\", \"pingback_url\": \"https://www.example.com/captcha_pingback\"} ",
+  "body": "{\"site_key\":\"6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-\",\"page_url\":\"https://www.example.com\",\"proxy_url\":\"megaproxy.rotating.proxyrack.net:10000\", \"webhook_url\": \"https://other-service.example.com/captcha_pingback\"} ",
   "isBase64Encoded": false
 }

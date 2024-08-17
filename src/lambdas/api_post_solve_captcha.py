@@ -1,7 +1,7 @@
 from py_aws_core import decorators, utils as aws_utils
 from py_aws_core.clients import RetryClient
 
-from src.layers import events, exceptions, logs
+from src.layers import events, exceptions, logs, secrets
 from src.layers.twocaptcha import api_twocaptcha
 
 logger = logs.logger
@@ -24,6 +24,9 @@ def solve_captcha(event: events.TwoCaptchaSolveCaptchaEvent):
             site_key=event.site_key,
             page_url=event.page_url,
             proxy_url=event.proxy_url,
-            pingback_url=event.pingback_url
+            pingback_url=secrets.get_domain_name(),
+            opt_data={
+                'webhook_url': event.webhook_url
+            }
         )
         api_twocaptcha.SolveCaptcha.call(client=client, request=request)
