@@ -41,6 +41,10 @@ class CaptchaInterface(ABC):
         raise NotImplemented
 
     @classmethod
+    def get_verification_token(cls, *args, **kwargs):
+        raise NotImplemented
+
+    @classmethod
     def report_bad_captcha_id(cls, client: Client, captcha_id: str, *args, **kwargs):
         raise NotImplemented
 

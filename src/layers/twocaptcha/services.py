@@ -1,6 +1,5 @@
 from httpx import Client
 
-from src.layers import secrets
 from src.layers.interfaces import CaptchaInterface
 from . import api_twocaptcha
 
@@ -19,7 +18,7 @@ class TwoCaptchaService(CaptchaInterface):
             site_key=site_key,
             page_url=page_url,
             proxy_url=proxy_url,
-            pingback_url=secrets.get_webhook_url(),
+            pingback_url=api_twocaptcha.SolveCaptcha.get_webhook_url(),
         )
         r = api_twocaptcha.SolveCaptcha.call(
             client=client,
@@ -31,6 +30,10 @@ class TwoCaptchaService(CaptchaInterface):
     def get_gcaptcha_token(cls, client: Client, captcha_id: int, **kwargs):
         r = api_twocaptcha.GetSolvedToken.call(client=client, captcha_id=captcha_id)
         return r.request
+
+    @classmethod
+    def get_verification_token(cls):
+        return api_twocaptcha.TwoCaptchaAPI.get_pingback_token()
 
     @classmethod
     def report_bad_captcha_id(cls, client: Client, captcha_id: int, **kwargs):

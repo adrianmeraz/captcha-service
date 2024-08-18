@@ -6,7 +6,6 @@ import respx
 from py_aws_core.testing import BaseTestFixture
 
 from src.lambdas import api_post_solve_captcha
-from src.layers import secrets
 from src.layers.twocaptcha import api_twocaptcha
 from tests import const as test_const
 
@@ -15,7 +14,7 @@ RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH
 
 class ApiPostSolveCaptchaTests(BaseTestFixture):
     @respx.mock
-    @mock.patch.object(secrets, 'get_domain_name')
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_domain_name')
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_ok(
         self,
@@ -57,4 +56,4 @@ class ApiPostSolveCaptchaTests(BaseTestFixture):
 
         self.assertEqual(mocked_solve_captcha.call_count, 1)
         self.assertEqual(mocked_get_api_key.call_count, 1)
-        self.assertEqual(mocked_get_domain_name.call_count, 2)
+        self.assertEqual(mocked_get_domain_name.call_count, 1)
