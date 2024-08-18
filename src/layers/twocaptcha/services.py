@@ -1,3 +1,5 @@
+import typing
+
 from httpx import Client
 
 from src.layers.interfaces import CaptchaInterface
@@ -26,6 +28,10 @@ class TwoCaptchaService(CaptchaInterface):
             request=request
         )
         return r.request
+
+    @classmethod
+    def handle_webhook_event(cls, event: typing.Dict, *args, **kwargs):
+        pass
 
     @classmethod
     def get_gcaptcha_token(cls, client: Client, captcha_id: int, **kwargs):
