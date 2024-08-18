@@ -12,14 +12,14 @@ logger = logs.logger
 def lambda_handler(raw_event, context):
     logger.info(f'{__name__}, Incoming event: {raw_event}')
     event = events.TwoCaptchaSolveCaptchaEvent(raw_event)
-    solve_captcha(event=event, captcha_service=TwoCaptchaService())
+    process_event(event=event, captcha_service=TwoCaptchaService())
     return aws_utils.build_lambda_response(
         status_code=200,
         body='',
     )
 
 
-def solve_captcha(event: events.TwoCaptchaSolveCaptchaEvent, captcha_service: CaptchaInterface):
+def process_event(event: events.TwoCaptchaSolveCaptchaEvent, captcha_service: CaptchaInterface):
     with RetryClient() as client:
         captcha_service.solve_captcha(
             client=client,

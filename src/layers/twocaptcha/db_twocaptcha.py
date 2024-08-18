@@ -24,6 +24,7 @@ class TCDBAPI(ABCCommonAPI):
     def build_recaptcha_event_map(
         cls,
         _id: uuid.UUID,
+        captcha_id: str,
         code: str,
         params: typing.Dict[str, str],
     ):
@@ -33,6 +34,7 @@ class TCDBAPI(ABCCommonAPI):
             pk=pk,
             sk=sk,
             _type=entities.RecaptchaEvent.type(),
+            CaptchaId=captcha_id,
             Code=code,
             Params=params,
             Status=const.EventStatus.INIT.value,

@@ -1,9 +1,15 @@
 import typing
+import uuid
 
 from httpx import Client
 
+from src.layers import logs
 from src.layers.interfaces import CaptchaInterface
+from src.layers.twocaptcha.db_twocaptcha import TCDBAPI, get_db_client
 from . import api_twocaptcha
+
+logger = logs.logger
+db_client = get_db_client()
 
 
 class TwoCaptchaService(CaptchaInterface):
@@ -30,8 +36,17 @@ class TwoCaptchaService(CaptchaInterface):
         return r.request
 
     @classmethod
-    def handle_webhook_event(cls, event: typing.Dict, *args, **kwargs):
-        pass
+    def handle_webhook_event(cls, captcha_id: str, code: str, opt_data: typing.Dict, *args, **kwargs):
+        c_maps = [
+            TCDBAPI.build_recaptcha_event_map(
+                _id=uuid.uuid4(),
+                captcha_id=captcha_id,
+                code=code,
+                params=opt_data
+            )
+        ]
+        db_client.write_maps_to_db(item_maps=c_maps)
+        logger.info(f'Captcha Pingback Event written to database')
 
     @classmethod
     def get_gcaptcha_token(cls, client: Client, captcha_id: int, **kwargs):

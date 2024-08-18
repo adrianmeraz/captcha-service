@@ -1,7 +1,8 @@
 from py_aws_core import decorators, utils as aws_utils
 
 from src.layers import events, exceptions, logs
-from src.layers.twocaptcha import api_twocaptcha
+from src.layers.interfaces import CaptchaInterface
+from src.layers.twocaptcha.services import TwoCaptchaService
 
 logger = logs.logger
 
@@ -10,12 +11,13 @@ logger = logs.logger
 def lambda_handler(raw_event, context):
     logger.info(f'{__name__}, Incoming event: {raw_event}')
     events.TwoCaptchaGetVerificationEvent(raw_event)
+    response = process_event(captcha_service=TwoCaptchaService())
     return aws_utils.build_lambda_response(
         status_code=200,
-        body=get_pingback_verification_token(),
+        body=response,
         content_type='text/plain;charset=utf-8'
     )
 
 
-def get_pingback_verification_token():
-    return api_twocaptcha.TwoCaptchaAPI.get_pingback_token()
+def process_event(captcha_service: CaptchaInterface):
+    return captcha_service.get_verification_token()

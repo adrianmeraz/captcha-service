@@ -1,4 +1,3 @@
-import logging
 import random
 import typing
 from abc import ABC, abstractmethod
@@ -8,7 +7,6 @@ from py_aws_core.secrets_manager import get_secrets_manager
 
 from . import const
 
-logger = logging.getLogger(__name__)
 secrets_manager = get_secrets_manager()
 
 
@@ -40,7 +38,7 @@ class CaptchaInterface(ABC):
 
     @classmethod
     @abstractmethod
-    def handle_webhook_event(cls, event: typing.Dict, *args, **kwargs):
+    def handle_webhook_event(cls, *args, **kwargs):
         pass
 
     @classmethod
