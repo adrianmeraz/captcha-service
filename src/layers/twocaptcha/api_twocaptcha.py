@@ -39,8 +39,6 @@ class TwoCaptchaAPI:
         return secrets_manager.get_secret(secret_name='DOMAIN_NAME')
 
 
-
-
 class TwoCaptchaResponse:
     def __init__(self, data):
         self.status = data['status']
