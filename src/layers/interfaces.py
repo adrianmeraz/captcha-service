@@ -18,19 +18,16 @@ class ProxyInterface(ABC):
     def get_proxy_url(cls, **kwargs) -> str:
         pass
 
-    @staticmethod
-    @abstractmethod
-    def get_weighted_country():
+    @classmethod
+    def get_weighted_country(cls):
         countries, weights = zip(const.PROXY_COUNTRY_WEIGHTS)
         return random.choices(population=countries, weights=weights, k=1)[0]
 
     @classmethod
-    @abstractmethod
     def get_proxy_password(cls):
         return secrets_manager.get_secret(secret_name='PROXY_PASSWORD')
 
     @classmethod
-    @abstractmethod
     def get_proxy_username(cls):
         return secrets_manager.get_secret(secret_name='PROXY_USERNAME')
 
