@@ -1,5 +1,4 @@
 import random
-import typing
 from abc import ABC, abstractmethod
 
 from httpx import Client

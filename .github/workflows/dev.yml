@@ -95,6 +95,7 @@ jobs:
           aws_access_key                 = "${{ env.AWS_ACCESS_KEY_ID }}"
           aws_region                     = "${{ env.AWS_REGION }}"
           aws_secret_key                 = "${{ env.AWS_SECRET_ACCESS_KEY }}"
+          domain_name                    = "${{ env.SSM_DOMAIN_NAME }}"
           environment                    = "${{ env.ENVIRONMENT }}"
           shared_secret_id               = "${{ env.SHARED_SECRET_ID }}"
 

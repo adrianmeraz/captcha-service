@@ -14,25 +14,23 @@ secrets_manager = get_secrets_manager()
 
 
 class TwoCaptchaAPI:
-    _api_key = None
-    _pingback_token = None
     ROOT_URL = 'http://2captcha.com'
 
     @classmethod
-    def get_api_key(cls):
-        if not cls._api_key:
-            cls._api_key = secrets_manager.get_secret('CAPTCHA_PASSWORD')
-        return cls._api_key
+    def get_api_key(cls) -> str:
+        return secrets_manager.get_secret('CAPTCHA_PASSWORD')
 
     @classmethod
-    def get_pingback_token(cls):
-        if not cls._pingback_token:
-            cls._pingback_token = secrets_manager.get_secret('TWOCAPTCHA_PINGBACK_TOKEN')
-        return cls._pingback_token
+    def get_pingback_token(cls) -> str:
+        return secrets_manager.get_secret('TWOCAPTCHA_PINGBACK_TOKEN')
 
     @classmethod
     def get_webhook_url(cls) -> str:
-        return f'{cls.get_domain_name()}/pingback-event'
+        return f'{cls.get_app_name()}.{cls.get_domain_name()}/pingback-event'
+
+    @classmethod
+    def get_app_name(cls):
+        return secrets_manager.get_secret(secret_name='APP_NAME')
 
     @classmethod
     def get_domain_name(cls) -> str:
