@@ -3,8 +3,8 @@ import random
 from abc import ABC, abstractmethod
 
 from httpx import Client
-
 from py_aws_core.secrets_manager import get_secrets_manager
+
 from . import const
 
 logger = logging.getLogger(__name__)

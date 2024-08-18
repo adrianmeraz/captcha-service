@@ -16,12 +16,6 @@ class TwoCaptchaGetVerificationEvent(HttpEvent):
     pass
 
 
-class TwoCaptchaAddPingbackEvent(HttpEvent):
-    def __init__(self, data):
-        super().__init__(data)
-        self.pingback_url = self.body['pingback_url']
-
-
 class TwoCaptchaReportCaptchaEvent(HttpEvent):
     def __init__(self, data):
         super().__init__(data)
