@@ -29,7 +29,7 @@ class ApiPostSolveCaptchaTests(BaseTestFixture):
         with as_file(source) as get_captcha_id_json:
             mocked_solve_captcha = self.create_ok_route(
                 method='POST',
-                url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fwww.example.com&json=1&proxy=&proxytype=MEGAPROXY.ROTATING.PROXYRACK.NET&pingback=www.ipsumlorem.com',
+                url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fwww.example.com&json=1&proxy=&proxytype=MEGAPROXY.ROTATING.PROXYRACK.NET&pingback=www.ipsumlorem.com%2Fpingback-event',
                 _json=json.loads(get_captcha_id_json.read_text(encoding='utf-8'))
             )
 
@@ -57,4 +57,4 @@ class ApiPostSolveCaptchaTests(BaseTestFixture):
 
         self.assertEqual(mocked_solve_captcha.call_count, 1)
         self.assertEqual(mocked_get_api_key.call_count, 1)
-        self.assertEqual(mocked_get_domain_name.call_count, 1)
+        self.assertEqual(mocked_get_domain_name.call_count, 2)

@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 secrets_manager = get_secrets_manager()
 
 
-class ProxyBackend(ABC):
+class ProxyInterface(ABC):
     @classmethod
     @abstractmethod
     def get_proxy_url(cls, **kwargs) -> str:
@@ -31,8 +31,7 @@ class ProxyBackend(ABC):
         return secrets_manager.get_secret(secret_name='PROXY_USERNAME')
 
 
-class CaptchaService(ABC):
-
+class CaptchaInterface(ABC):
     @classmethod
     def solve_captcha(cls, client: Client, site_key: str, page_url: str, *args, **kwargs):
         raise NotImplemented

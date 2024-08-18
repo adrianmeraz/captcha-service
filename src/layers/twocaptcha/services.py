@@ -1,13 +1,14 @@
 from httpx import Client
 
 from src.layers import secrets
-from src.layers.backends import CaptchaService
+from src.layers.interfaces import CaptchaInterface
 from . import api_twocaptcha
 
 
-class TwoCaptchaBackend(CaptchaService):
+class TwoCaptchaService(CaptchaInterface):
+    @classmethod
     def solve_captcha(
-        self,
+        cls,
         client: Client,
         site_key: str,
         page_url: str,
@@ -26,12 +27,15 @@ class TwoCaptchaBackend(CaptchaService):
         )
         return r.request
 
-    def get_gcaptcha_token(self, client: Client, captcha_id: int, **kwargs):
+    @classmethod
+    def get_gcaptcha_token(cls, client: Client, captcha_id: int, **kwargs):
         r = api_twocaptcha.GetSolvedToken.call(client=client, captcha_id=captcha_id)
         return r.request
 
-    def report_bad_captcha_id(self, client: Client, captcha_id: int, **kwargs):
+    @classmethod
+    def report_bad_captcha_id(cls, client: Client, captcha_id: int, **kwargs):
         return api_twocaptcha.ReportBadCaptcha.call(client=client, captcha_id=captcha_id)
 
-    def report_good_captcha_id(self, client: Client, captcha_id: int, **kwargs):
+    @classmethod
+    def report_good_captcha_id(cls, client: Client, captcha_id: int, **kwargs):
         return api_twocaptcha.ReportGoodCaptcha.call(client=client, captcha_id=captcha_id)
