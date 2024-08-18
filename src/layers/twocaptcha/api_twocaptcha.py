@@ -26,7 +26,7 @@ class TwoCaptchaAPI:
 
     @classmethod
     def get_webhook_url(cls) -> str:
-        return f'{cls.get_app_name()}.{cls.get_base_domain_name()}/pingback-event'
+        return f'https://{cls.get_environment()}-{cls.get_app_name()}.{cls.get_base_domain_name()}/pingback-event'
 
     @classmethod
     def get_app_name(cls):
@@ -35,6 +35,10 @@ class TwoCaptchaAPI:
     @classmethod
     def get_base_domain_name(cls) -> str:
         return secrets_manager.get_secret(secret_name='BASE_DOMAIN_NAME')
+
+    @classmethod
+    def get_environment(cls) -> str:
+        return secrets_manager.get_secret(secret_name='ENVIRONMENT')
 
 
 class TwoCaptchaResponse:
