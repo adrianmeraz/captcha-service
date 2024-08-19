@@ -67,8 +67,8 @@ class UpdateCaptchaEvent(RecaptchaV2DB):
         pk = sk = cls.recaptcha_v2_event_create_key(captcha_id=captcha_id)
         r = db_client.update_item(
             key={
-                'PK': pk,
-                'SK': sk,
+                'PK': {'S': pk},
+                'SK': {'S': sk},
             },
             update_expression=f'SET Status = :sts, ModifiedAt = :mda, Code = :code',
             expression_attribute_values={
