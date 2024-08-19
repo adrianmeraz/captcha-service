@@ -23,7 +23,7 @@ class RecaptchaV2DB(ABCCommonAPI):
 
     @classmethod
     def recaptcha_v2_event_create_key(cls, captcha_id: str):
-        return entities.CaptchaEvent.create_key(captcha_id=captcha_id, captcha_type=cls.EVENT_TYPE)
+        return entities.CaptchaEvent.create_key(captcha_id=captcha_id, captcha_type=cls.EVENT_TYPE.RECAPTCHA_V2)
 
 
 class CreateRecaptchaV2Event(RecaptchaV2DB):

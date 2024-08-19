@@ -39,10 +39,9 @@ class TwoCaptchaImpl(CaptchaInterface):
         )
 
     @classmethod
-    def handle_webhook_event(cls, event_id: uuid.UUID, captcha_id: str, code: str, *args, **kwargs):
+    def handle_webhook_event(cls, captcha_id: str, code: str, *args, **kwargs):
         db_twocaptcha.UpdateCaptchaEvent.call(
             db_client=db_client,
-            event_id=event_id,
             captcha_id=captcha_id,
             code=code,
             status=const.EventStatus.CAPTCHA_SOLVED
