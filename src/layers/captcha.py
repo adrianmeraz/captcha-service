@@ -1,3 +1,4 @@
+import typing
 from abc import ABC, abstractmethod
 
 from httpx import Client
@@ -6,7 +7,14 @@ from httpx import Client
 class CaptchaInterface(ABC):
     @classmethod
     @abstractmethod
-    def solve_captcha(cls, client: Client, site_key: str, page_url: str, webhook_url: str, *args, **kwargs):
+    def solve_captcha(
+        cls,
+        client: Client,
+        site_key: str,
+        page_url: str,
+        webhook_url: str = None,
+        webhook_params: typing.Dict[str, str] = None, *args, **kwargs
+    ):
         pass
 
     @classmethod

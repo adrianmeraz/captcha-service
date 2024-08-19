@@ -31,7 +31,8 @@ class CreateRecaptchaV2Event(RecaptchaV2DB):
         cls,
         db_client: DDBClient,
         captcha_id: str,
-        params: typing.Dict[str, str],
+        webhook_params: typing.Dict[str, str],
+        webhook_url: str,
     ) -> int:
         pk = sk = cls.recaptcha_v2_event_create_key(captcha_id=captcha_id)
         c_maps = [RecaptchaV2DB.get_batch_entity_create_map(
@@ -42,8 +43,9 @@ class CreateRecaptchaV2Event(RecaptchaV2DB):
             CaptchaId=captcha_id,
             CaptchaType=cls.EVENT_TYPE.value,
             Code='',
-            Params=params,
             Status=const.EventStatus.INIT.value,
+            WebhookParams=webhook_params,
+            WebhookUrl=webhook_url,
         )]
         count = db_client.write_maps_to_db(item_maps=c_maps)
         logger.info(f'{cls.__qualname__}#call, pk: {pk}, {count} record(s) written')
@@ -81,6 +83,7 @@ class UpdateCaptchaEvent(RecaptchaV2DB):
                 ':mda': {'S': RecaptchaV2DB.iso_8601_now_timestamp()},
                 ':cde': {'S': code}
             },
+            return_values='ALL_NEW'
         )
         logger.info(f'{cls.__qualname__}#call, pk: {pk}, record updated')
         return r

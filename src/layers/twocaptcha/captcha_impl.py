@@ -1,8 +1,8 @@
-import uuid
+import typing
 
 from httpx import Client
 
-from src.layers import const, logs
+from src.layers import entities, logs
 from src.layers.captcha import CaptchaInterface
 from src.layers.twocaptcha import db_twocaptcha
 from src.layers.twocaptcha.db_twocaptcha import const, get_db_client
@@ -20,6 +20,8 @@ class TwoCaptchaImpl(CaptchaInterface):
         site_key: str,
         page_url: str,
         proxy_url: str = None,
+        webhook_url: str = None,
+        webhook_params: typing.Dict[str, str] = None,
         **kwargs
     ):
         request = api_twocaptcha.SolveCaptcha.Request(
@@ -35,7 +37,8 @@ class TwoCaptchaImpl(CaptchaInterface):
         db_twocaptcha.CreateRecaptchaV2Event.call(
             db_client=db_client,
             captcha_id=r.request,
-            params=kwargs
+            webhook_url=webhook_url,
+            webhook_params=webhook_params
         )
 
     @classmethod
@@ -46,6 +49,8 @@ class TwoCaptchaImpl(CaptchaInterface):
             code=code,
             status=const.EventStatus.CAPTCHA_SOLVED
         )
+        pk = entities.CaptchaEvent.create_key(captcha_id=captcha_id, captcha_type=const.EventCaptchaType.RECAPTCHA_V2)
+
 
     @classmethod
     def get_gcaptcha_token(cls, client: Client, captcha_id: int, **kwargs):
