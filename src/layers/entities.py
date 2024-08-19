@@ -1,10 +1,10 @@
 from py_aws_core.entities import ABCEntity
 
-from .const import EventCaptchaType
+from src.layers.const import EventCaptchaType
 
 
 class CaptchaEvent(ABCEntity):
-    TYPE = 'RECAPTCHA_EVENT'
+    TYPE = 'CAPTCHA_EVENT'
 
     @classmethod
     def create_key(cls, captcha_id: str, captcha_type: EventCaptchaType) -> str:

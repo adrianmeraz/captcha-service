@@ -3,8 +3,7 @@ import typing
 from py_aws_core import decorators as aws_decorators, exceptions as aws_exceptions, entities
 from py_aws_core.db_dynamo import ABCCommonAPI, DDBClient
 
-from src.layers import logs
-from . import const, entities
+from src.layers import const, logs, entities
 
 logger = logs.logger
 __db_client = DDBClient()
@@ -22,7 +21,7 @@ class RecaptchaV2DB(ABCCommonAPI):
     EVENT_TYPE = const.EventCaptchaType.RECAPTCHA_V2
 
     @classmethod
-    def recaptcha_v2_event_create_key(cls, captcha_id: str):
+    def recaptcha_v2_event_create_key(cls, captcha_id: str) -> str:
         return entities.CaptchaEvent.create_key(captcha_id=captcha_id, captcha_type=cls.EVENT_TYPE.RECAPTCHA_V2)
 
 
