@@ -7,5 +7,5 @@ class RecaptchaEvent(ABCEntity):
     TYPE = 'RECAPTCHA_EVENT'
 
     @classmethod
-    def create_key(cls, _id: uuid.UUID) -> str:
-        return f'{cls.type()}#{_id}'
+    def create_key(cls, captcha_id: str) -> str:
+        return f'{cls.type()}#{captcha_id}'

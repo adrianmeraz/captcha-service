@@ -23,19 +23,17 @@ class TCDBAPI(ABCCommonAPI):
     @classmethod
     def build_recaptcha_event_map(
         cls,
-        _id: uuid.UUID,
         captcha_id: str,
-        code: str,
         params: typing.Dict[str, str],
     ):
-        pk = sk = entities.RecaptchaEvent.create_key(_id)
+        pk = sk = entities.RecaptchaEvent.create_key(captcha_id=captcha_id)
         return cls.get_batch_entity_create_map(
             expire_in_seconds=None,
             pk=pk,
             sk=sk,
             _type=entities.RecaptchaEvent.type(),
             CaptchaId=captcha_id,
-            Code=code,
+            Code='',
             Params=params,
             Status=const.EventStatus.INIT.value,
         )
@@ -50,18 +48,20 @@ class TCDBAPI(ABCCommonAPI):
         def call(
             cls,
             db_client: DDBClient,
-            _id: uuid,
+            captcha_id: str,
             status: const.EventStatus,
+            code: str = None,
         ):
-            pk = sk = entities.RecaptchaEvent.create_key(_id=_id)
+            pk = sk = entities.RecaptchaEvent.create_key(captcha_id=captcha_id)
             return db_client.update_item(
                 key={
                     'PK': pk,
                     'SK': sk,
                 },
-                update_expression=f'SET Status = :sts, ModifiedAt = :mda',
+                update_expression=f'SET Status = :sts, ModifiedAt = :mda, Code = :code',
                 expression_attribute_values={
                     ':sts': {'S': status.value},
-                    ':mda': {'S': TCDBAPI.iso_8601_now_timestamp()}
+                    ':mda': {'S': TCDBAPI.iso_8601_now_timestamp()},
+                    ':cde': {'S': code}
                 },
             )

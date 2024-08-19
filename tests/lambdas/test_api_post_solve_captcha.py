@@ -34,7 +34,7 @@ class ApiPostSolveCaptchaTests(BaseTestFixture):
         with as_file(source) as get_captcha_id_json:
             mocked_solve_captcha = self.create_ok_route(
                 method='POST',
-                url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fwww.example.com&json=1&proxy=&proxytype=MEGAPROXY.ROTATING.PROXYRACK.NET&pingback=https%3A%2F%2Fdev-big-service.ipsumlorem.com%2Fpingback-event',
+                url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fwww.example.com&json=1&proxy=&proxytype=MEGAPROXY.ROTATING.PROXYRACK.NET&pingback=https%3A%2F%2Fdev-big-service.ipsumlorem.com%2Fpingback-event%3Fopt_data%3D%257B%2527webhook_url%2527%253A%2B%2527https%253A%252F%252Fother-service.example.com%252Fcaptcha_pingback%2527%257D',
                 _json=json.loads(get_captcha_id_json.read_text(encoding='utf-8'))
             )
 

@@ -26,8 +26,11 @@ class TwoCaptchaAPI:
 
     @classmethod
     def get_webhook_url(cls, params: typing.Dict = None) -> str:
-        subdomain = {cls.get_environment()}-{cls.get_app_name()}
-        return f'https://{subdomain}.{cls.get_base_domain_name()}/pingback-event{urlencode(params)}'
+        subdomain = f'{cls.get_environment()}-{cls.get_app_name()}'
+        url = f'https://{subdomain}.{cls.get_base_domain_name()}/pingback-event'
+        if params:
+            url += f'?{urlencode(params)}'
+        return url
 
     @classmethod
     def get_app_name(cls):

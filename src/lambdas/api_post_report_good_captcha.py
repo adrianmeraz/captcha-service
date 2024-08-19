@@ -2,7 +2,7 @@ from py_aws_core import decorators, utils as aws_utils
 from py_aws_core.clients import RetryClient
 
 from src.layers import events, exceptions, logs
-from src.layers.interfaces import CaptchaInterface
+from src.layers.captcha import CaptchaInterface
 from src.layers.twocaptcha.services import TwoCaptchaService
 
 logger = logs.logger

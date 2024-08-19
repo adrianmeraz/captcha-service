@@ -12,6 +12,38 @@ from tests import const as test_const
 RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH
 
 
+class TwoCaptchaAPITests(BaseTestFixture):
+    """
+        Get Captcha ID Tests
+    """
+
+    @respx.mock
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_environment')
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_app_name')
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_base_domain_name')
+    def test_ok(
+        self,
+        mocked_get_domain_name,
+        mocked_get_app_name,
+        mocked_get_environment
+    ):
+        mocked_get_domain_name.return_value = 'ipsumlorem.com'
+        mocked_get_app_name.return_value = 'big-service'
+        mocked_get_environment.return_value = 'dev'
+
+        params = {
+            'ipsum_1': 'this is a test',
+            'key2': 'value 456',
+            'key3': 'xyzabc'
+        }
+        val = api_twocaptcha.TwoCaptchaAPI.get_webhook_url(params=params)
+        self.assertEqual(val, 'https://dev-big-service.ipsumlorem.com/pingback-event?ipsum_1=this+is+a+test&key2=value+456&key3=xyzabc')
+
+        self.assertEqual(mocked_get_domain_name.call_count, 1)
+        self.assertEqual(mocked_get_app_name.call_count, 1)
+        self.assertEqual(mocked_get_environment.call_count, 1)
+
+
 class GetSolvedCaptchaTests(BaseTestFixture):
     """
         Get Captcha ID Tests
