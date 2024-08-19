@@ -1,4 +1,5 @@
 from py_aws_core.events import LambdaEvent
+from urllib.parse import parse_qs
 
 
 class HttpEvent(LambdaEvent):
@@ -25,10 +26,11 @@ class TwoCaptchaReportCaptchaEvent(HttpEvent):
 class TwoCaptchaPostPingbackEvent(HttpEvent):
     def __init__(self, data):
         super().__init__(data)
-        self.qs = self.query_string_parameters
-        self.id = self.qs['id']
-        self.code = self.qs['code']
-        self.opt_data = self.qs['opt_data']
+        self.query = parse_qs(self.body)
+        self.code = self.query['code']
+        self.id = self.query['id']
+        self.rate = self.query['rate']
+        self.opt_data = self.query['opt_data']
 
 
 class TwoCaptchaSolveCaptchaEvent(HttpEvent):

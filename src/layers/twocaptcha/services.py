@@ -29,11 +29,10 @@ class TwoCaptchaService(CaptchaInterface):
             pingback_url=api_twocaptcha.SolveCaptcha.get_webhook_url(),
             opt_data=kwargs,
         )
-        r = api_twocaptcha.SolveCaptcha.call(
+        api_twocaptcha.SolveCaptcha.call(
             client=client,
             request=request
         )
-        return r.request
 
     @classmethod
     def handle_webhook_event(cls, captcha_id: str, code: str, opt_data: typing.Dict, *args, **kwargs):

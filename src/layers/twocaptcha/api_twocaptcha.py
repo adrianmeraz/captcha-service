@@ -108,6 +108,7 @@ class SolveCaptcha(TwoCaptchaAPI):
                 'pingback': request.pingback_url
             }
 
+        logger.info(f'{cls.__qualname__}.call#, Passing form data: {request.opt_data}')
         r = client.post(url, data=request.opt_data, params=params, follow_redirects=False)  # Disable redirects to network splash pages
         if not r.status_code == 200:
             raise TwoCaptchaException(f'Non 200 Response. Proxy: {request.proxy}, Response: {r.text}')
