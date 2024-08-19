@@ -70,7 +70,12 @@ class UpdateCaptchaEvent(RecaptchaV2DB):
                 'PK': {'S': pk},
                 'SK': {'S': sk},
             },
-            update_expression=f'SET Status = :sts, ModifiedAt = :mda, Code = :code',
+            update_expression=f'SET #sts = :sts, #mda = :mda, #cde = :cde',
+            expression_attribute_names={
+                '#sts': 'Status',
+                '#mda': 'ModifiedAt',
+                '#cde': 'Code',
+            },
             expression_attribute_values={
                 ':sts': {'S': status.value},
                 ':mda': {'S': RecaptchaV2DB.iso_8601_now_timestamp()},
