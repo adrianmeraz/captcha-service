@@ -1,6 +1,6 @@
 import typing
 
-from py_aws_core import decorators as aws_decorators, exceptions as aws_exceptions, entities
+from py_aws_core import decorators as aws_decorators, db_dynamo, exceptions as aws_exceptions, entities
 from py_aws_core.db_dynamo import ABCCommonAPI, DDBClient
 
 from src.layers import const, logs, entities
@@ -43,7 +43,7 @@ class CreateRecaptchaV2Event(RecaptchaV2DB):
             CaptchaId=captcha_id,
             CaptchaType=cls.EVENT_TYPE.value,
             Code='',
-            Status=const.EventStatus.INIT.value,
+            EventStatus=const.EventStatus.INIT.value,
             WebhookParams=webhook_params,
             WebhookUrl=webhook_url,
         )]
@@ -54,8 +54,13 @@ class CreateRecaptchaV2Event(RecaptchaV2DB):
 
 class UpdateCaptchaEvent(RecaptchaV2DB):
     """
-        Updates Captcha Event statuses
+        Updates Captcha Events
     """
+
+    class Response(db_dynamo.QueryResponse):
+        @property
+        def captcha_events(self) -> typing.List:
+            return self.get_by_type(entities.CaptchaEvent.type())
 
     @classmethod
     @aws_decorators.dynamodb_handler(client_err_map=aws_exceptions.ERR_CODE_MAP, cancellation_err_maps=[])
@@ -67,23 +72,23 @@ class UpdateCaptchaEvent(RecaptchaV2DB):
         code: str = None,
     ):
         pk = sk = cls.recaptcha_v2_event_create_key(captcha_id=captcha_id)
-        r = db_client.update_item(
+        response = db_client.update_item(
             key={
                 'PK': {'S': pk},
                 'SK': {'S': sk},
             },
-            update_expression=f'SET #sts = :sts, #mda = :mda, #cde = :cde',
+            update_expression=f'SET #est = :est, #mda = :mda, #cde = :cde',
             expression_attribute_names={
-                '#sts': 'Status',
+                '#est': 'EventStatus',
                 '#mda': 'ModifiedAt',
                 '#cde': 'Code',
             },
             expression_attribute_values={
-                ':sts': {'S': status.value},
+                ':est': {'S': status.value},
                 ':mda': {'S': RecaptchaV2DB.iso_8601_now_timestamp()},
                 ':cde': {'S': code}
             },
             return_values='ALL_NEW'
         )
         logger.info(f'{cls.__qualname__}#call, pk: {pk}, record updated')
-        return r
+        return cls.Response(response)
