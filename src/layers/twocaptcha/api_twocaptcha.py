@@ -112,7 +112,7 @@ class SolveCaptcha(TwoCaptchaAPI):
                 'pingback': request.pingback_url
             }
 
-        logger.info(f'{cls.__qualname__}.call#, Passing form data: {request.params}')
+        logger.info(f'{__name__}.{cls.__qualname__}.call#, Passing form data: {request.params}')
         r = client.post(url, params=params, follow_redirects=False)  # Disable redirects to network splash pages
         if not r.status_code == 200:
             raise TwoCaptchaException(f'Non 200 Response. Proxy: {request.proxy}, Response: {r.text}')
@@ -227,9 +227,9 @@ class AddPingback(TwoCaptchaAPI):
 
 class PostWebhook(TwoCaptchaAPI):
     class Request:
-        def __init__(self, webhook_url: str, opt_data: typing = None):
+        def __init__(self, webhook_url: str, webhook_data: typing.Dict = None):
             self.webhook_url = webhook_url
-            self.opt_data = opt_data
+            self.webhook_data = webhook_data
 
     class Response:
         def __init__(self, data):
@@ -239,5 +239,5 @@ class PostWebhook(TwoCaptchaAPI):
     def call(cls, client: Client, request: Request) -> Response:
         url = request.webhook_url
 
-        r = client.post(url, data=request.opt_data)
+        r = client.post(url, data=request.webhook_data)
         return cls.Response(r.json())

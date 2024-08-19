@@ -30,7 +30,6 @@ class TwoCaptchaPostPingbackEvent(HttpEvent):
         self.code = self.query['code'][0]
         self.id = self.query['id'][0]
         self.rate = self.query['rate'][0]
-        self.opt_data = self.query.get('opt_data')
 
 
 class TwoCaptchaSolveCaptchaEvent(HttpEvent):
@@ -39,5 +38,5 @@ class TwoCaptchaSolveCaptchaEvent(HttpEvent):
         self.site_key = self.body['site_key']
         self.page_url = self.body['page_url']
         self.webhook_url = self.body['webhook_url']
-        self.opt_data = self.body.get('opt_data')
+        self.webhook_data = self.body.get('webhook_data')
         self.proxy_url = self.body.get('proxy_url')

@@ -26,7 +26,5 @@ def process_event(event: events.TwoCaptchaSolveCaptchaEvent, captcha_service: Ca
             site_key=event.site_key,
             page_url=event.page_url,
             proxy_url=event.proxy_url,
-            opt_data={
-                'webhook_url': event.webhook_url
-            }
+            webhook_url=event.webhook_url
         )
