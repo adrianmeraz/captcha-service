@@ -29,7 +29,7 @@ class TwoCaptchaService(CaptchaInterface):
             pingback_url=api_twocaptcha.SolveCaptcha.get_webhook_url(),
             opt_data=kwargs,
         )
-        api_twocaptcha.SolveCaptcha.call(
+        return api_twocaptcha.SolveCaptcha.call(
             client=client,
             request=request
         )
@@ -49,8 +49,7 @@ class TwoCaptchaService(CaptchaInterface):
 
     @classmethod
     def get_gcaptcha_token(cls, client: Client, captcha_id: int, **kwargs):
-        r = api_twocaptcha.GetSolvedToken.call(client=client, captcha_id=captcha_id)
-        return r.request
+        return api_twocaptcha.GetSolvedToken.call(client=client, captcha_id=captcha_id)
 
     @classmethod
     def get_verification_token(cls):
