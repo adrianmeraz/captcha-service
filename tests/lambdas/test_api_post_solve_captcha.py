@@ -1,5 +1,6 @@
 import json
 from importlib.resources import as_file
+from py_aws_core.db_dynamo import DDBClient
 from unittest import mock
 
 import respx
@@ -14,6 +15,7 @@ RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH
 
 class ApiPostSolveCaptchaTests(BaseTestFixture):
     @respx.mock
+    @mock.patch.object(DDBClient, 'batch_write_item_maps')
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_environment')
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_app_name')
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_base_domain_name')
@@ -23,12 +25,15 @@ class ApiPostSolveCaptchaTests(BaseTestFixture):
         mocked_get_api_key,
         mocked_get_domain_name,
         mocked_get_app_name,
-        mocked_get_environment
+        mocked_get_environment,
+        mocked_batch_write_item_maps
     ):
         mocked_get_api_key.return_value = 'IPSUMKEY'
         mocked_get_domain_name.return_value = 'ipsumlorem.com'
         mocked_get_app_name.return_value = 'big-service'
         mocked_get_environment.return_value = 'dev'
+
+        mocked_batch_write_item_maps.return_value = 1
 
         source = RESOURCE_PATH.joinpath('get_captcha_id.json')
         with as_file(source) as get_captcha_id_json:
@@ -65,3 +70,5 @@ class ApiPostSolveCaptchaTests(BaseTestFixture):
         self.assertEqual(mocked_get_domain_name.call_count, 1)
         self.assertEqual(mocked_get_app_name.call_count, 1)
         self.assertEqual(mocked_get_environment.call_count, 1)
+
+        self.assertEqual(mocked_batch_write_item_maps.call_count, 1)

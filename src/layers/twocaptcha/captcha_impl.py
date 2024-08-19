@@ -1,15 +1,18 @@
+import uuid
+
 from httpx import Client
 
 from src.layers import const, logs
 from src.layers.captcha import CaptchaInterface
-from src.layers.twocaptcha.db_twocaptcha import const, TCDBAPI, get_db_client
+from src.layers.twocaptcha import db_twocaptcha
+from src.layers.twocaptcha.db_twocaptcha import const, get_db_client
 from . import api_twocaptcha
 
 logger = logs.logger
 db_client = get_db_client()
 
 
-class TwoCaptchaService(CaptchaInterface):
+class TwoCaptchaImpl(CaptchaInterface):
     @classmethod
     def solve_captcha(
         cls,
@@ -29,24 +32,21 @@ class TwoCaptchaService(CaptchaInterface):
             client=client,
             request=request
         )
-        captcha_id = r.request
-        c_maps = [
-            TCDBAPI.build_recaptcha_event_map(
-                captcha_id=r.request,
-                params=kwargs
-            )
-        ]
-        db_client.write_maps_to_db(item_maps=c_maps)
-        logger.info(f'{cls.__qualname__}, Captcha Pingback Event written to database, Captcha ID: {captcha_id}')
+        db_twocaptcha.CreateRecaptchaV2Event.call(
+            db_client=db_client,
+            captcha_id=r.request,
+            params=kwargs
+        )
 
     @classmethod
-    def handle_webhook_event(cls, captcha_id: str, code: str, *args, **kwargs):
-        TCDBAPI.UpdateCaptchaEvent.call(
+    def handle_webhook_event(cls, event_id: uuid.UUID, captcha_id: str, code: str, *args, **kwargs):
+        db_twocaptcha.UpdateCaptchaEvent.call(
             db_client=db_client,
+            event_id=event_id,
             captcha_id=captcha_id,
+            code=code,
             status=const.EventStatus.CAPTCHA_SOLVED
         )
-        logger.info(f'{cls.__qualname__}, Captcha Pingback Event updated, Captcha ID: {captcha_id}')
 
     @classmethod
     def get_gcaptcha_token(cls, client: Client, captcha_id: int, **kwargs):

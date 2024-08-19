@@ -5,7 +5,7 @@ from unittest import mock
 from py_aws_core.testing import BaseTestFixture
 
 from src.lambdas import api_post_pingback_event
-from src.layers.twocaptcha.services import TwoCaptchaService
+from src.layers.twocaptcha.captcha_impl import TwoCaptchaImpl
 from tests import const as test_const
 
 RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH
@@ -13,7 +13,7 @@ RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH
 
 class ApiPostSolveCaptchaTests(BaseTestFixture):
 
-    @mock.patch.object(TwoCaptchaService, 'handle_webhook_event')
+    @mock.patch.object(TwoCaptchaImpl, 'handle_webhook_event')
     def test_ok(
         self,
         mocked_handle_webhook_event
