@@ -1,6 +1,6 @@
 import logging
 import typing
-from urllib.parse import urlparse
+from urllib.parse import urlencode, urlparse
 
 from httpx import Client
 from py_aws_core import decorators as aws_decorators
@@ -25,8 +25,9 @@ class TwoCaptchaAPI:
         return secrets_manager.get_secret('TWOCAPTCHA_PINGBACK_TOKEN')
 
     @classmethod
-    def get_webhook_url(cls) -> str:
-        return f'https://{cls.get_environment()}-{cls.get_app_name()}.{cls.get_base_domain_name()}/pingback-event'
+    def get_webhook_url(cls, params: typing.Dict = None) -> str:
+        subdomain = {cls.get_environment()}-{cls.get_app_name()}
+        return f'https://{subdomain}.{cls.get_base_domain_name()}/pingback-event{urlencode(params)}'
 
     @classmethod
     def get_app_name(cls):
@@ -56,13 +57,13 @@ class SolveCaptcha(TwoCaptchaAPI):
             page_url: str,
             proxy_url: str = None,
             pingback_url: str = None,
-            opt_data: typing.Dict = None
+            params: typing.Dict = None
         ):
             self.site_key = site_key
             self.page_url = page_url
             self.proxy_url = proxy_url
             self.pingback_url = pingback_url
-            self.opt_data = opt_data
+            self.params = params
 
         @property
         def proxy(self) -> str | None:
@@ -108,8 +109,8 @@ class SolveCaptcha(TwoCaptchaAPI):
                 'pingback': request.pingback_url
             }
 
-        logger.info(f'{cls.__qualname__}.call#, Passing form data: {request.opt_data}')
-        r = client.post(url, data=request.opt_data, params=params, follow_redirects=False)  # Disable redirects to network splash pages
+        logger.info(f'{cls.__qualname__}.call#, Passing form data: {request.params}')
+        r = client.post(url, params=params, follow_redirects=False)  # Disable redirects to network splash pages
         if not r.status_code == 200:
             raise TwoCaptchaException(f'Non 200 Response. Proxy: {request.proxy}, Response: {r.text}')
 

@@ -26,8 +26,7 @@ class TwoCaptchaService(CaptchaInterface):
             site_key=site_key,
             page_url=page_url,
             proxy_url=proxy_url,
-            pingback_url=api_twocaptcha.SolveCaptcha.get_webhook_url(),
-            **kwargs,
+            pingback_url=api_twocaptcha.SolveCaptcha.get_webhook_url(params=kwargs),
         )
         return api_twocaptcha.SolveCaptcha.call(
             client=client,
