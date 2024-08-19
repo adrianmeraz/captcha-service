@@ -35,7 +35,7 @@ class TwoCaptchaService(CaptchaInterface):
         )
 
     @classmethod
-    def handle_webhook_event(cls, captcha_id: str, code: str, opt_data: typing.Dict, *args, **kwargs):
+    def handle_webhook_event(cls, captcha_id: str, code: str, opt_data: typing.Dict = None, *args, **kwargs):
         c_maps = [
             TCDBAPI.build_recaptcha_event_map(
                 _id=uuid.uuid4(),
