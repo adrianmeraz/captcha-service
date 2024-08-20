@@ -19,9 +19,9 @@ class TwoCaptchaImpl(CaptchaInterface):
         client: Client,
         site_key: str,
         page_url: str,
-        proxy_url: str = None,
-        webhook_url: str = None,
+        webhook_url: str,
         webhook_data: typing.Dict[str, str] = None,
+        proxy_url: str = None,
         **kwargs
     ):
         request = api_twocaptcha.SolveCaptcha.Request(

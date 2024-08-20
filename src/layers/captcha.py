@@ -12,7 +12,7 @@ class CaptchaInterface(ABC):
         client: Client,
         site_key: str,
         page_url: str,
-        webhook_url: str = None,
+        webhook_url: str,
         webhook_data: typing.Dict[str, str] = None,
         *args,
         **kwargs
