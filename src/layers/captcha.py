@@ -24,7 +24,7 @@ class CaptchaInterface(ABC):
 
     @classmethod
     @abstractmethod
-    def post_webhook_event(
+    def send_webhook_event(
         cls,
         client: Client,
         captcha_id: str,

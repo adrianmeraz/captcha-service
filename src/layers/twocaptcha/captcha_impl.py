@@ -50,7 +50,7 @@ class TwoCaptchaImpl(CaptchaInterface):
             status=const.EventStatus.CAPTCHA_SOLVED
         )
         captcha_event = update_response.captcha_event
-        cls.post_webhook_event(
+        cls.send_webhook_event(
             client=client,
             captcha_id=captcha_id,
             webhook_url=captcha_event.WebhookUrl,
@@ -58,7 +58,7 @@ class TwoCaptchaImpl(CaptchaInterface):
         )
 
     @classmethod
-    def post_webhook_event(
+    def send_webhook_event(
         cls,
         client: Client,
         captcha_id: str,
@@ -71,10 +71,10 @@ class TwoCaptchaImpl(CaptchaInterface):
         )
         try:
             api_twocaptcha.PostWebhook.call(client=client, request=request)
+            webhook_status = const.WebhookStatus.WEBHOOK_SUCCESS
         except exceptions.TwoCaptchaException:
             webhook_status = const.WebhookStatus.WEBHOOK_FAILED
-        else:
-            webhook_status = const.WebhookStatus.WEBHOOK_SUCCESS
+
         db_twocaptcha.UpdateCaptchaEventWebookStatus.call(
             db_client=db_client,
             captcha_id=captcha_id,
