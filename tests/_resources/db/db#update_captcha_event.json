@@ -12,7 +12,7 @@
         "CaptchaType": {
             "S": "RECAPTCHA_V2"
         },
-        "WebhookParams": {
+        "WebhookData": {
             "NULL": true
         },
         "ModifiedAt": {

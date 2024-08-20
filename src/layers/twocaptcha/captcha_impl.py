@@ -21,7 +21,7 @@ class TwoCaptchaImpl(CaptchaInterface):
         page_url: str,
         proxy_url: str = None,
         webhook_url: str = None,
-        webhook_params: typing.Dict[str, str] = None,
+        webhook_data: typing.Dict[str, str] = None,
         **kwargs
     ):
         request = api_twocaptcha.SolveCaptcha.Request(
@@ -38,19 +38,33 @@ class TwoCaptchaImpl(CaptchaInterface):
             db_client=db_client,
             captcha_id=r.request,
             webhook_url=webhook_url,
-            webhook_params=webhook_params
+            webhook_data=webhook_data
         )
 
     @classmethod
-    def handle_webhook_event(cls, captcha_id: str, code: str, *args, **kwargs):
-        db_twocaptcha.UpdateCaptchaEvent.call(
+    def handle_webhook_event(cls, client: Client, captcha_id: str, code: str, *args, **kwargs):
+        update_response = db_twocaptcha.UpdateCaptchaEvent.call(
             db_client=db_client,
             captcha_id=captcha_id,
             code=code,
             status=const.EventStatus.CAPTCHA_SOLVED
         )
-        pk = entities.CaptchaEvent.create_key(captcha_id=captcha_id, captcha_type=const.EventCaptchaType.RECAPTCHA_V2)
-
+        captcha_event = update_response.captcha_event
+        request = api_twocaptcha.PostWebhook.Request(
+            webhook_url=captcha_event.WebhookUrl,
+            webhook_data=captcha_event.WebhookData
+        )
+        try:
+            api_twocaptcha.PostWebhook.call(client=client, request=request)
+        except Exception as e:
+            webhook_status = const.WebhookStatus.WEBHOOK_FAILED
+        else:
+            webhook_status = const.WebhookStatus.WEBHOOK_SUCCESS
+        db_twocaptcha.UpdateCaptchaEventWebookStatus.call(
+            db_client=db_client,
+            captcha_id=captcha_id,
+            webhook_status=webhook_status
+        )
 
     @classmethod
     def get_gcaptcha_token(cls, client: Client, captcha_id: int, **kwargs):

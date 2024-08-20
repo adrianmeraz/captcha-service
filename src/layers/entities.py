@@ -12,8 +12,9 @@ class CaptchaEvent(ABCEntity):
         self.CaptchaType = self.data['CaptchaType']
         self.Code = self.data['Code']
         self.EventStatus = self.data['EventStatus']
-        self.WebhookParams = self.data['WebhookParams']
         self.WebhookUrl = self.data['WebhookUrl']
+        self.WebhookData = self.data['WebhookData']
+        self.WebhookStatus = self.data['WebhookStatus']
 
     @classmethod
     def create_key(cls, captcha_id: str, captcha_type: EventCaptchaType) -> str:

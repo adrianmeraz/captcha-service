@@ -90,6 +90,7 @@ class SolveCaptcha(TwoCaptchaAPI):
         pass
 
     @classmethod
+    @aws_decorators.wrap_exceptions(raise_as=TwoCaptchaException)
     @decorators.error_check
     def call(cls, client: Client, request: Request) -> Response:
         url = f'{cls.ROOT_URL}/in.php'
@@ -129,6 +130,7 @@ class GetSolvedToken(TwoCaptchaAPI):
         pass
 
     @classmethod
+    @aws_decorators.wrap_exceptions(raise_as=TwoCaptchaException)
     @aws_decorators.retry(retry_exceptions=(CaptchaNotReady,), tries=60, delay=5, backoff=1)
     @decorators.error_check
     def call(cls, client: Client, request: Request) -> Response:
@@ -156,6 +158,7 @@ class ReportCaptcha(TwoCaptchaAPI):
         pass
 
     @classmethod
+    @aws_decorators.wrap_exceptions(raise_as=TwoCaptchaException)
     def call(cls, client: Client, request: Request) -> Response:
         url = f'{cls.ROOT_URL}/res.php'
 
@@ -180,6 +183,7 @@ class ReportBadCaptcha(ReportCaptcha):
             self.is_good = False
 
     @classmethod
+    @aws_decorators.wrap_exceptions(raise_as=TwoCaptchaException)
     @decorators.error_check
     def call(cls, client: Client, request: Request, **kwargs):
         r = super().call(client=client, request=request)
@@ -194,6 +198,7 @@ class ReportGoodCaptcha(ReportCaptcha):
             self.is_good = True
 
     @classmethod
+    @aws_decorators.wrap_exceptions(raise_as=TwoCaptchaException)
     @decorators.error_check
     def call(cls, client: Client, request: Request, **kwargs):
         r = super().call(client=client, request=request)
@@ -210,6 +215,7 @@ class AddPingback(TwoCaptchaAPI):
         pass
 
     @classmethod
+    @aws_decorators.wrap_exceptions(raise_as=TwoCaptchaException)
     @decorators.error_check
     def call(cls, client: Client, request: Request) -> Response:
         url = f'{cls.ROOT_URL}/res.php'
@@ -236,6 +242,7 @@ class PostWebhook(TwoCaptchaAPI):
             self.data = data
 
     @classmethod
+    @aws_decorators.wrap_exceptions(raise_as=TwoCaptchaException)
     def call(cls, client: Client, request: Request) -> Response:
         url = request.webhook_url
 

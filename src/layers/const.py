@@ -8,6 +8,12 @@ class EventStatus(str, Enum):
     CAPTCHA_INVALID = 'CAPTCHA_INVALID'
 
 
+class WebhookStatus(str, Enum):
+    INIT = 'INIT'
+    WEBHOOK_SUCCESS = 'WEBHOOK_SUCCESS'
+    WEBHOOK_FAILED = 'WEBHOOK_FAILED'
+
+
 class EventCaptchaType(str, Enum):
     RECAPTCHA_V2 = 'RECAPTCHA_V2'
 
