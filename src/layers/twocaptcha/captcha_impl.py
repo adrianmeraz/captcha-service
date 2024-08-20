@@ -60,10 +60,12 @@ class TwoCaptchaImpl(CaptchaInterface):
     @classmethod
     def send_webhook_event(
         cls,
-        client: Client,
         captcha_id: str,
         webhook_url: str,
         webhook_data: typing.Dict[str, str] = None,
+        client: Client = None,
+        *args,
+        **kwargs
     ):
         request = api_twocaptcha.PostWebhook.Request(
             webhook_url=webhook_url,
@@ -82,7 +84,7 @@ class TwoCaptchaImpl(CaptchaInterface):
         )
 
     @classmethod
-    def get_gcaptcha_token(cls, client: Client, captcha_id: int, **kwargs):
+    def get_gcaptcha_token(cls, captcha_id: int, client: Client = None, **kwargs):
         return api_twocaptcha.GetSolvedToken.call(client=client, captcha_id=captcha_id)
 
     @classmethod

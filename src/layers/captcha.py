@@ -32,6 +32,8 @@ class CaptchaInterface(ABC):
         captcha_id: str,
         webhook_url: str,
         webhook_data: typing.Dict[str, str] = None,
+        *args,
+        **kwargs
     ):
         pass
 
