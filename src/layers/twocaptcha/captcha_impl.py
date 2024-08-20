@@ -2,7 +2,7 @@ import typing
 
 from httpx import Client
 
-from src.layers import entities, logs
+from src.layers import logs
 from src.layers.captcha import CaptchaInterface
 from src.layers.twocaptcha import db_twocaptcha, exceptions
 from src.layers.twocaptcha.db_twocaptcha import const, get_db_client
