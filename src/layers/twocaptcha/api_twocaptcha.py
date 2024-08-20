@@ -235,7 +235,7 @@ class PostWebhook(TwoCaptchaAPI):
     class Request:
         def __init__(self, webhook_url: str, webhook_data: typing.Dict = None):
             self.webhook_url = webhook_url
-            self.webhook_data = webhook_data
+            self.webhook_data = webhook_data or dict()
 
     class Response:
         def __init__(self, data):

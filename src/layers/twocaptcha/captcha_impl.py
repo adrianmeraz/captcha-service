@@ -63,7 +63,7 @@ class TwoCaptchaImpl(CaptchaInterface):
         client: Client,
         captcha_id: str,
         webhook_url: str,
-        webhook_data: typing.Dict,
+        webhook_data: typing.Dict[str, str] = None,
     ):
         request = api_twocaptcha.PostWebhook.Request(
             webhook_url=webhook_url,

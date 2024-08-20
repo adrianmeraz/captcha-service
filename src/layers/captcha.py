@@ -13,7 +13,9 @@ class CaptchaInterface(ABC):
         site_key: str,
         page_url: str,
         webhook_url: str = None,
-        webhook_data: typing.Dict[str, str] = None, *args, **kwargs
+        webhook_data: typing.Dict[str, str] = None,
+        *args,
+        **kwargs
     ):
         pass
 
@@ -29,7 +31,7 @@ class CaptchaInterface(ABC):
         client: Client,
         captcha_id: str,
         webhook_url: str,
-        webhook_data: typing.Dict,
+        webhook_data: typing.Dict[str, str] = None,
     ):
         pass
 
