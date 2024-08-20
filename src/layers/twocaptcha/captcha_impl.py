@@ -4,7 +4,7 @@ from httpx import Client
 
 from src.layers import entities, logs
 from src.layers.captcha import CaptchaInterface
-from src.layers.twocaptcha import db_twocaptcha
+from src.layers.twocaptcha import db_twocaptcha, exceptions
 from src.layers.twocaptcha.db_twocaptcha import const, get_db_client
 from . import api_twocaptcha
 
@@ -50,13 +50,28 @@ class TwoCaptchaImpl(CaptchaInterface):
             status=const.EventStatus.CAPTCHA_SOLVED
         )
         captcha_event = update_response.captcha_event
-        request = api_twocaptcha.PostWebhook.Request(
+        cls.post_webhook_event(
+            client=client,
+            captcha_id=captcha_id,
             webhook_url=captcha_event.WebhookUrl,
             webhook_data=captcha_event.WebhookData
         )
+
+    @classmethod
+    def post_webhook_event(
+        cls,
+        client: Client,
+        captcha_id: str,
+        webhook_url: str,
+        webhook_data: typing.Dict,
+    ):
+        request = api_twocaptcha.PostWebhook.Request(
+            webhook_url=webhook_url,
+            webhook_data=webhook_data
+        )
         try:
             api_twocaptcha.PostWebhook.call(client=client, request=request)
-        except Exception as e:
+        except exceptions.TwoCaptchaException:
             webhook_status = const.WebhookStatus.WEBHOOK_FAILED
         else:
             webhook_status = const.WebhookStatus.WEBHOOK_SUCCESS

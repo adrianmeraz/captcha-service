@@ -24,6 +24,17 @@ class CaptchaInterface(ABC):
 
     @classmethod
     @abstractmethod
+    def post_webhook_event(
+        cls,
+        client: Client,
+        captcha_id: str,
+        webhook_url: str,
+        webhook_data: typing.Dict,
+    ):
+        pass
+
+    @classmethod
+    @abstractmethod
     def get_gcaptcha_token(cls, client: Client, captcha_id: str, *args, **kwargs):
         pass
 
