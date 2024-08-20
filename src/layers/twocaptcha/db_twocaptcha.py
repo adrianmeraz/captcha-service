@@ -1,6 +1,6 @@
 import typing
 
-from py_aws_core import decorators as aws_decorators, db_dynamo, exceptions as aws_exceptions, entities
+from py_aws_core import decorators as aws_decorators, exceptions as aws_exceptions, entities
 from py_aws_core.db_dynamo import ABCCommonAPI, DDBClient
 
 from src.layers import const, logs, entities
