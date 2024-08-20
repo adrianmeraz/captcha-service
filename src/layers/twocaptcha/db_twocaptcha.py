@@ -63,7 +63,7 @@ class UpdateCaptchaEvent(RecaptchaV2DB):
     class Response(db_dynamo.QueryResponse):
         @property
         def captcha_event(self) -> entities.CaptchaEvent:
-            return [entities.CaptchaEvent(s) for s in self.get_by_type(entities.Session.TYPE)][0]
+            return [entities.CaptchaEvent(s) for s in self.get_by_type(entities.CaptchaEvent.TYPE)][0]
 
     @classmethod
     @aws_decorators.dynamodb_handler(client_err_map=aws_exceptions.ERR_CODE_MAP, cancellation_err_maps=[])
@@ -101,10 +101,18 @@ class UpdateCaptchaEventWebookStatus(RecaptchaV2DB):
     """
         Updates Captcha Event Webhook Status
     """
-    class Response(db_dynamo.QueryResponse):
+    # class Response(db_dynamo.QueryResponse):
+    #     @property
+    #     def captcha_event(self) -> entities.CaptchaEvent:
+    #         return [entities.CaptchaEvent(s) for s in self.get_by_type(entities.CaptchaEvent.TYPE)][0]
+
+    class UpdateResponse:
+        def __init__(self, data: typing.Dict):
+            self.attributes = data['Attributes']
+
         @property
         def captcha_event(self) -> entities.CaptchaEvent:
-            return [entities.CaptchaEvent(s) for s in self.get_by_type(entities.Session.TYPE)][0]
+            return entities.CaptchaEvent(self.attributes)
 
     @classmethod
     @aws_decorators.dynamodb_handler(client_err_map=aws_exceptions.ERR_CODE_MAP, cancellation_err_maps=[])
@@ -132,4 +140,4 @@ class UpdateCaptchaEventWebookStatus(RecaptchaV2DB):
             return_values='ALL_NEW'
         )
         logger.info(f'{cls.__qualname__}#call, pk: {pk}, record updated')
-        return cls.Response(response)
+        return cls.UpdateResponse(response)
