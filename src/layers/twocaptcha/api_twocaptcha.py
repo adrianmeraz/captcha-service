@@ -237,14 +237,9 @@ class PostWebhook(TwoCaptchaAPI):
             self.webhook_url = webhook_url
             self.webhook_data = webhook_data or dict()
 
-    class Response:
-        def __init__(self, data):
-            self.data = data
-
     @classmethod
     @aws_decorators.wrap_exceptions(raise_as=TwoCaptchaException)
-    def call(cls, client: Client, request: Request) -> Response:
+    def call(cls, client: Client, request: Request):
         url = request.webhook_url
 
-        r = client.post(url, data=request.webhook_data)
-        return cls.Response(r.json())
+        return client.post(url, data=request.webhook_data)

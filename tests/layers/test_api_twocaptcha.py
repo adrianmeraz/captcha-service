@@ -471,3 +471,36 @@ class AddPingbackTests(BaseTestFixture):
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_add_pingback.call_count, 1)
+
+
+class PostWebhookTests(BaseTestFixture):
+    """
+        Post Webhook Tests
+    """
+
+    @respx.mock
+    def test_ok(self):
+        mocked_post_webhook = self.create_route(
+            method='POST',
+            url__eq='http://mysite.com/pingback/url/',
+            response_status_code=200,
+            response_text=''
+        )
+
+        with RetryClient() as client:
+            webhook_data = {
+                'test1': 'val1',
+                'test33': 'ipsum lorem'
+            }
+            request = api_twocaptcha.PostWebhook.Request(
+                webhook_url='http://mysite.com/pingback/url/',
+                webhook_data=webhook_data
+            )
+            response = api_twocaptcha.PostWebhook.call(
+                client=client,
+                request=request
+            )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(mocked_post_webhook.call_count, 1)
