@@ -39,11 +39,6 @@ class CaptchaInterface(ABC):
 
     @classmethod
     @abstractmethod
-    def get_gcaptcha_token(cls, http_client: Client, captcha_id: str, *args, **kwargs):
-        pass
-
-    @classmethod
-    @abstractmethod
     def get_verification_token(cls, *args, **kwargs):
         pass
 

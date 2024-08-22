@@ -85,17 +85,15 @@ class TwoCaptchaImpl(CaptchaInterface):
         )
 
     @classmethod
-    def get_gcaptcha_token(cls, captcha_id: int, http_client: Client = None, **kwargs):
-        return api_twocaptcha.GetSolvedToken.call(http_client=http_client, captcha_id=captcha_id)
-
-    @classmethod
     def get_verification_token(cls):
         return api_twocaptcha.TwoCaptchaAPI.get_pingback_token()
 
     @classmethod
     def report_bad_captcha_id(cls, http_client: Client, captcha_id: int, **kwargs):
-        return api_twocaptcha.ReportBadCaptcha.call(http_client=http_client, captcha_id=captcha_id)
+        request = api_twocaptcha.ReportBadCaptcha.Request(captcha_id=captcha_id)
+        return api_twocaptcha.ReportBadCaptcha.call(http_client=http_client, request=request)
 
     @classmethod
     def report_good_captcha_id(cls, http_client: Client, captcha_id: int, **kwargs):
-        return api_twocaptcha.ReportGoodCaptcha.call(http_client=http_client, captcha_id=captcha_id)
+        request = api_twocaptcha.ReportGoodCaptcha.Request(captcha_id=captcha_id)
+        return api_twocaptcha.ReportGoodCaptcha.call(http_client=http_client, request=request)

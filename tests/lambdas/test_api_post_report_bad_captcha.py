@@ -20,7 +20,7 @@ class ApiPostReportBadCaptchaTests(BaseTestFixture):
     ):
         mocked_report_bad_captcha_id.return_value = True
 
-        source = test_const.TEST_EVENT_RESOURCE_PATH.joinpath('event#api_post_pingback_event.json')
+        source = test_const.TEST_EVENT_RESOURCE_PATH.joinpath('event#api_post_report_bad_captcha.json')
         with as_file(source) as event_json:
             mock_event = json.loads(event_json.read_text())
 

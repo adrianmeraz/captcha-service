@@ -121,33 +121,6 @@ class SolveCaptcha(TwoCaptchaAPI):
         return cls.Response(r.json())
 
 
-class GetSolvedToken(TwoCaptchaAPI):
-    class Request:
-        def __init__(self, captcha_id: int):
-            self.captcha_id = captcha_id
-
-    class Response(TwoCaptchaResponse):
-        pass
-
-    @classmethod
-    @aws_decorators.wrap_exceptions(raise_as=TwoCaptchaException)
-    @aws_decorators.retry(retry_exceptions=(CaptchaNotReady,), tries=60, delay=5, backoff=1)
-    @decorators.error_check
-    def call(cls, http_client: Client, request: Request) -> Response:
-        url = f'{cls.ROOT_URL}/res.php'
-
-        params = {
-            'key': cls.get_api_key(),
-            'action': 'get',
-            'id': request.captcha_id,
-            'json': '1',
-        }
-
-        r = http_client.get(url, params=params)
-
-        return cls.Response(r.json())
-
-
 class ReportCaptcha(TwoCaptchaAPI):
     class Request:
         def __init__(self, captcha_id: int, is_good: bool):

@@ -44,60 +44,6 @@ class TwoCaptchaAPITests(BaseTestFixture):
         self.assertEqual(mocked_get_environment.call_count, 1)
 
 
-class GetSolvedCaptchaTests(BaseTestFixture):
-    """
-        Get Captcha ID Tests
-    """
-
-    @respx.mock
-    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
-    def test_ok(self, mocked_get_api_key):
-        mocked_get_api_key.return_value = 'IPSUMKEY'
-
-        source = RESOURCE_PATH.joinpath('get_solved_token.json')
-        with as_file(source) as get_solved_token_json:
-            mocked_get_solved_token_route = self.create_ok_route(
-                method='GET',
-                url__eq='http://2captcha.com/res.php?key=IPSUMKEY&action=get&id=2122988149&json=1',
-                _json=json.loads(get_solved_token_json.read_text(encoding='utf-8'))
-            )
-
-        with RetryClient() as client:
-            request = api_twocaptcha.GetSolvedToken.Request(captcha_id=2122988149)
-            r = api_twocaptcha.GetSolvedToken.call(
-                http_client=client,
-                request=request
-            )
-            self.assertEqual(r.request, '03AHJ_Vuve5Asa4koK3KSMyUkCq0vUFCR5Im4CwB7PzO3dCxIo11i53epEraq-uBO5mVm2XRikL8iKOWr0aG50sCuej9bXx5qcviUGSm4iK4NC_Q88flavWhaTXSh0VxoihBwBjXxwXuJZ-WGN5Sy4dtUl2wbpMqAj8Zwup1vyCaQJWFvRjYGWJ_TQBKTXNB5CCOgncqLetmJ6B6Cos7qoQyaB8ZzBOTGf5KSP6e-K9niYs772f53Oof6aJeSUDNjiKG9gN3FTrdwKwdnAwEYX-F37sI_vLB1Zs8NQo0PObHYy0b0sf7WSLkzzcIgW9GR0FwcCCm1P8lB-50GQHPEBJUHNnhJyDzwRoRAkVzrf7UkV8wKCdTwrrWqiYDgbrzURfHc2ESsp020MicJTasSiXmNRgryt-gf50q5BMkiRH7osm4DoUgsjc_XyQiEmQmxl5sqZP7aKsaE-EM00x59XsPzD3m3YI6SRCFRUevSyumBd7KmXE8VuzIO9lgnnbka4-eZynZa6vbB9cO3QjLH0xSG3-egcplD1uLGh79wC34RF49Ui3eHwua4S9XHpH6YBe7gXzz6_mv-o-fxrOuphwfrtwvvi2FGfpTexWvxhqWICMFTTjFBCEGEgj7_IFWEKirXW2RTZCVF0Gid7EtIsoEeZkPbrcUISGmgtiJkJ_KojuKwImF0G0CsTlxYTOU2sPsd5o1JDt65wGniQR2IZufnPbbK76Yh_KI2DY4cUxMfcb2fAXcFMc9dcpHg6f9wBXhUtFYTu6pi5LhhGuhpkiGcv6vWYNxMrpWJW_pV7q8mPilwkAP-zw5MJxkgijl2wDMpM-UUQ_k37FVtf-ndbQAIPG7S469doZMmb5IZYgvcB4ojqCW3Vz6Q')
-
-        self.assertEqual(mocked_get_api_key.call_count, 1)
-        self.assertEqual(mocked_get_solved_token_route.call_count, 1)
-
-    @respx.mock
-    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
-    def test_captcha_unsolvable(self, mocked_get_api_key):
-        mocked_get_api_key.return_value = 'IPSUMKEY'
-
-        source = RESOURCE_PATH.joinpath('captcha_unsolvable.json')
-        with as_file(source) as get_solved_token_json:
-            mocked_get_solved_token_route = self.create_ok_route(
-                method='GET',
-                url__eq='http://2captcha.com/res.php?key=IPSUMKEY&action=get&id=2122988149&json=1',
-                _json=json.loads(get_solved_token_json.read_text(encoding='utf-8'))
-            )
-
-        with self.assertRaises(exceptions.CaptchaUnsolvable):
-            with RetryClient() as client:
-                request = api_twocaptcha.GetSolvedToken.Request(captcha_id=2122988149)
-                api_twocaptcha.GetSolvedToken.call(
-                    http_client=client,
-                    request=request
-                )
-
-        self.assertEqual(mocked_get_api_key.call_count, 1)
-        self.assertEqual(mocked_get_solved_token_route.call_count, 1)
-
-
 class SolveCaptchaTests(BaseTestFixture):
     """
         Ping Captcha ID Tests
@@ -286,65 +232,6 @@ class SolveCaptchaTests(BaseTestFixture):
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_solve_captcha.call_count, 1)
-
-
-class GetSolvedTokenTests(BaseTestFixture):
-    """
-        Get Solved Token Tests
-    """
-
-    @respx.mock
-    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
-    def test_ok(self, mocked_get_api_key):
-        mocked_get_api_key.return_value = 'IPSUMKEY'
-
-        source = RESOURCE_PATH.joinpath('get_solved_token.json')
-        with as_file(source) as get_solved_token_json:
-            mocked_get_solved_token = self.create_route(
-                method='GET',
-                url__eq='http://2captcha.com/res.php?key=IPSUMKEY&action=get&id=2122988149&json=1',
-                response_status_code=200,
-                response_json=json.loads(get_solved_token_json.read_text(encoding='utf-8'))
-            )
-
-        with RetryClient() as client:
-            request = api_twocaptcha.GetSolvedToken.Request(captcha_id=2122988149)
-            r = api_twocaptcha.GetSolvedToken.call(
-                http_client=client,
-                request=request,
-            )
-
-        self.assertEqual(r.request, '03AHJ_Vuve5Asa4koK3KSMyUkCq0vUFCR5Im4CwB7PzO3dCxIo11i53epEraq-uBO5mVm2XRikL8iKOWr0aG50sCuej9bXx5qcviUGSm4iK4NC_Q88flavWhaTXSh0VxoihBwBjXxwXuJZ-WGN5Sy4dtUl2wbpMqAj8Zwup1vyCaQJWFvRjYGWJ_TQBKTXNB5CCOgncqLetmJ6B6Cos7qoQyaB8ZzBOTGf5KSP6e-K9niYs772f53Oof6aJeSUDNjiKG9gN3FTrdwKwdnAwEYX-F37sI_vLB1Zs8NQo0PObHYy0b0sf7WSLkzzcIgW9GR0FwcCCm1P8lB-50GQHPEBJUHNnhJyDzwRoRAkVzrf7UkV8wKCdTwrrWqiYDgbrzURfHc2ESsp020MicJTasSiXmNRgryt-gf50q5BMkiRH7osm4DoUgsjc_XyQiEmQmxl5sqZP7aKsaE-EM00x59XsPzD3m3YI6SRCFRUevSyumBd7KmXE8VuzIO9lgnnbka4-eZynZa6vbB9cO3QjLH0xSG3-egcplD1uLGh79wC34RF49Ui3eHwua4S9XHpH6YBe7gXzz6_mv-o-fxrOuphwfrtwvvi2FGfpTexWvxhqWICMFTTjFBCEGEgj7_IFWEKirXW2RTZCVF0Gid7EtIsoEeZkPbrcUISGmgtiJkJ_KojuKwImF0G0CsTlxYTOU2sPsd5o1JDt65wGniQR2IZufnPbbK76Yh_KI2DY4cUxMfcb2fAXcFMc9dcpHg6f9wBXhUtFYTu6pi5LhhGuhpkiGcv6vWYNxMrpWJW_pV7q8mPilwkAP-zw5MJxkgijl2wDMpM-UUQ_k37FVtf-ndbQAIPG7S469doZMmb5IZYgvcB4ojqCW3Vz6Q')
-        self.assertEqual(r.status, 1)
-
-        self.assertEqual(mocked_get_api_key.call_count, 1)
-        self.assertEqual(mocked_get_solved_token.call_count, 1)
-
-    @respx.mock
-    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
-    def test_error_wrong_captcha_id(self, mocked_get_api_key):
-        mocked_get_api_key.return_value = 'IPSUMKEY'
-
-        mocked_get_solved_token = self.create_route(
-            method='GET',
-            url__eq='http://2captcha.com/res.php?key=IPSUMKEY&action=get&id=2122988149&json=1',
-            response_status_code=200,
-            response_json={
-                "status": 1,
-                "request": "ERROR_WRONG_CAPTCHA_ID"
-            }
-        )
-
-        with self.assertRaises(exceptions.WarnError):
-            with RetryClient() as client:
-                request = api_twocaptcha.GetSolvedToken.Request(captcha_id=2122988149)
-                api_twocaptcha.GetSolvedToken.call(
-                    http_client=client,
-                    request=request
-                )
-
-        self.assertEqual(mocked_get_api_key.call_count, 1)
-        self.assertEqual(mocked_get_solved_token.call_count, 1)
 
 
 class ReportCaptchaTests(BaseTestFixture):
