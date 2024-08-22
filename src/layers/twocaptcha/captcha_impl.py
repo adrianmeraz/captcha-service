@@ -16,7 +16,7 @@ class TwoCaptchaImpl(CaptchaInterface):
     @classmethod
     def solve_captcha(
         cls,
-        client: Client,
+        http_client: Client,
         site_key: str,
         page_url: str,
         webhook_url: str,
@@ -31,7 +31,7 @@ class TwoCaptchaImpl(CaptchaInterface):
             pingback_url=api_twocaptcha.SolveCaptcha.get_webhook_url(),
         )
         r = api_twocaptcha.SolveCaptcha.call(
-            client=client,
+            http_client=http_client,
             request=request
         )
         db_twocaptcha.CreateRecaptchaV2Event.call(
@@ -42,7 +42,7 @@ class TwoCaptchaImpl(CaptchaInterface):
         )
 
     @classmethod
-    def handle_webhook_event(cls, client: Client, captcha_id: str, code: str, *args, **kwargs):
+    def handle_webhook_event(cls, http_client: Client, captcha_id: str, code: str, *args, **kwargs):
         update_response = db_twocaptcha.UpdateCaptchaEvent.call(
             db_client=db_client,
             captcha_id=captcha_id,
@@ -51,7 +51,7 @@ class TwoCaptchaImpl(CaptchaInterface):
         )
         captcha_event = update_response.captcha_event
         cls.send_webhook_event(
-            client=client,
+            http_client=http_client,
             captcha_id=captcha_id,
             webhook_url=captcha_event.WebhookUrl,
             webhook_data=captcha_event.WebhookData
@@ -63,7 +63,7 @@ class TwoCaptchaImpl(CaptchaInterface):
         captcha_id: str,
         webhook_url: str,
         webhook_data: typing.Dict[str, str] = None,
-        client: Client = None,
+        http_client: Client = None,
         *args,
         **kwargs
     ):
@@ -72,11 +72,12 @@ class TwoCaptchaImpl(CaptchaInterface):
             webhook_data=webhook_data
         )
         try:
-            api_twocaptcha.PostWebhook.call(client=client, request=request)
+            api_twocaptcha.PostWebhook.call(http_client=http_client, request=request)
             webhook_status = const.WebhookStatus.WEBHOOK_SUCCESS
         except exceptions.TwoCaptchaException:
             webhook_status = const.WebhookStatus.WEBHOOK_FAILED
 
+        logger.info(f'{__name__}, Webhook response status: {webhook_status.value}')
         db_twocaptcha.UpdateCaptchaEventWebookStatus.call(
             db_client=db_client,
             captcha_id=captcha_id,
@@ -84,17 +85,17 @@ class TwoCaptchaImpl(CaptchaInterface):
         )
 
     @classmethod
-    def get_gcaptcha_token(cls, captcha_id: int, client: Client = None, **kwargs):
-        return api_twocaptcha.GetSolvedToken.call(client=client, captcha_id=captcha_id)
+    def get_gcaptcha_token(cls, captcha_id: int, http_client: Client = None, **kwargs):
+        return api_twocaptcha.GetSolvedToken.call(http_client=http_client, captcha_id=captcha_id)
 
     @classmethod
     def get_verification_token(cls):
         return api_twocaptcha.TwoCaptchaAPI.get_pingback_token()
 
     @classmethod
-    def report_bad_captcha_id(cls, client: Client, captcha_id: int, **kwargs):
-        return api_twocaptcha.ReportBadCaptcha.call(client=client, captcha_id=captcha_id)
+    def report_bad_captcha_id(cls, http_client: Client, captcha_id: int, **kwargs):
+        return api_twocaptcha.ReportBadCaptcha.call(http_client=http_client, captcha_id=captcha_id)
 
     @classmethod
-    def report_good_captcha_id(cls, client: Client, captcha_id: int, **kwargs):
-        return api_twocaptcha.ReportGoodCaptcha.call(client=client, captcha_id=captcha_id)
+    def report_good_captcha_id(cls, http_client: Client, captcha_id: int, **kwargs):
+        return api_twocaptcha.ReportGoodCaptcha.call(http_client=http_client, captcha_id=captcha_id)

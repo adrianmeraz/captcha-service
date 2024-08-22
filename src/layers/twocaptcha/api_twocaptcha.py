@@ -92,7 +92,7 @@ class SolveCaptcha(TwoCaptchaAPI):
     @classmethod
     @aws_decorators.wrap_exceptions(raise_as=TwoCaptchaException)
     @decorators.error_check
-    def call(cls, client: Client, request: Request) -> Response:
+    def call(cls, http_client: Client, request: Request) -> Response:
         url = f'{cls.ROOT_URL}/in.php'
 
         params = {
@@ -114,7 +114,7 @@ class SolveCaptcha(TwoCaptchaAPI):
             }
 
         logger.info(f'{__name__}.{cls.__qualname__}.call#, Passing form data: {request.params}')
-        r = client.post(url, params=params, follow_redirects=False)  # Disable redirects to network splash pages
+        r = http_client.post(url, params=params, follow_redirects=False)  # Disable redirects to network splash pages
         if not r.status_code == 200:
             raise TwoCaptchaException(f'Non 200 Response. Proxy: {request.proxy}, Response: {r.text}')
 
@@ -133,7 +133,7 @@ class GetSolvedToken(TwoCaptchaAPI):
     @aws_decorators.wrap_exceptions(raise_as=TwoCaptchaException)
     @aws_decorators.retry(retry_exceptions=(CaptchaNotReady,), tries=60, delay=5, backoff=1)
     @decorators.error_check
-    def call(cls, client: Client, request: Request) -> Response:
+    def call(cls, http_client: Client, request: Request) -> Response:
         url = f'{cls.ROOT_URL}/res.php'
 
         params = {
@@ -143,7 +143,7 @@ class GetSolvedToken(TwoCaptchaAPI):
             'json': '1',
         }
 
-        r = client.get(url, params=params)
+        r = http_client.get(url, params=params)
 
         return cls.Response(r.json())
 
@@ -159,7 +159,7 @@ class ReportCaptcha(TwoCaptchaAPI):
 
     @classmethod
     @aws_decorators.wrap_exceptions(raise_as=TwoCaptchaException)
-    def call(cls, client: Client, request: Request) -> Response:
+    def call(cls, http_client: Client, request: Request) -> Response:
         url = f'{cls.ROOT_URL}/res.php'
 
         action = 'reportgood' if request.is_good else 'reportbad'
@@ -171,7 +171,7 @@ class ReportCaptcha(TwoCaptchaAPI):
             'json': '1',
         }
 
-        r = client.get(url, params=params)
+        r = http_client.get(url, params=params)
 
         return cls.Response(r.json())
 
@@ -185,8 +185,8 @@ class ReportBadCaptcha(ReportCaptcha):
     @classmethod
     @aws_decorators.wrap_exceptions(raise_as=TwoCaptchaException)
     @decorators.error_check
-    def call(cls, client: Client, request: Request, **kwargs):
-        r = super().call(client=client, request=request)
+    def call(cls, http_client: Client, request: Request, **kwargs):
+        r = super().call(http_client=http_client, request=request)
         logger.info(f'Reported bad captcha. id: {request.captcha_id}')
         return r
 
@@ -200,8 +200,8 @@ class ReportGoodCaptcha(ReportCaptcha):
     @classmethod
     @aws_decorators.wrap_exceptions(raise_as=TwoCaptchaException)
     @decorators.error_check
-    def call(cls, client: Client, request: Request, **kwargs):
-        r = super().call(client=client, request=request)
+    def call(cls, http_client: Client, request: Request, **kwargs):
+        r = super().call(http_client=http_client, request=request)
         logger.info(f'Reported good captcha. id: {request.captcha_id}')
         return r
 
@@ -217,7 +217,7 @@ class AddPingback(TwoCaptchaAPI):
     @classmethod
     @aws_decorators.wrap_exceptions(raise_as=TwoCaptchaException)
     @decorators.error_check
-    def call(cls, client: Client, request: Request) -> Response:
+    def call(cls, http_client: Client, request: Request) -> Response:
         url = f'{cls.ROOT_URL}/res.php'
 
         params = {
@@ -227,7 +227,7 @@ class AddPingback(TwoCaptchaAPI):
             'json': '1',
         }
 
-        r = client.get(url, params=params)
+        r = http_client.get(url, params=params)
         return cls.Response(r.json())
 
 
@@ -239,7 +239,7 @@ class PostWebhook(TwoCaptchaAPI):
 
     @classmethod
     @aws_decorators.wrap_exceptions(raise_as=TwoCaptchaException)
-    def call(cls, client: Client, request: Request):
+    def call(cls, http_client: Client, request: Request):
         url = request.webhook_url
 
-        return client.post(url, data=request.webhook_data)
+        return http_client.post(url, data=request.webhook_data)

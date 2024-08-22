@@ -22,7 +22,7 @@ def lambda_handler(raw_event, context):
 def process_event(event: events.TwoCaptchaSolveCaptchaEvent, captcha_service: CaptchaInterface):
     with RetryClient() as client:
         captcha_service.solve_captcha(
-            client=client,
+            http_client=client,
             site_key=event.site_key,
             page_url=event.page_url,
             proxy_url=event.proxy_url,

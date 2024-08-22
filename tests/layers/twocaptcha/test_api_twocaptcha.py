@@ -21,7 +21,7 @@ class TwoCaptchaAPITests(BaseTestFixture):
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_environment')
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_app_name')
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_base_domain_name')
-    def test_ok(
+    def test_get_webhook_url_ok(
         self,
         mocked_get_domain_name,
         mocked_get_app_name,
@@ -65,7 +65,7 @@ class GetSolvedCaptchaTests(BaseTestFixture):
         with RetryClient() as client:
             request = api_twocaptcha.GetSolvedToken.Request(captcha_id=2122988149)
             r = api_twocaptcha.GetSolvedToken.call(
-                client=client,
+                http_client=client,
                 request=request
             )
             self.assertEqual(r.request, '03AHJ_Vuve5Asa4koK3KSMyUkCq0vUFCR5Im4CwB7PzO3dCxIo11i53epEraq-uBO5mVm2XRikL8iKOWr0aG50sCuej9bXx5qcviUGSm4iK4NC_Q88flavWhaTXSh0VxoihBwBjXxwXuJZ-WGN5Sy4dtUl2wbpMqAj8Zwup1vyCaQJWFvRjYGWJ_TQBKTXNB5CCOgncqLetmJ6B6Cos7qoQyaB8ZzBOTGf5KSP6e-K9niYs772f53Oof6aJeSUDNjiKG9gN3FTrdwKwdnAwEYX-F37sI_vLB1Zs8NQo0PObHYy0b0sf7WSLkzzcIgW9GR0FwcCCm1P8lB-50GQHPEBJUHNnhJyDzwRoRAkVzrf7UkV8wKCdTwrrWqiYDgbrzURfHc2ESsp020MicJTasSiXmNRgryt-gf50q5BMkiRH7osm4DoUgsjc_XyQiEmQmxl5sqZP7aKsaE-EM00x59XsPzD3m3YI6SRCFRUevSyumBd7KmXE8VuzIO9lgnnbka4-eZynZa6vbB9cO3QjLH0xSG3-egcplD1uLGh79wC34RF49Ui3eHwua4S9XHpH6YBe7gXzz6_mv-o-fxrOuphwfrtwvvi2FGfpTexWvxhqWICMFTTjFBCEGEgj7_IFWEKirXW2RTZCVF0Gid7EtIsoEeZkPbrcUISGmgtiJkJ_KojuKwImF0G0CsTlxYTOU2sPsd5o1JDt65wGniQR2IZufnPbbK76Yh_KI2DY4cUxMfcb2fAXcFMc9dcpHg6f9wBXhUtFYTu6pi5LhhGuhpkiGcv6vWYNxMrpWJW_pV7q8mPilwkAP-zw5MJxkgijl2wDMpM-UUQ_k37FVtf-ndbQAIPG7S469doZMmb5IZYgvcB4ojqCW3Vz6Q')
@@ -90,7 +90,7 @@ class GetSolvedCaptchaTests(BaseTestFixture):
             with RetryClient() as client:
                 request = api_twocaptcha.GetSolvedToken.Request(captcha_id=2122988149)
                 api_twocaptcha.GetSolvedToken.call(
-                    client=client,
+                    http_client=client,
                     request=request
                 )
 
@@ -122,7 +122,7 @@ class SolveCaptchaTests(BaseTestFixture):
                 site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
                 page_url='https://example.com',
             )
-            r = api_twocaptcha.SolveCaptcha.call(client=client, request=request)
+            r = api_twocaptcha.SolveCaptcha.call(http_client=client, request=request)
         self.assertEqual(r.request, '2122988149')
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
@@ -149,7 +149,7 @@ class SolveCaptchaTests(BaseTestFixture):
                     site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
                     page_url='https://example.com',
                 )
-                api_twocaptcha.SolveCaptcha.call(client=client, request=request)
+                api_twocaptcha.SolveCaptcha.call(http_client=client, request=request)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_solve_captcha.call_count, 1)
@@ -175,7 +175,7 @@ class SolveCaptchaTests(BaseTestFixture):
                     site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
                     page_url='https://example.com',
                 )
-                api_twocaptcha.SolveCaptcha.call(client=client, request=request)
+                api_twocaptcha.SolveCaptcha.call(http_client=client, request=request)
 
         self.assertTrue(mocked_solve_captcha.call_count, 1)
         self.assertTrue(mocked_get_api_key.call_count, 1)
@@ -202,7 +202,7 @@ class SolveCaptchaTests(BaseTestFixture):
                     site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
                     page_url='https://example.com',
                 )
-                api_twocaptcha.SolveCaptcha.call(client=client, request=request)
+                api_twocaptcha.SolveCaptcha.call(http_client=client, request=request)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_solve_captcha.call_count, 1)
@@ -229,7 +229,7 @@ class SolveCaptchaTests(BaseTestFixture):
                     site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
                     page_url='https://example.com',
                 )
-                api_twocaptcha.SolveCaptcha.call(client=client, request=request)
+                api_twocaptcha.SolveCaptcha.call(http_client=client, request=request)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_solve_captcha.call_count, 1)
@@ -256,7 +256,7 @@ class SolveCaptchaTests(BaseTestFixture):
                     site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
                     page_url='https://example.com',
                 )
-                api_twocaptcha.SolveCaptcha.call(client=client, request=request)
+                api_twocaptcha.SolveCaptcha.call(http_client=client, request=request)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_solve_captcha.call_count, 1)
@@ -282,7 +282,7 @@ class SolveCaptchaTests(BaseTestFixture):
                     site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
                     page_url='https://example.com',
                 )
-                api_twocaptcha.SolveCaptcha.call(client=client, request=request)
+                api_twocaptcha.SolveCaptcha.call(http_client=client, request=request)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_solve_captcha.call_count, 1)
@@ -310,7 +310,7 @@ class GetSolvedTokenTests(BaseTestFixture):
         with RetryClient() as client:
             request = api_twocaptcha.GetSolvedToken.Request(captcha_id=2122988149)
             r = api_twocaptcha.GetSolvedToken.call(
-                client=client,
+                http_client=client,
                 request=request,
             )
 
@@ -339,7 +339,7 @@ class GetSolvedTokenTests(BaseTestFixture):
             with RetryClient() as client:
                 request = api_twocaptcha.GetSolvedToken.Request(captcha_id=2122988149)
                 api_twocaptcha.GetSolvedToken.call(
-                    client=client,
+                    http_client=client,
                     request=request
                 )
 
@@ -368,7 +368,7 @@ class ReportCaptchaTests(BaseTestFixture):
 
         with RetryClient() as client:
             request = api_twocaptcha.ReportBadCaptcha.Request(captcha_id=2122988149)
-            r_report = api_twocaptcha.ReportBadCaptcha.call(client=client, request=request)
+            r_report = api_twocaptcha.ReportBadCaptcha.call(http_client=client, request=request)
 
         self.assertEqual(r_report.request, 'OK_REPORT_RECORDED')
         self.assertEqual(mocked_get_api_key.call_count, 1)
@@ -390,7 +390,7 @@ class ReportCaptchaTests(BaseTestFixture):
 
         with RetryClient() as client:
             request = api_twocaptcha.ReportGoodCaptcha.Request(captcha_id=2122988149)
-            r_report = api_twocaptcha.ReportGoodCaptcha.call(client=client, request=request)
+            r_report = api_twocaptcha.ReportGoodCaptcha.call(http_client=client, request=request)
 
         self.assertEqual(r_report.request, 'OK_REPORT_RECORDED')
         self.assertEqual(mocked_get_api_key.call_count, 1)
@@ -413,7 +413,7 @@ class ReportCaptchaTests(BaseTestFixture):
         with self.assertRaises(exceptions.InvalidResponse):
             with RetryClient() as client:
                 request = api_twocaptcha.ReportBadCaptcha.Request(captcha_id=2122988149)
-                api_twocaptcha.ReportBadCaptcha.call(client=client, request=request)
+                api_twocaptcha.ReportBadCaptcha.call(http_client=client, request=request)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_report_bad_captcha.call_count, 1)
@@ -435,7 +435,7 @@ class ReportCaptchaTests(BaseTestFixture):
         with self.assertRaises(exceptions.WarnError):
             with RetryClient() as client:
                 request = api_twocaptcha.ReportBadCaptcha.Request(captcha_id=2122988149)
-                api_twocaptcha.ReportBadCaptcha.call(client=client, request=request)
+                api_twocaptcha.ReportBadCaptcha.call(http_client=client, request=request)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_report_bad_captcha.call_count, 1)
@@ -463,7 +463,7 @@ class AddPingbackTests(BaseTestFixture):
         with RetryClient() as client:
             request = api_twocaptcha.AddPingback.Request(pingback_url='http://mysite.com/pingback/url/')
             r_report = api_twocaptcha.AddPingback.call(
-                client=client,
+                http_client=client,
                 request=request
             )
 
@@ -471,36 +471,3 @@ class AddPingbackTests(BaseTestFixture):
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
         self.assertEqual(mocked_add_pingback.call_count, 1)
-
-
-class PostWebhookTests(BaseTestFixture):
-    """
-        Post Webhook Tests
-    """
-
-    @respx.mock
-    def test_ok(self):
-        mocked_post_webhook = self.create_route(
-            method='POST',
-            url__eq='http://mysite.com/pingback/url/',
-            response_status_code=200,
-            response_text=''
-        )
-
-        with RetryClient() as client:
-            webhook_data = {
-                'test1': 'val1',
-                'test33': 'ipsum lorem'
-            }
-            request = api_twocaptcha.PostWebhook.Request(
-                webhook_url='http://mysite.com/pingback/url/',
-                webhook_data=webhook_data
-            )
-            response = api_twocaptcha.PostWebhook.call(
-                client=client,
-                request=request
-            )
-
-        self.assertEqual(response.status_code, 200)
-
-        self.assertEqual(mocked_post_webhook.call_count, 1)

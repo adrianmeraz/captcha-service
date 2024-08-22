@@ -50,7 +50,7 @@ class TwoCaptchaImplTests(BaseTestFixture):
 
         with RetryClient() as client:
             TwoCaptchaImpl.solve_captcha(
-                client=client,
+                http_client=client,
                 site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
                 page_url='https://example.com',
                 webhook_url='https://ipsumlorem.com/webhook'

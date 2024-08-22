@@ -21,4 +21,4 @@ def lambda_handler(raw_event, context):
 
 def process_event(event: events.TwoCaptchaReportCaptchaEvent, captcha_service: CaptchaInterface):
     with RetryClient() as client:
-        captcha_service.report_bad_captcha_id(client=client, captcha_id=event.captcha_id)
+        captcha_service.report_bad_captcha_id(http_client=client, captcha_id=event.captcha_id)
