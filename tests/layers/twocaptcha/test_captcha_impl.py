@@ -8,6 +8,7 @@ from py_aws_core.db_dynamo import DDBClient
 from py_aws_core.testing import BaseTestFixture
 
 from src.layers.twocaptcha import api_twocaptcha
+from src.layers.twocaptcha.db_twocaptcha import UpdateCaptchaEvent
 from src.layers.twocaptcha.captcha_impl import TwoCaptchaImpl
 from tests import const as test_const
 
@@ -63,6 +64,32 @@ class TwoCaptchaImplTests(BaseTestFixture):
         self.assertEqual(mocked_get_environment.call_count, 1)
         self.assertEqual(mocked_solve_captcha.call_count, 1)
         self.assertEqual(mocked_batch_write_item_maps.call_count, 1)
+
+    @respx.mock
+    @mock.patch.object(UpdateCaptchaEvent, 'call')
+    def test_handle_webhook_event_ok(
+            self,
+            mocked_UpdateCaptchaEvent_call
+    ):
+        mocked_UpdateCaptchaEvent_call.return_value = 'IPSUMKEY'
+
+        source = RESOURCE_PATH.joinpath('get_captcha_id.json')
+        with as_file(source) as warn_error_status_json:
+            mocked_solve_captcha = self.create_route(
+                method='POST',
+                url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&pingback=https%3A%2F%2Fdev-big-service.ipsumlorem.com%2Fpingback-event',
+                response_status_code=200,
+                response_json=json.loads(warn_error_status_json.read_text(encoding='utf-8'))
+            )
+
+        with RetryClient() as client:
+            TwoCaptchaImpl.handle_webhook_event(
+                http_client=client,
+                captcha_id='9991117777',
+                code='03AFcWeA5xt81X',
+            )
+
+        self.assertEqual(mocked_UpdateCaptchaEvent_call.call_count, 1)
 
 
 # class GetSolvedCaptchaTests(BaseTestFixture):

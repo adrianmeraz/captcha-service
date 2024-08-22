@@ -77,7 +77,7 @@ class UpdateCaptchaEvent(RecaptchaV2DB):
         captcha_id: str,
         status: const.EventStatus,
         code: str = None,
-    ):
+    ) -> UpdateResponse:
         pk = sk = cls.recaptcha_v2_event_create_key(captcha_id=captcha_id)
         response = db_client.update_item(
             key={
