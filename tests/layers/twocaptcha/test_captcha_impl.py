@@ -8,7 +8,7 @@ from py_aws_core.db_dynamo import DDBClient
 from py_aws_core.testing import BaseTestFixture
 
 from src.layers.twocaptcha import api_twocaptcha
-from src.layers.twocaptcha.db_twocaptcha import UpdateCaptchaEvent
+from src.layers.twocaptcha import db_twocaptcha
 from src.layers.twocaptcha.captcha_impl import TwoCaptchaImpl
 from tests import const as test_const
 
@@ -65,22 +65,12 @@ class TwoCaptchaImplTests(BaseTestFixture):
         self.assertEqual(mocked_solve_captcha.call_count, 1)
         self.assertEqual(mocked_batch_write_item_maps.call_count, 1)
 
-    @respx.mock
-    @mock.patch.object(UpdateCaptchaEvent, 'call')
+    @mock.patch.object(db_twocaptcha.UpdateCaptchaEvent, 'call')
     def test_handle_webhook_event_ok(
-            self,
-            mocked_UpdateCaptchaEvent_call
+        self,
+        mocked_update_captcha_event_call
     ):
-        mocked_UpdateCaptchaEvent_call.return_value = 'IPSUMKEY'
-
-        source = RESOURCE_PATH.joinpath('get_captcha_id.json')
-        with as_file(source) as warn_error_status_json:
-            mocked_solve_captcha = self.create_route(
-                method='POST',
-                url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&pingback=https%3A%2F%2Fdev-big-service.ipsumlorem.com%2Fpingback-event',
-                response_status_code=200,
-                response_json=json.loads(warn_error_status_json.read_text(encoding='utf-8'))
-            )
+        mocked_update_captcha_event_call.return_value = True
 
         with RetryClient() as client:
             TwoCaptchaImpl.handle_webhook_event(
@@ -89,58 +79,34 @@ class TwoCaptchaImplTests(BaseTestFixture):
                 code='03AFcWeA5xt81X',
             )
 
-        self.assertEqual(mocked_UpdateCaptchaEvent_call.call_count, 1)
+        self.assertEqual(mocked_update_captcha_event_call.call_count, 1)
 
+    @respx.mock
+    @mock.patch.object(db_twocaptcha.UpdateCaptchaEventWebookStatus, 'call')
+    def test_send_webhook_event_ok(
+        self,
+        mocked_update_captcha_event_webhook_status_call
+    ):
+        mocked_update_captcha_event_webhook_status_call.return_value = True
 
-# class GetSolvedCaptchaTests(BaseTestFixture):
-#     """
-#         Get Captcha ID Tests
-#     """
-#
-#     @respx.mock
-#     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
-#     def test_ok(self, mocked_get_api_key):
-#         mocked_get_api_key.return_value = 'IPSUMKEY'
-#
-#         source = RESOURCE_PATH.joinpath('get_solved_token.json')
-#         with as_file(source) as get_solved_token_json:
-#             mocked_get_solved_token_route = self.create_ok_route(
-#                 method='GET',
-#                 url__eq='http://2captcha.com/res.php?key=IPSUMKEY&action=get&id=2122988149&json=1',
-#                 _json=json.loads(get_solved_token_json.read_text(encoding='utf-8'))
-#             )
-#
-#         with RetryClient() as client:
-#             request = api_twocaptcha.GetSolvedToken.Request(captcha_id=2122988149)
-#             r = api_twocaptcha.GetSolvedToken.call(
-#                 client=client,
-#                 request=request
-#             )
-#             self.assertEqual(r.request, '03AHJ_Vuve5Asa4koK3KSMyUkCq0vUFCR5Im4CwB7PzO3dCxIo11i53epEraq-uBO5mVm2XRikL8iKOWr0aG50sCuej9bXx5qcviUGSm4iK4NC_Q88flavWhaTXSh0VxoihBwBjXxwXuJZ-WGN5Sy4dtUl2wbpMqAj8Zwup1vyCaQJWFvRjYGWJ_TQBKTXNB5CCOgncqLetmJ6B6Cos7qoQyaB8ZzBOTGf5KSP6e-K9niYs772f53Oof6aJeSUDNjiKG9gN3FTrdwKwdnAwEYX-F37sI_vLB1Zs8NQo0PObHYy0b0sf7WSLkzzcIgW9GR0FwcCCm1P8lB-50GQHPEBJUHNnhJyDzwRoRAkVzrf7UkV8wKCdTwrrWqiYDgbrzURfHc2ESsp020MicJTasSiXmNRgryt-gf50q5BMkiRH7osm4DoUgsjc_XyQiEmQmxl5sqZP7aKsaE-EM00x59XsPzD3m3YI6SRCFRUevSyumBd7KmXE8VuzIO9lgnnbka4-eZynZa6vbB9cO3QjLH0xSG3-egcplD1uLGh79wC34RF49Ui3eHwua4S9XHpH6YBe7gXzz6_mv-o-fxrOuphwfrtwvvi2FGfpTexWvxhqWICMFTTjFBCEGEgj7_IFWEKirXW2RTZCVF0Gid7EtIsoEeZkPbrcUISGmgtiJkJ_KojuKwImF0G0CsTlxYTOU2sPsd5o1JDt65wGniQR2IZufnPbbK76Yh_KI2DY4cUxMfcb2fAXcFMc9dcpHg6f9wBXhUtFYTu6pi5LhhGuhpkiGcv6vWYNxMrpWJW_pV7q8mPilwkAP-zw5MJxkgijl2wDMpM-UUQ_k37FVtf-ndbQAIPG7S469doZMmb5IZYgvcB4ojqCW3Vz6Q')
-#
-#         self.assertEqual(mocked_get_api_key.call_count, 1)
-#         self.assertEqual(mocked_get_solved_token_route.call_count, 1)
-#
-#     @respx.mock
-#     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
-#     def test_captcha_unsolvable(self, mocked_get_api_key):
-#         mocked_get_api_key.return_value = 'IPSUMKEY'
-#
-#         source = RESOURCE_PATH.joinpath('captcha_unsolvable.json')
-#         with as_file(source) as get_solved_token_json:
-#             mocked_get_solved_token_route = self.create_ok_route(
-#                 method='GET',
-#                 url__eq='http://2captcha.com/res.php?key=IPSUMKEY&action=get&id=2122988149&json=1',
-#                 _json=json.loads(get_solved_token_json.read_text(encoding='utf-8'))
-#             )
-#
-#         with self.assertRaises(exceptions.CaptchaUnsolvable):
-#             with RetryClient() as client:
-#                 request = api_twocaptcha.GetSolvedToken.Request(captcha_id=2122988149)
-#                 api_twocaptcha.GetSolvedToken.call(
-#                     client=client,
-#                     request=request
-#                 )
-#
-#         self.assertEqual(mocked_get_api_key.call_count, 1)
-#         self.assertEqual(mocked_get_solved_token_route.call_count, 1)
+        mocked_post_webhook = self.create_route(
+            method='POST',
+            url__eq='http://mysite.com/pingback/url/',
+            response_status_code=200,
+            response_text=''
+        )
+
+        with RetryClient() as client:
+            webhook_data = {
+                'test1': 'val1',
+                'test33': 'ipsum lorem'
+            }
+            TwoCaptchaImpl.send_webhook_event(
+                http_client=client,
+                captcha_id='9991117777',
+                webhook_url='http://mysite.com/pingback/url/',
+                webhook_data=webhook_data,
+            )
+
+        self.assertEqual(mocked_post_webhook.call_count, 1)
+        self.assertEqual(mocked_update_captcha_event_webhook_status_call.call_count, 1)
