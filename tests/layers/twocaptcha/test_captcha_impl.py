@@ -110,3 +110,16 @@ class TwoCaptchaImplTests(BaseTestFixture):
 
         self.assertEqual(mocked_post_webhook.call_count, 1)
         self.assertEqual(mocked_update_captcha_event_webhook_status_call.call_count, 1)
+
+    @respx.mock
+    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_pingback_token')
+    def test_get_verification_token_ok(
+        self,
+        mocked_get_pingback_token
+    ):
+        mocked_get_pingback_token.return_value = 'token123xyz'
+
+        r = TwoCaptchaImpl.get_verification_token()
+
+        self.assertEqual(r, 'token123xyz')
+        self.assertEqual(mocked_get_pingback_token.call_count, 1)
