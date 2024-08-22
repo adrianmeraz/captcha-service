@@ -123,3 +123,33 @@ class TwoCaptchaImplTests(BaseTestFixture):
 
         self.assertEqual(r, 'token123xyz')
         self.assertEqual(mocked_get_pingback_token.call_count, 1)
+
+    @mock.patch.object(api_twocaptcha.ReportBadCaptcha, 'call')
+    def test_report_bad_captcha_id_ok(
+        self,
+        mocked_report_bad_captcha
+    ):
+        mocked_report_bad_captcha.return_value = True
+
+        with RetryClient() as client:
+            TwoCaptchaImpl.report_bad_captcha_id(
+                http_client=client,
+                captcha_id='9991117777'
+            )
+
+        self.assertEqual(mocked_report_bad_captcha.call_count, 1)
+
+    @mock.patch.object(api_twocaptcha.ReportGoodCaptcha, 'call')
+    def test_report_good_captcha_id_ok(
+        self,
+        mocked_report_good_captcha
+    ):
+        mocked_report_good_captcha.return_value = True
+
+        with RetryClient() as client:
+            TwoCaptchaImpl.report_good_captcha_id(
+                http_client=client,
+                captcha_id='9991117777'
+            )
+
+        self.assertEqual(mocked_report_good_captcha.call_count, 1)

@@ -151,7 +151,7 @@ class ReportCaptcha(TwoCaptchaAPI):
 
 class ReportBadCaptcha(ReportCaptcha):
     class Request:
-        def __init__(self, captcha_id: int):
+        def __init__(self, captcha_id: str):
             self.captcha_id = captcha_id
             self.is_good = False
 
@@ -166,7 +166,7 @@ class ReportBadCaptcha(ReportCaptcha):
 
 class ReportGoodCaptcha(ReportCaptcha):
     class Request:
-        def __init__(self, captcha_id: int):
+        def __init__(self, captcha_id: str):
             self.captcha_id = captcha_id
             self.is_good = True
 
