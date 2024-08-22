@@ -22,7 +22,7 @@ def lambda_handler(raw_event, context):
 def process_event(event: events.TwoCaptchaPostPingbackEvent, captcha_service: CaptchaInterface):
     with RetryClient() as client:
         captcha_service.handle_webhook_event(
-            client=client,
+            http_client=client,
             captcha_id=event.id,
             code=event.code,
         )
