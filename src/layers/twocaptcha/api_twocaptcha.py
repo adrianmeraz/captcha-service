@@ -202,17 +202,3 @@ class AddPingback(TwoCaptchaAPI):
 
         r = http_client.get(url, params=params)
         return cls.Response(r.json())
-
-
-class PostWebhook(TwoCaptchaAPI):
-    class Request:
-        def __init__(self, webhook_url: str, webhook_data: typing.Dict = None):
-            self.webhook_url = webhook_url
-            self.webhook_data = webhook_data or dict()
-
-    @classmethod
-    @aws_decorators.wrap_exceptions(raise_as=TwoCaptchaException)
-    def call(cls, http_client: Client, request: Request):
-        url = request.webhook_url
-
-        return http_client.post(url, data=request.webhook_data)

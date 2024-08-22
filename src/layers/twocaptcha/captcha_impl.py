@@ -2,9 +2,10 @@ import typing
 
 from httpx import Client
 
-from src.layers import logs
+from src.layers import logs, webhooks
 from src.layers.captcha import CaptchaInterface
-from src.layers.twocaptcha import db_twocaptcha, exceptions
+from src.layers.exceptions import WebhookException
+from src.layers.twocaptcha import db_twocaptcha
 from src.layers.twocaptcha.db_twocaptcha import const, get_db_client
 from . import api_twocaptcha
 
@@ -67,14 +68,14 @@ class TwoCaptchaImpl(CaptchaInterface):
         *args,
         **kwargs
     ):
-        request = api_twocaptcha.PostWebhook.Request(
+        request = webhooks.PostWebhook.Request(
             webhook_url=webhook_url,
             webhook_data=webhook_data
         )
         try:
-            api_twocaptcha.PostWebhook.call(http_client=http_client, request=request)
+            webhooks.PostWebhook.call(http_client=http_client, request=request)
             webhook_status = const.WebhookStatus.WEBHOOK_SUCCESS
-        except exceptions.TwoCaptchaException:
+        except WebhookException:
             webhook_status = const.WebhookStatus.WEBHOOK_FAILED
 
         logger.info(f'{__name__}, Webhook response status: {webhook_status.value}')
