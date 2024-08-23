@@ -72,7 +72,7 @@ class TwoCaptchaImpl(CaptchaInterface):
             webhook_url=webhook_url,
             webhook_data=webhook_data
         )
-        logger.info(f'{__name__}, webhook_url: {webhook_url}, webhook_data: {webhook_data}')
+        logger.info(f'{__name__}, Webhook details, webhook_url: {webhook_url}, webhook_data: {webhook_data}')
 
         try:
             webhooks.PostWebhook.call(http_client=http_client, request=request)
