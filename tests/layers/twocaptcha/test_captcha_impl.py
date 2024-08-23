@@ -7,8 +7,7 @@ from py_aws_core.clients import RetryClient
 from py_aws_core.db_dynamo import DDBClient
 from py_aws_core.testing import BaseTestFixture
 
-from src.layers.twocaptcha import api_twocaptcha
-from src.layers.twocaptcha import db_twocaptcha
+from src.layers.twocaptcha import api_twocaptcha, db_twocaptcha
 from src.layers.twocaptcha.captcha_impl import TwoCaptchaImpl
 from tests import const as test_const
 
@@ -76,7 +75,7 @@ class TwoCaptchaImplTests(BaseTestFixture):
             TwoCaptchaImpl.handle_webhook_event(
                 http_client=client,
                 captcha_id='9991117777',
-                code='03AFcWeA5xt81X',
+                code=test_const.TEST_RECAPTCHA_V2_TOKEN,
             )
 
         self.assertEqual(mocked_update_captcha_event_call.call_count, 1)
@@ -104,6 +103,7 @@ class TwoCaptchaImplTests(BaseTestFixture):
             TwoCaptchaImpl.send_webhook_event(
                 http_client=client,
                 captcha_id='9991117777',
+                captcha_token=test_const.TEST_RECAPTCHA_V2_TOKEN,
                 webhook_url='http://mysite.com/pingback/url/',
                 webhook_data=webhook_data,
             )

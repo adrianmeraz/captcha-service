@@ -14,6 +14,7 @@ class CaptchaInterface(ABC):
         page_url: str,
         webhook_url: str,
         webhook_data: typing.Dict[str, str] = None,
+        proxy_url: str = None,
         *args,
         **kwargs
     ):

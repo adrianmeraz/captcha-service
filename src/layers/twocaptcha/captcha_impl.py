@@ -55,12 +55,19 @@ class TwoCaptchaImpl(CaptchaInterface):
     def send_webhook_event(
         cls,
         captcha_id: str,
+        captcha_token: str,
         webhook_url: str,
         webhook_data: typing.Dict[str, str] = None,
         http_client: Client = None,
         *args,
         **kwargs
     ):
+        if not webhook_data:
+            webhook_data = dict()
+        webhook_data |= {
+            'captcha_id': captcha_id,
+            'captcha_token': captcha_token
+        }
         request = webhooks.PostWebhook.Request(
             webhook_url=webhook_url,
             webhook_data=webhook_data
