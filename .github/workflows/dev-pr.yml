@@ -102,9 +102,9 @@ jobs:
         path: apps/${{ env.APP_NAME }}/environments/${{ env.ENVIRONMENT }}
         label: ${{ env.LABEL }}
         variables: |
-          app_name                       = "${{ env.APP_NAME }}"
-          aws_access_key                 = "${{ env.AWS_ACCESS_KEY_ID }}"
-          aws_region                     = "${{ env.AWS_REGION }}"
-          aws_secret_key                 = "${{ env.AWS_SECRET_ACCESS_KEY }}"
-          environment                    = "${{ env.ENVIRONMENT }}"
-          shared_app_name                = "${{ env.SHARED_APP_NAME }}"
+          app_name        = "${{ env.APP_NAME }}"
+          aws_access_key  = "${{ env.AWS_ACCESS_KEY_ID }}"
+          aws_region      = "${{ env.AWS_REGION }}"
+          aws_secret_key  = "${{ env.AWS_SECRET_ACCESS_KEY }}"
+          environment     = "${{ env.ENVIRONMENT }}"
+          shared_app_name = "${{ env.SHARED_APP_NAME }}"
