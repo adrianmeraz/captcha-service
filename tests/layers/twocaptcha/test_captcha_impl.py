@@ -43,7 +43,7 @@ class TwoCaptchaImplTests(BaseTestFixture):
         with as_file(source) as warn_error_status_json:
             mocked_solve_captcha = self.create_route(
                 method='POST',
-                url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&pingback=https%3A%2F%2Fdev-big-service.ipsumlorem.com%2Fpingback-event',
+                url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&pingback=https%3A%2F%2Fbig-service-dev.ipsumlorem.com%2Fpingback-event',
                 response_status_code=200,
                 response_json=json.loads(warn_error_status_json.read_text(encoding='utf-8'))
             )

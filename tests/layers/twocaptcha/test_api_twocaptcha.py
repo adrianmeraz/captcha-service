@@ -37,7 +37,7 @@ class TwoCaptchaAPITests(BaseTestFixture):
             'key3': 'xyzabc'
         }
         val = api_twocaptcha.TwoCaptchaAPI.get_webhook_url(params=params)
-        self.assertEqual(val, 'https://dev-big-service.ipsumlorem.com/pingback-event?ipsum_1=this+is+a+test&key2=value+456&key3=xyzabc')
+        self.assertEqual(val, 'https://big-service-dev.ipsumlorem.com/pingback-event?ipsum_1=this+is+a+test&key2=value+456&key3=xyzabc')
 
         self.assertEqual(mocked_get_domain_name.call_count, 1)
         self.assertEqual(mocked_get_app_name.call_count, 1)
