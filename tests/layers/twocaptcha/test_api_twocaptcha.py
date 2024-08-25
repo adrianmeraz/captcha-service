@@ -13,10 +13,6 @@ RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH
 
 
 class TwoCaptchaAPITests(BaseTestFixture):
-    """
-        Get Captcha ID Tests
-    """
-
     @respx.mock
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_environment')
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_app_name')
@@ -45,10 +41,6 @@ class TwoCaptchaAPITests(BaseTestFixture):
 
 
 class SolveCaptchaTests(BaseTestFixture):
-    """
-        Ping Captcha ID Tests
-    """
-
     @respx.mock
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_ok(self, mocked_get_api_key):
