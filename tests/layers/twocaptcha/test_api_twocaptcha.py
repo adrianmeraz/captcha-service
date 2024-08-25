@@ -254,7 +254,7 @@ class ReportCaptchaTests(BaseTestFixture):
             )
 
         with RetryClient() as client:
-            request = api_twocaptcha.ReportBadCaptcha.Request(captcha_id=2122988149)
+            request = api_twocaptcha.ReportBadCaptcha.Request(captcha_id='2122988149')
             r_report = api_twocaptcha.ReportBadCaptcha.call(http_client=client, request=request)
 
         self.assertEqual(r_report.request, 'OK_REPORT_RECORDED')
@@ -276,7 +276,7 @@ class ReportCaptchaTests(BaseTestFixture):
             )
 
         with RetryClient() as client:
-            request = api_twocaptcha.ReportGoodCaptcha.Request(captcha_id=2122988149)
+            request = api_twocaptcha.ReportGoodCaptcha.Request(captcha_id='2122988149')
             r_report = api_twocaptcha.ReportGoodCaptcha.call(http_client=client, request=request)
 
         self.assertEqual(r_report.request, 'OK_REPORT_RECORDED')
@@ -299,7 +299,7 @@ class ReportCaptchaTests(BaseTestFixture):
 
         with self.assertRaises(exceptions.InvalidResponse):
             with RetryClient() as client:
-                request = api_twocaptcha.ReportBadCaptcha.Request(captcha_id=2122988149)
+                request = api_twocaptcha.ReportBadCaptcha.Request(captcha_id='2122988149')
                 api_twocaptcha.ReportBadCaptcha.call(http_client=client, request=request)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
@@ -321,7 +321,7 @@ class ReportCaptchaTests(BaseTestFixture):
 
         with self.assertRaises(exceptions.WarnError):
             with RetryClient() as client:
-                request = api_twocaptcha.ReportBadCaptcha.Request(captcha_id=2122988149)
+                request = api_twocaptcha.ReportBadCaptcha.Request(captcha_id='2122988149')
                 api_twocaptcha.ReportBadCaptcha.call(http_client=client, request=request)
 
         self.assertEqual(mocked_get_api_key.call_count, 1)
