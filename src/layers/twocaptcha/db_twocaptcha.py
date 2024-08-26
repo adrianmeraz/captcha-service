@@ -95,7 +95,6 @@ class UpdateCaptchaEvent(RecaptchaV2DB):
                 ':est': {'S': status.value},
                 ':mda': {'S': RecaptchaV2DB.iso_8601_now_timestamp()},
                 ':cde': {'S': code},
-                ':empty': {'S': ''}
             },
             return_values='ALL_NEW'
         )
