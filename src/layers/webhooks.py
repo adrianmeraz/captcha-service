@@ -16,7 +16,7 @@ class PostWebhook:
     @aws_decorators.wrap_exceptions(raise_as=WebhookException)
     def call(cls, http_client: Client, request: Request):
         url = request.webhook_url
-        r = http_client.post(url, data=request.webhook_data)
+        r = http_client.post(url, json=request.webhook_data)
         if not r.is_success:
             raise WebhookHttpStatusException(r.status_code)
         return r
