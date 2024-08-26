@@ -3,7 +3,7 @@ import typing
 from httpx import Client
 
 from src.layers import logs, webhooks
-from src.layers.captcha import CaptchaInterface
+from src.layers.icaptcha import ICaptcha
 from src.layers.exceptions import WebhookException
 from src.layers.twocaptcha import db_twocaptcha
 from src.layers.twocaptcha.db_twocaptcha import const, get_db_client
@@ -13,7 +13,7 @@ logger = logs.logger
 db_client = get_db_client()
 
 
-class TwoCaptchaImpl(CaptchaInterface):
+class TwoCaptchaImpl(ICaptcha):
     @classmethod
     def solve_captcha(
         cls,

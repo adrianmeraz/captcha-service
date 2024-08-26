@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from httpx import Client
 
 
-class CaptchaInterface(ABC):
+class ICaptcha(ABC):
     @classmethod
     @abstractmethod
     def solve_captcha(

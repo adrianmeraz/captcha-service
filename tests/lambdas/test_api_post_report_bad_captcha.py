@@ -5,7 +5,7 @@ from unittest import mock
 from py_aws_core.testing import BaseTestFixture
 
 from src.lambdas import api_post_report_bad_captcha
-from src.layers.twocaptcha.captcha_impl import TwoCaptchaImpl
+from src.layers.twocaptcha.captcha import TwoCaptchaImpl
 from tests import const as test_const
 
 RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH

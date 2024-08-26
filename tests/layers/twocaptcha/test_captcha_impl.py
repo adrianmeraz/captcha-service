@@ -8,7 +8,7 @@ from py_aws_core.db_dynamo import DDBClient
 from py_aws_core.testing import BaseTestFixture
 
 from src.layers.twocaptcha import api_twocaptcha, db_twocaptcha
-from src.layers.twocaptcha.captcha_impl import TwoCaptchaImpl
+from src.layers.twocaptcha.captcha import TwoCaptchaImpl
 from tests import const as test_const
 
 RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH

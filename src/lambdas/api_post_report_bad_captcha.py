@@ -2,8 +2,8 @@ from py_aws_core import decorators, utils as aws_utils
 from py_aws_core.clients import RetryClient
 
 from src.layers import events, exceptions, logs
-from src.layers.captcha import CaptchaInterface
-from src.layers.twocaptcha.captcha_impl import TwoCaptchaImpl
+from src.layers.icaptcha import ICaptcha
+from src.layers.twocaptcha.captcha import TwoCaptchaImpl
 
 logger = logs.logger
 
@@ -19,6 +19,6 @@ def lambda_handler(raw_event, context):
     )
 
 
-def process_event(event: events.TwoCaptchaReportCaptchaEvent, captcha_service: CaptchaInterface):
+def process_event(event: events.TwoCaptchaReportCaptchaEvent, captcha_service: ICaptcha):
     with RetryClient() as client:
         captcha_service.report_bad_captcha_id(http_client=client, captcha_id=event.captcha_id)

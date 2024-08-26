@@ -1,8 +1,8 @@
 from py_aws_core import decorators, utils as aws_utils
 
 from src.layers import events, exceptions, logs
-from src.layers.captcha import CaptchaInterface
-from src.layers.twocaptcha.captcha_impl import TwoCaptchaImpl
+from src.layers.icaptcha import ICaptcha
+from src.layers.twocaptcha.captcha import TwoCaptchaImpl
 
 logger = logs.logger
 
@@ -19,5 +19,5 @@ def lambda_handler(raw_event, context):
     )
 
 
-def process_event(captcha_service: CaptchaInterface):
+def process_event(captcha_service: ICaptcha):
     return captcha_service.get_verification_token()
