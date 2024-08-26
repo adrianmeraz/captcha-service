@@ -84,7 +84,8 @@ class UpdateCaptchaEvent(RecaptchaV2DB):
                 'PK': {'S': pk},
                 'SK': {'S': sk},
             },
-            update_expression=f'SET #est = :est, #mda = :mda, #cde = if_not_exists(#cde, :cde)',
+            update_expression=f'SET #est = :est, #mda = :mda, #cde = :cde',
+            condition_expression='attribute_not_exists(#cde)',
             expression_attribute_names={
                 '#est': 'EventStatus',
                 '#mda': 'ModifiedAt',
