@@ -85,7 +85,7 @@ class UpdateCaptchaEvent(RecaptchaV2DB):
                 'SK': {'S': sk},
             },
             update_expression=f'SET #est = :est, #mda = :mda, #cde = :cde',
-            condition_expression='#cde = :empty',
+            # condition_expression='#cde = :empty',
             expression_attribute_names={
                 '#est': 'EventStatus',
                 '#mda': 'ModifiedAt',
