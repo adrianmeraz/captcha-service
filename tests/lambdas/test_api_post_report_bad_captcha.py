@@ -5,7 +5,7 @@ from unittest import mock
 from py_aws_core.testing import BaseTestFixture
 
 from src.lambdas import api_post_report_bad_captcha
-from src.layers.twocaptcha.captcha import TwoCaptchaImpl
+from src.layers.twocaptcha.captcha import TwoCaptcha
 from tests import const as test_const
 
 RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH
@@ -13,7 +13,7 @@ RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH
 
 class ApiPostReportBadCaptchaTests(BaseTestFixture):
 
-    @mock.patch.object(TwoCaptchaImpl, 'report_bad_captcha_id')
+    @mock.patch.object(TwoCaptcha, 'report_bad_captcha_id')
     def test_ok(
         self,
         mocked_report_bad_captcha_id

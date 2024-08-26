@@ -6,7 +6,7 @@ from py_aws_core.db_dynamo import DDBClient
 from py_aws_core.testing import BaseTestFixture
 
 from src.lambdas import api_post_pingback_event
-from src.layers.twocaptcha.captcha import TwoCaptchaImpl
+from src.layers.twocaptcha.captcha import TwoCaptcha
 from tests import const as test_const
 
 RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH
@@ -14,7 +14,7 @@ RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH
 
 class ApiPostPingbackEventTests(BaseTestFixture):
 
-    @mock.patch.object(TwoCaptchaImpl, 'send_webhook_event')
+    @mock.patch.object(TwoCaptcha, 'send_webhook_event')
     @mock.patch.object(DDBClient, 'update_item')
     def test_ok(
         self,

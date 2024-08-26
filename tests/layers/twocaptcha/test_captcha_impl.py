@@ -8,7 +8,7 @@ from py_aws_core.db_dynamo import DDBClient
 from py_aws_core.testing import BaseTestFixture
 
 from src.layers.twocaptcha import api_twocaptcha, db_twocaptcha
-from src.layers.twocaptcha.captcha import TwoCaptchaImpl
+from src.layers.twocaptcha.captcha import TwoCaptcha
 from tests import const as test_const
 
 RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH
@@ -49,7 +49,7 @@ class TwoCaptchaImplTests(BaseTestFixture):
             )
 
         with RetryClient() as client:
-            TwoCaptchaImpl.solve_captcha(
+            TwoCaptcha.solve_captcha(
                 http_client=client,
                 site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
                 page_url='https://example.com',
@@ -72,7 +72,7 @@ class TwoCaptchaImplTests(BaseTestFixture):
         mocked_update_captcha_event_call.return_value = True
 
         with RetryClient() as client:
-            TwoCaptchaImpl.handle_webhook_event(
+            TwoCaptcha.handle_webhook_event(
                 http_client=client,
                 captcha_id='9991117777',
                 code=test_const.TEST_RECAPTCHA_V2_TOKEN,
@@ -100,7 +100,7 @@ class TwoCaptchaImplTests(BaseTestFixture):
                 'test1': 'val1',
                 'test33': 'ipsum lorem'
             }
-            TwoCaptchaImpl.send_webhook_event(
+            TwoCaptcha.send_webhook_event(
                 http_client=client,
                 captcha_id='9991117777',
                 captcha_token=test_const.TEST_RECAPTCHA_V2_TOKEN,
@@ -119,7 +119,7 @@ class TwoCaptchaImplTests(BaseTestFixture):
     ):
         mocked_get_pingback_token.return_value = 'token123xyz'
 
-        r = TwoCaptchaImpl.get_verification_token()
+        r = TwoCaptcha.get_verification_token()
 
         self.assertEqual(r, 'token123xyz')
         self.assertEqual(mocked_get_pingback_token.call_count, 1)
@@ -132,7 +132,7 @@ class TwoCaptchaImplTests(BaseTestFixture):
         mocked_report_bad_captcha.return_value = True
 
         with RetryClient() as client:
-            TwoCaptchaImpl.report_bad_captcha_id(
+            TwoCaptcha.report_bad_captcha_id(
                 http_client=client,
                 captcha_id='9991117777'
             )
@@ -147,7 +147,7 @@ class TwoCaptchaImplTests(BaseTestFixture):
         mocked_report_good_captcha.return_value = True
 
         with RetryClient() as client:
-            TwoCaptchaImpl.report_good_captcha_id(
+            TwoCaptcha.report_good_captcha_id(
                 http_client=client,
                 captcha_id='9991117777'
             )
