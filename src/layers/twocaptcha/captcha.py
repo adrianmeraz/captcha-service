@@ -4,7 +4,7 @@ from httpx import Client
 
 from src.layers import logs, webhooks
 from src.layers.exceptions import WebhookException
-from src.layers.icaptcha import ICaptcha
+from src.layers.interfaces import ICaptcha
 from src.layers.twocaptcha import db_twocaptcha
 from src.layers.twocaptcha.db_twocaptcha import const, get_db_client
 from . import api_twocaptcha

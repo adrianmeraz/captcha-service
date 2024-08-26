@@ -1,7 +1,7 @@
 from py_aws_core import decorators, utils as aws_utils
 
 from src.layers import events, exceptions, logs
-from src.layers.icaptcha import ICaptcha
+from src.layers.interfaces import ICaptcha
 from src.layers.twocaptcha.captcha import TwoCaptcha
 
 logger = logs.logger
