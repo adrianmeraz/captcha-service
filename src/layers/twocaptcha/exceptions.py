@@ -30,6 +30,7 @@ class PingbackInvalidIP(TwoCaptchaException):
 
 
 RESPONSE_EXCEPTION_MAP = {
+    'ERROR_DUPLICATE_REPORT': WarnError,
     'ERROR_WRONG_CAPTCHA_ID': WarnError,
     'MAX_USER_TURN': WarnError,
     'ERROR_IP_ADDRES': PingbackInvalidIP,
