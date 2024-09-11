@@ -21,6 +21,10 @@ class CaptchaNotReady(TwoCaptchaException):
     """Captcha is not Ready Yet"""
 
 
+class CaptchaAlreadyReported(TwoCaptchaException):
+    """Captcha ID has already been reported"""
+
+
 class InvalidResponse(TwoCaptchaException):
     """Response is not valid"""
 
@@ -30,7 +34,7 @@ class PingbackInvalidIP(TwoCaptchaException):
 
 
 RESPONSE_EXCEPTION_MAP = {
-    'ERROR_DUPLICATE_REPORT': WarnError,
+    'ERROR_DUPLICATE_REPORT': CaptchaAlreadyReported,
     'ERROR_WRONG_CAPTCHA_ID': WarnError,
     'MAX_USER_TURN': WarnError,
     'ERROR_IP_ADDRES': PingbackInvalidIP,
