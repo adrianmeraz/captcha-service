@@ -6,31 +6,31 @@ class TwoCaptchaException(APIException):
 
 
 class WarnError(TwoCaptchaException):
-    """2Captcha warn exception"""
+    ERROR_MESSAGE = '2Captcha warn exception'
 
 
 class CriticalError(TwoCaptchaException):
-    """2Captcha Critical exception"""
+    ERROR_MESSAGE = '2Captcha Critical exception'
 
 
 class CaptchaUnsolvable(TwoCaptchaException):
-    """Captcha was unsolvable."""
+    ERROR_MESSAGE = 'Captcha was unsolvable.'
 
 
 class CaptchaNotReady(TwoCaptchaException):
-    """Captcha is not Ready Yet"""
+    ERROR_MESSAGE = 'Captcha is not Ready Yet'
 
 
 class CaptchaAlreadyReported(TwoCaptchaException):
-    """Captcha ID has already been reported"""
+    ERROR_MESSAGE = 'Captcha ID has already been reported'
 
 
 class InvalidResponse(TwoCaptchaException):
-    """Response is not valid"""
+    ERROR_MESSAGE = 'Response is not valid'
 
 
 class PingbackInvalidIP(TwoCaptchaException):
-    """Pingback IP does not match IP of calling server"""
+    ERROR_MESSAGE = 'Pingback IP does not match IP of calling server'
 
 
 RESPONSE_EXCEPTION_MAP = {
