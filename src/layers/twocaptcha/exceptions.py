@@ -13,6 +13,10 @@ class CriticalError(TwoCaptchaException):
     ERROR_MESSAGE = '2Captcha Critical exception'
 
 
+class DuplicateTCWebhookEvent(TwoCaptchaException):
+    ERROR_MESSAGE = 'Duplicate TwoCaptcha Webhook event'
+
+
 class CaptchaUnsolvable(TwoCaptchaException):
     ERROR_MESSAGE = 'Captcha was unsolvable.'
 
