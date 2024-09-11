@@ -25,6 +25,10 @@ class CaptchaAlreadyReported(TwoCaptchaException):
     ERROR_MESSAGE = 'Captcha ID has already been reported'
 
 
+class InvalidCaptcha(TwoCaptchaException):
+    ERROR_MESSAGE = 'Captcha ID was submitted more than 15 minutes ago, or does not exist'
+
+
 class InvalidResponse(TwoCaptchaException):
     ERROR_MESSAGE = 'Response is not valid'
 
@@ -35,7 +39,7 @@ class PingbackInvalidIP(TwoCaptchaException):
 
 RESPONSE_EXCEPTION_MAP = {
     'ERROR_DUPLICATE_REPORT': CaptchaAlreadyReported,
-    'ERROR_WRONG_CAPTCHA_ID': WarnError,
+    'ERROR_WRONG_CAPTCHA_ID': InvalidCaptcha,
     'MAX_USER_TURN': WarnError,
     'ERROR_IP_ADDRES': PingbackInvalidIP,
     'ERROR_NO_SLOT_AVAILABLE': WarnError,

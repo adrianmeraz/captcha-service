@@ -106,7 +106,7 @@ class SolveCaptchaTests(BaseTestFixture):
                 response_json=json.loads(warn_error_status_json.read_text(encoding='utf-8'))
             )
 
-        with self.assertRaises(exceptions.WarnError):
+        with self.assertRaises(exceptions.InvalidCaptcha):
             with RetryClient() as client:
                 request = api_twocaptcha.SolveCaptcha.Request(
                     proxy_url='http://example.com:1000',
@@ -311,7 +311,7 @@ class ReportCaptchaTests(BaseTestFixture):
                 response_json=json.loads(warn_error_status_json.read_text(encoding='utf-8'))
             )
 
-        with self.assertRaises(exceptions.WarnError):
+        with self.assertRaises(exceptions.InvalidCaptcha):
             with RetryClient() as client:
                 request = api_twocaptcha.ReportBadCaptcha.Request(captcha_id='2122988149')
                 api_twocaptcha.ReportBadCaptcha.call(http_client=client, request=request)
