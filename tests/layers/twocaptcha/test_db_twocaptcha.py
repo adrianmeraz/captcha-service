@@ -2,6 +2,7 @@ import json
 from importlib.resources import as_file
 from unittest import mock, TestCase
 
+from botocore.exceptions import ClientError
 from py_aws_core.db_dynamo import DDBClient
 
 from src.layers.twocaptcha import db_twocaptcha
@@ -21,7 +22,7 @@ class DBTwoCaptchaTests(TestCase):
         source = RESOURCE_PATH.joinpath('errors', 'db#tc_webhook_event#duplicate_error.json')
         with as_file(source) as json_text:
             _json = json.loads(json_text.read_text(encoding='utf-8'))
-            mocked_put_item.return_value = _json
+            mocked_put_item.side_effect = ClientError(error_response=_json, operation_name='dummy')
 
         db_client = DDBClient()
         with self.assertRaises(DuplicateTCWebhookEvent):

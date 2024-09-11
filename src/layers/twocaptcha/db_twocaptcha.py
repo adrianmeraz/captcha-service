@@ -1,4 +1,4 @@
-from py_aws_core import decorators as aws_decorators, exceptions as aws_exceptions
+from py_aws_core import decorators as aws_decorators
 from py_aws_core.db_dynamo import ABCCommonAPI, DDBClient, DDBItemResponse
 
 from src.layers import logs
