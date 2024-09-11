@@ -76,22 +76,22 @@ class UpdateCaptchaEvent(RecaptchaV2DB):
     ) -> Response:
         pk = sk = cls.recaptcha_v2_event_create_key(captcha_id=captcha_id)
         response = db_client.update_item(
-            key=cls.serialize_types({
+            Key=cls.serialize_types({
                 'PK': pk,
                 'SK': sk,
             }),
-            update_expression=f'SET #est = :est, #mda = :mda, #cde = :cde',
-            expression_attribute_names={
+            UpdateExpression=f'SET #est = :est, #mda = :mda, #cde = :cde',
+            ExpressionAttributeNames={
                 '#est': 'EventStatus',
                 '#mda': 'ModifiedAt',
                 '#cde': 'Code',
             },
-            expression_attribute_values=cls.serialize_types({
+            ExpressionAttributeValues=cls.serialize_types({
                 ':est': status.value,
                 ':mda': cls.iso_8601_now_timestamp(),
                 ':cde': code,
             }),
-            return_values='ALL_NEW'
+            ReturnValues='ALL_NEW'
         )
         logger.info(f'{cls.__qualname__}#call, pk: {pk}, record updated')
         return cls.Response(response)
@@ -116,20 +116,20 @@ class UpdateCaptchaEventWebookStatus(RecaptchaV2DB):
     ) -> Response:
         pk = sk = cls.recaptcha_v2_event_create_key(captcha_id=captcha_id)
         response = db_client.update_item(
-            key=cls.serialize_types({
+            Key=cls.serialize_types({
                 'PK': pk,
                 'SK': sk,
             }),
-            update_expression=f'SET #wst = :wst, #mda = :mda',
-            expression_attribute_names={
+            UpdateExpression=f'SET #wst = :wst, #mda = :mda',
+            ExpressionAttributeNames={
                 '#wst': 'WebhookStatus',
                 '#mda': 'ModifiedAt',
             },
-            expression_attribute_values=cls.serialize_types({
+            ExpressionAttributeValues=cls.serialize_types({
                 ':wst': webhook_status.value,
                 ':mda': cls.iso_8601_now_timestamp(),
             }),
-            return_values='ALL_NEW'
+            ReturnValues='ALL_NEW'
         )
         logger.info(f'{cls.__qualname__}#call, pk: {pk}, record updated')
         return cls.Response(response)
