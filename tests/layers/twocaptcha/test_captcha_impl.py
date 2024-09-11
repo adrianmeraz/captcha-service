@@ -131,12 +131,15 @@ class TwoCaptchaImplTests(BaseTestFixture):
         self.assertEqual(r, 'token123xyz')
         self.assertEqual(mocked_get_pingback_token.call_count, 1)
 
+    @mock.patch.object(db_twocaptcha.CreateTCCaptchaReport, 'call')
     @mock.patch.object(api_twocaptcha.ReportBadCaptcha, 'call')
     def test_report_bad_captcha_id_ok(
         self,
-        mocked_report_bad_captcha
+        mocked_report_bad_captcha,
+        mocked_create_tc_captcha_report
     ):
         mocked_report_bad_captcha.return_value = True
+        mocked_create_tc_captcha_report.return_value = True
 
         with RetryClient() as client:
             TwoCaptcha.report_bad_captcha_id(
@@ -145,13 +148,17 @@ class TwoCaptchaImplTests(BaseTestFixture):
             )
 
         self.assertEqual(mocked_report_bad_captcha.call_count, 1)
+        self.assertEqual(mocked_create_tc_captcha_report.call_count, 1)
 
+    @mock.patch.object(db_twocaptcha.CreateTCCaptchaReport, 'call')
     @mock.patch.object(api_twocaptcha.ReportGoodCaptcha, 'call')
     def test_report_good_captcha_id_ok(
         self,
-        mocked_report_good_captcha
+        mocked_report_good_captcha,
+        mocked_create_tc_captcha_report
     ):
         mocked_report_good_captcha.return_value = True
+        mocked_create_tc_captcha_report.return_value = True
 
         with RetryClient() as client:
             TwoCaptcha.report_good_captcha_id(
@@ -160,3 +167,4 @@ class TwoCaptchaImplTests(BaseTestFixture):
             )
 
         self.assertEqual(mocked_report_good_captcha.call_count, 1)
+        self.assertEqual(mocked_create_tc_captcha_report.call_count, 1)
