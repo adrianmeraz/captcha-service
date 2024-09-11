@@ -64,7 +64,7 @@ class CreateTCWebhookEvent(TwoCaptchaDB):
         )
         response = db_client.put_item(
             Item=item,
-            ConditionExpression='attribute_not_exists(pk)',
+            ConditionExpression='attribute_not_exists(PK)',
         )
         logger.debug(f'{cls.__qualname__}.call# -> response: {response}')
         return response
