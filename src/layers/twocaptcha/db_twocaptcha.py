@@ -80,10 +80,10 @@ class UpdateCaptchaEvent(RecaptchaV2DB):
     ) -> UpdateResponse:
         pk = sk = cls.recaptcha_v2_event_create_key(captcha_id=captcha_id)
         response = db_client.update_item(
-            key={
-                'PK': {'S': pk},
-                'SK': {'S': sk},
-            },
+            key=cls.serialize_types({
+                'PK': pk,
+                'SK': sk,
+            }),
             update_expression=f'SET #est = :est, #mda = :mda, #cde = :cde',
             # condition_expression='#cde = :empty',
             expression_attribute_names={
@@ -91,11 +91,11 @@ class UpdateCaptchaEvent(RecaptchaV2DB):
                 '#mda': 'ModifiedAt',
                 '#cde': 'Code',
             },
-            expression_attribute_values={
-                ':est': {'S': status.value},
-                ':mda': {'S': RecaptchaV2DB.iso_8601_now_timestamp()},
-                ':cde': {'S': code},
-            },
+            expression_attribute_values=cls.serialize_types({
+                ':est': status.value,
+                ':mda': RecaptchaV2DB.iso_8601_now_timestamp(),
+                ':cde': code,
+            }),
             return_values='ALL_NEW'
         )
         logger.info(f'{cls.__qualname__}#call, pk: {pk}, record updated')
@@ -129,19 +129,19 @@ class UpdateCaptchaEventWebookStatus(RecaptchaV2DB):
     ):
         pk = sk = cls.recaptcha_v2_event_create_key(captcha_id=captcha_id)
         response = db_client.update_item(
-            key={
-                'PK': {'S': pk},
-                'SK': {'S': sk},
-            },
+            key=cls.serialize_types({
+                'PK': pk,
+                'SK': sk,
+            }),
             update_expression=f'SET #wst = :wst, #mda = :mda',
             expression_attribute_names={
                 '#wst': 'WebhookStatus',
                 '#mda': 'ModifiedAt',
             },
-            expression_attribute_values={
-                ':wst': {'S': webhook_status.value},
-                ':mda': {'S': RecaptchaV2DB.iso_8601_now_timestamp()},
-            },
+            expression_attribute_values=cls.serialize_types({
+                ':wst': webhook_status.value,
+                ':mda': RecaptchaV2DB.iso_8601_now_timestamp(),
+            }),
             return_values='ALL_NEW'
         )
         logger.info(f'{cls.__qualname__}#call, pk: {pk}, record updated')
