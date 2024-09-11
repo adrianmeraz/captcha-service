@@ -1,7 +1,8 @@
 import typing
 
-from py_aws_core import decorators as aws_decorators, exceptions as aws_exceptions, entities
-from py_aws_core.db_dynamo import ABCCommonAPI, DDBClient
+from py_aws_core import decorators as aws_decorators, exceptions as aws_exceptions
+from py_aws_core.db_dynamo import ABCCommonAPI, DDBClient, UpdateItemResponse
+from src.layers.twocaptcha import entities
 
 from src.layers import const, logs, entities
 
@@ -17,53 +18,16 @@ def get_db_client():
     return __db_client
 
 
-class RecaptchaV2DB(ABCCommonAPI):
-    EVENT_TYPE = const.EventCaptchaType.RECAPTCHA_V2
-
-    @classmethod
-    def recaptcha_v2_event_create_key(cls, captcha_id: str) -> str:
-        return entities.CaptchaEvent.create_key(captcha_id=captcha_id, captcha_type=cls.EVENT_TYPE.RECAPTCHA_V2)
-
-# class BaseRecaptchaV2EventDB(RecaptchaV2DB):
-#
+class TwoCaptchaDB(ABCCommonAPI):
+    pass
 
 
-class CreateRecaptchaV2Event(RecaptchaV2DB):
-    @classmethod
-    def call(
-        cls,
-        db_client: DDBClient,
-        captcha_id: str,
-        webhook_data: typing.Dict[str, str],
-        webhook_url: str,
-    ) -> int:
-        pk = sk = cls.recaptcha_v2_event_create_key(captcha_id=captcha_id)
-        c_maps = [RecaptchaV2DB.get_batch_entity_create_map(
-            expire_in_seconds=None,
-            pk=pk,
-            sk=sk,
-            _type=entities.CaptchaEvent.type(),
-            CaptchaId=captcha_id,
-            CaptchaType=cls.EVENT_TYPE.value,
-            Code='',
-            EventStatus=const.EventStatus.INIT.value,
-            WebhookData=webhook_data,
-            WebhookUrl=webhook_url,
-            WebhookStatus=const.WebhookStatus.INIT.value
-        )]
-        count = db_client.write_maps_to_db(item_maps=c_maps)
-        logger.info(f'{cls.__qualname__}#call, pk: {pk}, {count} record(s) written')
-        return count
-
-
-class UpdateCaptchaEvent(RecaptchaV2DB):
+class CreateCaptchaEvent(TwoCaptchaDB):
     """
         Updates Captcha Events
     """
 
-    class UpdateResponse:
-        def __init__(self, data: typing.Dict):
-            self.attributes = data['Attributes']
+    class Response(UpdateItemResponse):
 
         @property
         def captcha_event(self) -> entities.CaptchaEvent:
@@ -77,15 +41,14 @@ class UpdateCaptchaEvent(RecaptchaV2DB):
         captcha_id: str,
         status: const.EventStatus,
         code: str = None,
-    ) -> UpdateResponse:
+    ) -> Response:
         pk = sk = cls.recaptcha_v2_event_create_key(captcha_id=captcha_id)
-        response = db_client.update_item(
+        response = db_client.put_item(
             key=cls.serialize_types({
                 'PK': pk,
                 'SK': sk,
             }),
             update_expression=f'SET #est = :est, #mda = :mda, #cde = :cde',
-            # condition_expression='#cde = :empty',
             expression_attribute_names={
                 '#est': 'EventStatus',
                 '#mda': 'ModifiedAt',
@@ -93,56 +56,32 @@ class UpdateCaptchaEvent(RecaptchaV2DB):
             },
             expression_attribute_values=cls.serialize_types({
                 ':est': status.value,
-                ':mda': RecaptchaV2DB.iso_8601_now_timestamp(),
+                ':mda': cls.iso_8601_now_timestamp(),
                 ':cde': code,
             }),
             return_values='ALL_NEW'
         )
         logger.info(f'{cls.__qualname__}#call, pk: {pk}, record updated')
-        return cls.UpdateResponse(response)
+        return cls.Response(response)
 
 
-class UpdateCaptchaEventWebookStatus(RecaptchaV2DB):
-    """
-        Updates Captcha Event Webhook Status
-    """
-    # class Response(db_dynamo.QueryResponse):
-    #     @property
-    #     def captcha_event(self) -> entities.CaptchaEvent:
-    #         return [entities.CaptchaEvent(s) for s in self.get_by_type(entities.CaptchaEvent.TYPE)][0]
-
-    class UpdateResponse:
-        def __init__(self, data: typing.Dict):
-            self.attributes = data['Attributes']
-
-        @property
-        def captcha_event(self) -> entities.CaptchaEvent:
-            return entities.CaptchaEvent(self.attributes)
-
+class CreateTCWebhookEvent(TwoCaptchaDB):
     @classmethod
     @aws_decorators.dynamodb_handler(client_err_map=aws_exceptions.ERR_CODE_MAP, cancellation_err_maps=[])
-    def call(
-        cls,
-        db_client: DDBClient,
-        captcha_id: str,
-        webhook_status: const.WebhookStatus,
-    ):
-        pk = sk = cls.recaptcha_v2_event_create_key(captcha_id=captcha_id)
-        response = db_client.update_item(
-            key=cls.serialize_types({
-                'PK': pk,
-                'SK': sk,
-            }),
-            update_expression=f'SET #wst = :wst, #mda = :mda',
-            expression_attribute_names={
-                '#wst': 'WebhookStatus',
-                '#mda': 'ModifiedAt',
-            },
-            expression_attribute_values=cls.serialize_types({
-                ':wst': webhook_status.value,
-                ':mda': RecaptchaV2DB.iso_8601_now_timestamp(),
-            }),
-            return_values='ALL_NEW'
+    def call(cls, db_client: DDBClient, _id: str, code: str, rate: str):
+        pk = sk = entities.TCWebhookEvent.create_key(_id=_id)
+        _type = entities.TCWebhookEvent.type()
+        item = cls.get_put_item_map(
+            pk=pk,
+            sk=sk,
+            _type=_type,
+            expire_in_seconds=None,
+            Id=_id,
+            Code=code,
+            Rate=rate
         )
-        logger.info(f'{cls.__qualname__}#call, pk: {pk}, record updated')
-        return cls.UpdateResponse(response)
+        response = db_client.put_item(
+            Item=item,
+        )
+        logger.debug(f'{cls.__qualname__}.call# -> response: {response}')
+        return response

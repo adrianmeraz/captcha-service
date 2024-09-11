@@ -30,6 +30,9 @@
         "WebhookUrl": {
             "S": "https://www.example.com/captcha_webhook"
         },
+        "WebhookAttempts": {
+            "N": "2"
+        },
         "SK": {
             "S": "CAPTCHA_EVENT#RECAPTCHA_V2#77219856370"
         },

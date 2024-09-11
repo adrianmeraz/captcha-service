@@ -2,11 +2,10 @@ import typing
 
 from httpx import Client
 
-from src.layers import logs, webhooks
+from src.layers import logs, webhooks, db_captcha
 from src.layers.exceptions import WebhookException
 from src.layers.interfaces import ICaptcha
-from src.layers.twocaptcha import db_twocaptcha
-from src.layers.twocaptcha.db_twocaptcha import const, get_db_client
+from src.layers.db_captcha import const, get_db_client
 from . import api_twocaptcha
 
 logger = logs.logger
@@ -35,7 +34,7 @@ class TwoCaptcha(ICaptcha):
             http_client=http_client,
             request=request
         )
-        db_twocaptcha.CreateRecaptchaV2Event.call(
+        db_captcha.CreateRecaptchaV2Event.call(
             db_client=db_client,
             captcha_id=r.request,
             webhook_url=webhook_url,
@@ -44,7 +43,7 @@ class TwoCaptcha(ICaptcha):
 
     @classmethod
     def handle_webhook_event(cls, http_client: Client, captcha_id: str, code: str, *args, **kwargs):
-        return db_twocaptcha.UpdateCaptchaEvent.call(
+        return db_captcha.UpdateCaptchaEvent.call(
             db_client=db_client,
             captcha_id=captcha_id,
             code=code,
@@ -81,7 +80,7 @@ class TwoCaptcha(ICaptcha):
             webhook_status = const.WebhookStatus.WEBHOOK_FAILED
 
         logger.info(f'{__name__}, Webhook response status: {webhook_status.value}')
-        db_twocaptcha.UpdateCaptchaEventWebookStatus.call(
+        db_captcha.UpdateCaptchaEventWebookStatus.call(
             db_client=db_client,
             captcha_id=captcha_id,
             webhook_status=webhook_status
