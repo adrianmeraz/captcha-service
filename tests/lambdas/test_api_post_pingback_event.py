@@ -15,10 +15,12 @@ RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH
 class ApiPostPingbackEventTests(BaseTestFixture):
 
     @mock.patch.object(TwoCaptcha, 'send_webhook_event')
+    @mock.patch.object(DDBClient, 'put_item')
     @mock.patch.object(DDBClient, 'update_item')
     def test_ok(
         self,
         mocked_update_item,
+        mocked_put_item,
         mocked_send_webhook_event
     ):
         source = test_const.TEST_EVENT_RESOURCE_PATH.joinpath('event#api_post_pingback_event.json')
@@ -29,6 +31,7 @@ class ApiPostPingbackEventTests(BaseTestFixture):
         with as_file(source) as db_update_captcha_event_json:
             mocked_update_item.return_value = json.loads(db_update_captcha_event_json.read_text())
         mocked_send_webhook_event.return_value = True
+        mocked_put_item.return_value = True
 
         val = api_post_pingback_event.lambda_handler(raw_event=mock_event, context=None)
         self.maxDiff = None

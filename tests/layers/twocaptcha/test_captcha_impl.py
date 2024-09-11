@@ -9,6 +9,7 @@ from py_aws_core.testing import BaseTestFixture
 
 from src.layers.twocaptcha import api_twocaptcha
 from src.layers import db_captcha
+from src.layers.twocaptcha import db_twocaptcha
 from src.layers.twocaptcha.captcha import TwoCaptcha
 from tests import const as test_const
 
@@ -65,21 +66,26 @@ class TwoCaptchaImplTests(BaseTestFixture):
         self.assertEqual(mocked_solve_captcha.call_count, 1)
         self.assertEqual(mocked_batch_write_item_maps.call_count, 1)
 
+    @mock.patch.object(db_twocaptcha.CreateTCWebhookEvent, 'call')
     @mock.patch.object(db_captcha.UpdateCaptchaEvent, 'call')
     def test_handle_webhook_event_ok(
         self,
-        mocked_update_captcha_event_call
+        mocked_update_captcha_event_call,
+        mocked_create_tc_webhook_event_call
     ):
         mocked_update_captcha_event_call.return_value = True
+        mocked_create_tc_webhook_event_call.return_value = True
 
         with RetryClient() as client:
             TwoCaptcha.handle_webhook_event(
                 http_client=client,
                 captcha_id='9991117777',
                 code=test_const.TEST_RECAPTCHA_V2_TOKEN,
+                rate='.00299'
             )
 
         self.assertEqual(mocked_update_captcha_event_call.call_count, 1)
+        self.assertEqual(mocked_create_tc_webhook_event_call.call_count, 1)
 
     @respx.mock
     @mock.patch.object(db_captcha.UpdateCaptchaEventWebookStatus, 'call')

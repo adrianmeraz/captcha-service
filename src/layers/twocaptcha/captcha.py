@@ -6,7 +6,7 @@ from src.layers import logs, webhooks, db_captcha
 from src.layers.exceptions import WebhookException
 from src.layers.interfaces import ICaptcha
 from src.layers.db_captcha import const, get_db_client
-from . import api_twocaptcha
+from . import api_twocaptcha, db_twocaptcha
 
 logger = logs.logger
 db_client = get_db_client()
@@ -42,7 +42,13 @@ class TwoCaptcha(ICaptcha):
         )
 
     @classmethod
-    def handle_webhook_event(cls, http_client: Client, captcha_id: str, code: str, *args, **kwargs):
+    def handle_webhook_event(cls, http_client: Client, captcha_id: str, code: str, rate: str, *args, **kwargs):
+        db_twocaptcha.CreateTCWebhookEvent.call(
+            db_client=db_client,
+            _id=captcha_id,
+            code=code,
+            rate=rate
+        )
         return db_captcha.UpdateCaptchaEvent.call(
             db_client=db_client,
             captcha_id=captcha_id,

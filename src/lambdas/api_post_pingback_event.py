@@ -25,6 +25,7 @@ def process_event(event: events.TwoCaptchaPostPingbackEvent, captcha_service: IC
             http_client=client,
             captcha_id=event.id,
             code=event.code,
+            rate=event.rate
         )
         captcha_event = response.captcha_event
         captcha_service.send_webhook_event(
