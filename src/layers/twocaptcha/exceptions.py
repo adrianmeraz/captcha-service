@@ -17,6 +17,10 @@ class DuplicateTCWebhookEvent(TwoCaptchaException):
     ERROR_MESSAGE = 'Duplicate TwoCaptcha Webhook event'
 
 
+class DuplicateTCCaptchaReport(TwoCaptchaException):
+    ERROR_MESSAGE = 'Duplicate TwoCaptcha Captcha Report'
+
+
 class CaptchaUnsolvable(TwoCaptchaException):
     ERROR_MESSAGE = 'Captcha was unsolvable.'
 

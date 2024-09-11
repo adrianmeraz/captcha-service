@@ -6,7 +6,7 @@ from src.layers import logs, webhooks, db_captcha
 from src.layers.exceptions import WebhookException
 from src.layers.interfaces import ICaptcha
 from src.layers.db_captcha import const, get_db_client
-from . import api_twocaptcha, db_twocaptcha
+from . import const as tc_const, api_twocaptcha, db_twocaptcha
 
 logger = logs.logger
 db_client = get_db_client()
@@ -98,10 +98,12 @@ class TwoCaptcha(ICaptcha):
 
     @classmethod
     def report_bad_captcha_id(cls, http_client: Client, captcha_id: str, **kwargs):
+        db_twocaptcha.CreateTCCaptchaReport.call(db_client=db_client, _id=captcha_id, status=tc_const.ReportStatus.BAD)
         request = api_twocaptcha.ReportBadCaptcha.Request(captcha_id=captcha_id)
         return api_twocaptcha.ReportBadCaptcha.call(http_client=http_client, request=request)
 
     @classmethod
     def report_good_captcha_id(cls, http_client: Client, captcha_id: str, **kwargs):
+        db_twocaptcha.CreateTCCaptchaReport.call(db_client=db_client, _id=captcha_id, status=tc_const.ReportStatus.GOOD)
         request = api_twocaptcha.ReportGoodCaptcha.Request(captcha_id=captcha_id)
         return api_twocaptcha.ReportGoodCaptcha.call(http_client=http_client, request=request)
