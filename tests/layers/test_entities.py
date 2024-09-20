@@ -9,21 +9,8 @@ class CaptchaEventTests(CSTestFixture):
         self.assertEqual(key, 'CAPTCHA_EVENT#RECAPTCHA_V2#9991117777')
 
     def test_props(self):
-        captcha_event = entities.CaptchaEvent(
-            data={
-                'CaptchaId': '9991117777',
-                'CaptchaType': const.EventCaptchaType.RECAPTCHA_V2,
-                'CaptchaAttempts': 3,
-                'CaptchaMaxAttempts': 5,
-                'Code': self.TEST_RECAPTCHA_V2_TOKEN,
-                'EventStatus': const.EventStatus.CAPTCHA_INVALID,
-                'PageUrl': 'https://example.com/captcha',
-                'SiteKey': self.TEST_SITEKEY,
-                'WebhookUrl': 'https://example.com/webhook',
-                'WebhookData': {'key1': 'val1'},
-                'WebhookStatus': const.WebhookStatus.INIT,
-                'WebhookAttempts': 0,
-            }
-        )
+        _json = self.get_db_resource_json('db#update_captcha_event.json')
+        captcha_event = entities.CaptchaEvent(data=_json['Attributes'])
 
         self.assertTrue(captcha_event.can_retry_captcha)
+        self.assertTrue(captcha_event.can_retry_webhook)
