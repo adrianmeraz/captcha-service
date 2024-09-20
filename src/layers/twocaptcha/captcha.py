@@ -73,7 +73,7 @@ class TwoCaptcha(ICaptcha):
             'captcha_token': captcha_token,
         }
         if not utils.is_valid_captcha_v2_token(captcha_token):
-            webhook_data['error'] = tc_exceptions.RESPONSE_EXCEPTION_MAP.get(captcha_token)
+            webhook_data['error'] = str(tc_exceptions.RESPONSE_EXCEPTION_MAP.get(captcha_token))
         request = webhooks.PostWebhook.Request(
             webhook_url=webhook_url,
             webhook_data=webhook_data
