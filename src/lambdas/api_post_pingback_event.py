@@ -29,6 +29,14 @@ def process_event(event: events.TwoCaptchaPostPingbackEvent, captcha_service: IC
         )
         captcha_event = response.captcha_event
         if captcha_event.has_captcha_error:
+            captcha_service.send_webhook_event(
+                http_client=client,
+                captcha_id=event.id,
+                captcha_token=event.code,
+                webhook_url=captcha_event.WebhookUrl,
+                webhook_data=captcha_event.WebhookData
+            )
+        else:
             captcha_service.solve_captcha(
                 http_client=client,
                 site_key=captcha_event.SiteKey,
@@ -36,12 +44,4 @@ def process_event(event: events.TwoCaptchaPostPingbackEvent, captcha_service: IC
                 webhook_url=captcha_event.WebhookUrl,
                 webhook_data=captcha_event.WebhookData,
                 proxy_url=captcha_event.ProxyUrl,
-            )
-        else:
-            captcha_service.send_webhook_event(
-                http_client=client,
-                captcha_id=event.id,
-                captcha_token=event.code,
-                webhook_url=captcha_event.WebhookUrl,
-                webhook_data=captcha_event.WebhookData
             )
