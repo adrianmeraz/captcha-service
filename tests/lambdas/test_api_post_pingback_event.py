@@ -1,18 +1,13 @@
-import json
-from importlib.resources import as_file
 from unittest import mock
 
 from py_aws_core.db_dynamo import DDBClient
-from py_aws_core.testing import BaseTestFixture
 
 from src.lambdas import api_post_pingback_event
+from src.layers.testing import CSTestFixture
 from src.layers.twocaptcha.captcha import TwoCaptcha
-from tests import const as test_const
-
-RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH
 
 
-class ApiPostPingbackEventTests(BaseTestFixture):
+class ApiPostPingbackEventTests(CSTestFixture):
 
     @mock.patch.object(TwoCaptcha, 'send_webhook_event')
     @mock.patch.object(DDBClient, 'put_item')
@@ -23,13 +18,9 @@ class ApiPostPingbackEventTests(BaseTestFixture):
         mocked_put_item,
         mocked_send_webhook_event
     ):
-        source = test_const.TEST_EVENT_RESOURCE_PATH.joinpath('event#api_post_pingback_event.json')
-        with as_file(source) as event_json:
-            mock_event = json.loads(event_json.read_text())
+        mock_event = self.get_event_resource_json('event#api_post_pingback_event.json')
 
-        source = test_const.TEST_DB_RESOURCE_PATH.joinpath('db#update_captcha_event.json')
-        with as_file(source) as db_update_captcha_event_json:
-            mocked_update_item.return_value = json.loads(db_update_captcha_event_json.read_text())
+        mocked_update_item.return_value = self.get_db_resource_json('db#update_captcha_event.json')
         mocked_send_webhook_event.return_value = True
         mocked_put_item.return_value = dict()
 

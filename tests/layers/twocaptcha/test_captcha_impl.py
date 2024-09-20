@@ -1,22 +1,16 @@
-import json
-from importlib.resources import as_file
 from unittest import mock
 
 import respx
 from py_aws_core.clients import RetryClient
 from py_aws_core.db_dynamo import DDBClient
-from py_aws_core.testing import BaseTestFixture
 
-from src.layers.twocaptcha import api_twocaptcha
 from src.layers import db_captcha
-from src.layers.twocaptcha import db_twocaptcha
+from src.layers.testing import CSTestFixture
+from src.layers.twocaptcha import api_twocaptcha, db_twocaptcha
 from src.layers.twocaptcha.captcha import TwoCaptcha
-from tests import const as test_const
-
-RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH
 
 
-class TwoCaptchaImplTests(BaseTestFixture):
+class TwoCaptchaImplTests(CSTestFixture):
     """
         Get Captcha ID Tests
     """
@@ -41,14 +35,12 @@ class TwoCaptchaImplTests(BaseTestFixture):
         mocked_get_environment.return_value = 'dev'
         mocked_batch_write_item_maps.return_value = 1
 
-        source = RESOURCE_PATH.joinpath('get_captcha_id.json')
-        with as_file(source) as warn_error_status_json:
-            mocked_solve_captcha = self.create_route(
-                method='POST',
-                url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&pingback=https%3A%2F%2Fbig-service-dev.ipsumlorem.com%2Fpingback-event',
-                response_status_code=200,
-                response_json=json.loads(warn_error_status_json.read_text(encoding='utf-8'))
-            )
+        mocked_solve_captcha = self.create_route(
+            method='POST',
+            url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&pingback=https%3A%2F%2Fbig-service-dev.ipsumlorem.com%2Fpingback-event',
+            response_status_code=200,
+            response_json=self.get_api_resource_json('get_captcha_id.json')
+        )
 
         with RetryClient() as client:
             TwoCaptcha.solve_captcha(
@@ -80,7 +72,7 @@ class TwoCaptchaImplTests(BaseTestFixture):
             TwoCaptcha.handle_webhook_event(
                 http_client=client,
                 captcha_id='9991117777',
-                code=test_const.TEST_RECAPTCHA_V2_TOKEN,
+                code=self.TEST_RECAPTCHA_V2_TOKEN,
                 rate='.00299'
             )
 
@@ -110,7 +102,7 @@ class TwoCaptchaImplTests(BaseTestFixture):
             TwoCaptcha.send_webhook_event(
                 http_client=client,
                 captcha_id='9991117777',
-                captcha_token=test_const.TEST_RECAPTCHA_V2_TOKEN,
+                captcha_token=self.TEST_RECAPTCHA_V2_TOKEN,
                 webhook_url='http://mysite.com/pingback/url/',
                 webhook_data=webhook_data,
             )

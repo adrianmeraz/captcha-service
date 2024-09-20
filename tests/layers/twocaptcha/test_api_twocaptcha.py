@@ -1,18 +1,13 @@
-import json
-from importlib.resources import as_file
 from unittest import mock
 
 import respx
 from py_aws_core.clients import RetryClient
-from py_aws_core.testing import BaseTestFixture
 
+from src.layers.testing import CSTestFixture
 from src.layers.twocaptcha import api_twocaptcha, exceptions
-from tests import const as test_const
-
-RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH
 
 
-class TwoCaptchaAPITests(BaseTestFixture):
+class TwoCaptchaAPITests(CSTestFixture):
     @respx.mock
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_environment')
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_app_name')
@@ -40,19 +35,17 @@ class TwoCaptchaAPITests(BaseTestFixture):
         self.assertEqual(mocked_get_environment.call_count, 1)
 
 
-class SolveCaptchaTests(BaseTestFixture):
+class SolveCaptchaTests(CSTestFixture):
     @respx.mock
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
     def test_ok(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
-        source = RESOURCE_PATH.joinpath('get_captcha_id.json')
-        with as_file(source) as get_captcha_id_json:
-            mocked_solve_captcha = self.create_ok_route(
-                method='POST',
-                url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&proxy=example.com%3A1000&proxytype=HTTP',
-                _json=json.loads(get_captcha_id_json.read_text(encoding='utf-8'))
-            )
+        mocked_solve_captcha = self.create_ok_route(
+            method='POST',
+            url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&proxy=example.com%3A1000&proxytype=HTTP',
+            _json=self.get_api_resource_json('get_captcha_id.json')
+        )
 
         with RetryClient() as client:
             request = api_twocaptcha.SolveCaptcha.Request(
@@ -71,14 +64,12 @@ class SolveCaptchaTests(BaseTestFixture):
     def test_redirect(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
-        source = RESOURCE_PATH.joinpath('warn_error_status.json')
-        with as_file(source) as warn_error_status_json:
-            mocked_solve_captcha = self.create_route(
-                method='POST',
-                url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&proxy=example.com%3A1000&proxytype=HTTP',
-                response_status_code=301,
-                response_json=json.loads(warn_error_status_json.read_text(encoding='utf-8'))
-            )
+        mocked_solve_captcha = self.create_route(
+            method='POST',
+            url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&proxy=example.com%3A1000&proxytype=HTTP',
+            response_status_code=301,
+            response_json=self.get_api_resource_json('warn_error_status.json')
+        )
 
         with self.assertRaises(exceptions.TwoCaptchaException):
             with RetryClient() as client:
@@ -97,14 +88,12 @@ class SolveCaptchaTests(BaseTestFixture):
     def test_invalid_response(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
-        source = RESOURCE_PATH.joinpath('warn_error_status.json')
-        with as_file(source) as warn_error_status_json:
-            mocked_solve_captcha = self.create_route(
-                method='POST',
-                url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&proxy=example.com%3A1000&proxytype=HTTP',
-                response_status_code=200,
-                response_json=json.loads(warn_error_status_json.read_text(encoding='utf-8'))
-            )
+        mocked_solve_captcha = self.create_route(
+            method='POST',
+            url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&proxy=example.com%3A1000&proxytype=HTTP',
+            response_status_code=200,
+            response_json=self.get_api_resource_json('warn_error_status.json')
+        )
 
         with self.assertRaises(exceptions.InvalidCaptcha):
             with RetryClient() as client:
@@ -204,14 +193,12 @@ class SolveCaptchaTests(BaseTestFixture):
     def test_captcha_not_ready(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
-        source = RESOURCE_PATH.joinpath('captcha_not_ready.json')
-        with as_file(source) as captcha_not_ready_json:
-            mocked_solve_captcha = self.create_route(
-                method='POST',
-                url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&proxy=example.com%3A1000&proxytype=HTTP',
-                response_status_code=200,
-                response_json=json.loads(captcha_not_ready_json.read_text(encoding='utf-8'))
-            )
+        mocked_solve_captcha = self.create_route(
+            method='POST',
+            url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&proxy=example.com%3A1000&proxytype=HTTP',
+            response_status_code=200,
+            response_json=self.get_api_resource_json('captcha_not_ready.json')
+        )
 
         with self.assertRaises(exceptions.CaptchaNotReady):
             with RetryClient() as client:
@@ -226,7 +213,7 @@ class SolveCaptchaTests(BaseTestFixture):
         self.assertEqual(mocked_solve_captcha.call_count, 1)
 
 
-class ReportCaptchaTests(BaseTestFixture):
+class ReportCaptchaTests(CSTestFixture):
     """
         Report Captcha Tests
     """
@@ -236,14 +223,12 @@ class ReportCaptchaTests(BaseTestFixture):
     def test_reportbad_ok(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
-        source = RESOURCE_PATH.joinpath('report_captcha.json')
-        with as_file(source) as report_captcha_json:
-            mocked_report_bad_captcha = self.create_route(
-                method='GET',
-                url__eq='http://2captcha.com/res.php?key=IPSUMKEY&action=reportbad&id=2122988149&json=1',
-                response_status_code=200,
-                response_json=json.loads(report_captcha_json.read_text(encoding='utf-8'))
-            )
+        mocked_report_bad_captcha = self.create_route(
+            method='GET',
+            url__eq='http://2captcha.com/res.php?key=IPSUMKEY&action=reportbad&id=2122988149&json=1',
+            response_status_code=200,
+            response_json=self.get_api_resource_json('report_captcha.json')
+        )
 
         with RetryClient() as client:
             request = api_twocaptcha.ReportBadCaptcha.Request(captcha_id='2122988149')
@@ -258,14 +243,12 @@ class ReportCaptchaTests(BaseTestFixture):
     def test_reportgood_ok(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
-        source = RESOURCE_PATH.joinpath('report_captcha.json')
-        with as_file(source) as report_captcha_json:
-            mocked_report_good_captcha = self.create_route(
-                method='GET',
-                url__eq='http://2captcha.com/res.php?key=IPSUMKEY&action=reportgood&id=2122988149&json=1',
-                response_status_code=200,
-                response_json=json.loads(report_captcha_json.read_text(encoding='utf-8'))
-            )
+        mocked_report_good_captcha = self.create_route(
+            method='GET',
+            url__eq='http://2captcha.com/res.php?key=IPSUMKEY&action=reportgood&id=2122988149&json=1',
+            response_status_code=200,
+            response_json=self.get_api_resource_json('report_captcha.json')
+        )
 
         with RetryClient() as client:
             request = api_twocaptcha.ReportGoodCaptcha.Request(captcha_id='2122988149')
@@ -280,14 +263,12 @@ class ReportCaptchaTests(BaseTestFixture):
     def test_reportbad_invalid_response(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
-        source = test_const.TEST_API_RESOURCE_PATH.joinpath('invalid_response.json')
-        with as_file(source) as report_captcha_json:
-            mocked_report_bad_captcha = self.create_route(
-                method='GET',
-                url__eq='http://2captcha.com/res.php?key=IPSUMKEY&action=reportbad&id=2122988149&json=1',
-                response_status_code=200,
-                response_json=json.loads(report_captcha_json.read_text(encoding='utf-8'))
-            )
+        mocked_report_bad_captcha = self.create_route(
+            method='GET',
+            url__eq='http://2captcha.com/res.php?key=IPSUMKEY&action=reportbad&id=2122988149&json=1',
+            response_status_code=200,
+            response_json=self.get_api_resource_json('invalid_response.json')
+        )
 
         with self.assertRaises(exceptions.InvalidResponse):
             with RetryClient() as client:
@@ -302,14 +283,12 @@ class ReportCaptchaTests(BaseTestFixture):
     def test_invalid_report(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
-        source = test_const.TEST_API_RESOURCE_PATH.joinpath('warn_error_status.json')
-        with as_file(source) as warn_error_status_json:
-            mocked_report_bad_captcha = self.create_route(
-                method='GET',
-                url__eq='http://2captcha.com/res.php?key=IPSUMKEY&action=reportbad&id=2122988149&json=1',
-                response_status_code=200,
-                response_json=json.loads(warn_error_status_json.read_text(encoding='utf-8'))
-            )
+        mocked_report_bad_captcha = self.create_route(
+            method='GET',
+            url__eq='http://2captcha.com/res.php?key=IPSUMKEY&action=reportbad&id=2122988149&json=1',
+            response_status_code=200,
+            response_json=self.get_api_resource_json('warn_error_status.json')
+        )
 
         with self.assertRaises(exceptions.InvalidCaptcha):
             with RetryClient() as client:
@@ -320,7 +299,7 @@ class ReportCaptchaTests(BaseTestFixture):
         self.assertEqual(mocked_report_bad_captcha.call_count, 1)
 
 
-class AddPingbackTests(BaseTestFixture):
+class AddPingbackTests(CSTestFixture):
     """
         Add Pingback Tests
     """
@@ -330,14 +309,12 @@ class AddPingbackTests(BaseTestFixture):
     def test_ok(self, mocked_get_api_key):
         mocked_get_api_key.return_value = 'IPSUMKEY'
 
-        source = test_const.TEST_API_RESOURCE_PATH.joinpath('add_pingback.json')
-        with as_file(source) as warn_error_status_json:
-            mocked_add_pingback = self.create_route(
-                method='GET',
-                url__eq='http://2captcha.com/res.php?key=IPSUMKEY&action=add_pingback&addr=http%3A%2F%2Fmysite.com%2Fpingback%2Furl%2F&json=1',
-                response_status_code=200,
-                response_json=json.loads(warn_error_status_json.read_text(encoding='utf-8'))
-            )
+        mocked_add_pingback = self.create_route(
+            method='GET',
+            url__eq='http://2captcha.com/res.php?key=IPSUMKEY&action=add_pingback&addr=http%3A%2F%2Fmysite.com%2Fpingback%2Furl%2F&json=1',
+            response_status_code=200,
+            response_json=self.get_api_resource_json('add_pingback.json')
+        )
 
         with RetryClient() as client:
             request = api_twocaptcha.AddPingback.Request(pingback_url='http://mysite.com/pingback/url/')

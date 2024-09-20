@@ -2,10 +2,10 @@ import typing
 
 from httpx import Client
 
-from src.layers import logs, webhooks, db_captcha, exceptions
+from src.layers import logs, webhooks, db_captcha, exceptions, utils
 from src.layers.db_captcha import const, get_db_client
 from src.layers.interfaces import ICaptcha
-from . import const as tc_const, api_twocaptcha, db_twocaptcha
+from . import api_twocaptcha, db_twocaptcha, exceptions as tc_exceptions, const as tc_const
 
 logger = logs.logger
 db_client = get_db_client()
@@ -72,6 +72,8 @@ class TwoCaptcha(ICaptcha):
             'captcha_id': captcha_id,
             'captcha_token': captcha_token,
         }
+        if not utils.is_valid_captcha_v2_token(captcha_token):
+            webhook_data['error'] = tc_exceptions.RESPONSE_EXCEPTION_MAP.get(captcha_token)
         request = webhooks.PostWebhook.Request(
             webhook_url=webhook_url,
             webhook_data=webhook_data

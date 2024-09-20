@@ -1,28 +1,22 @@
-import json
-from importlib.resources import as_file
-from unittest import mock, TestCase
+from unittest import mock
 
 from botocore.exceptions import ClientError
 from py_aws_core.db_dynamo import DDBClient
 
+from src.layers.testing import CSTestFixture
 from src.layers.twocaptcha import const as tc_const, db_twocaptcha
 from src.layers.twocaptcha.exceptions import DuplicateTCCaptchaReport, DuplicateTCWebhookEvent
-from tests import const as test_const
-
-RESOURCE_PATH = test_const.TEST_DB_RESOURCE_PATH
 
 
-class CreateTCWebhookEventTests(TestCase):
+class CreateTCWebhookEventTests(CSTestFixture):
 
     @mock.patch.object(DDBClient, 'put_item')
     def test_DuplicateTCWebhookEvent(
         self,
         mocked_put_item,
     ):
-        source = RESOURCE_PATH.joinpath('errors', 'db#tc_webhook_event#duplicate_error.json')
-        with as_file(source) as json_text:
-            _json = json.loads(json_text.read_text(encoding='utf-8'))
-            mocked_put_item.side_effect = ClientError(error_response=_json, operation_name='dummy')
+        _json = self.get_db_resource_json('errors', 'db#tc_webhook_event#duplicate_error.json')
+        mocked_put_item.side_effect = ClientError(error_response=_json, operation_name='dummy')
 
         db_client = DDBClient()
         with self.assertRaises(DuplicateTCWebhookEvent):
@@ -36,16 +30,14 @@ class CreateTCWebhookEventTests(TestCase):
         self.assertEqual(mocked_put_item.call_count, 1)
 
 
-class CreateTCCaptchaReportTests(TestCase):
+class CreateTCCaptchaReportTests(CSTestFixture):
     @mock.patch.object(DDBClient, 'put_item')
     def test_DuplicateTCCaptchaReport(
         self,
         mocked_put_item,
     ):
-        source = RESOURCE_PATH.joinpath('errors', 'db#tc_webhook_event#duplicate_error.json')
-        with as_file(source) as json_text:
-            _json = json.loads(json_text.read_text(encoding='utf-8'))
-            mocked_put_item.side_effect = ClientError(error_response=_json, operation_name='dummy')
+        _json = self.get_db_resource_json('errors', 'db#tc_webhook_event#duplicate_error.json')
+        mocked_put_item.side_effect = ClientError(error_response=_json, operation_name='dummy')
 
         db_client = DDBClient()
         with self.assertRaises(DuplicateTCCaptchaReport):

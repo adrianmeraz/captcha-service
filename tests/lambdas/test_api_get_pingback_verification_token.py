@@ -1,29 +1,22 @@
-import json
-from importlib.resources import as_file
 from unittest import mock
 
 import respx
-from py_aws_core.testing import BaseTestFixture
 
 from src.lambdas import api_get_pingback_verification_token
+from src.layers.testing import CSTestFixture
 from src.layers.twocaptcha import api_twocaptcha
-from tests import const as test_const
-
-RESOURCE_PATH = test_const.TEST_API_RESOURCE_PATH
 
 
-class ApiGetPingbackVerificationTokenTests(BaseTestFixture):
+class ApiGetPingbackVerificationTokenTests(CSTestFixture):
     @respx.mock
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_pingback_token')
     def test_ok(
         self,
         mocked_get_pingback_token
     ):
-        mocked_get_pingback_token.return_value = test_const.TEST_VERIFICATION_TOKEN
+        mocked_get_pingback_token.return_value = self.TEST_VERIFICATION_TOKEN
 
-        source = test_const.TEST_EVENT_RESOURCE_PATH.joinpath('event#api_get_pingback_verification_token.json')
-        with as_file(source) as event_json:
-            mock_event = json.loads(event_json.read_text())
+        mock_event = self.get_event_resource_json('event#api_get_pingback_verification_token.json')
 
         val = api_get_pingback_verification_token.lambda_handler(raw_event=mock_event, context=None)
         self.maxDiff = None

@@ -1,11 +1,11 @@
 import respx
 from py_aws_core.clients import RetryClient
-from py_aws_core.testing import BaseTestFixture
 
 from src.layers import exceptions, webhooks
+from src.layers.testing import CSTestFixture
 
 
-class PostWebhookTests(BaseTestFixture):
+class PostWebhookTests(CSTestFixture):
     """
         Post Webhook Tests
     """
