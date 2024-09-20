@@ -94,7 +94,7 @@ class TwoCaptcha(ICaptcha):
             webhook_status = const.WebhookStatus.FAILED
 
         logger.info(f'{__name__}, Webhook response status: {webhook_status.value}')
-        db_captcha.UpdateCaptchaEventWebookStatus.call(
+        db_captcha.UpdateCaptchaEventWebhook.call(
             db_client=db_client,
             captcha_id=captcha_id,
             webhook_status=webhook_status

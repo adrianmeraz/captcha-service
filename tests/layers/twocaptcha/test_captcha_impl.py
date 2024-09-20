@@ -80,7 +80,7 @@ class TwoCaptchaImplTests(CSTestFixture):
         self.assertEqual(mocked_create_tc_webhook_event_call.call_count, 1)
 
     @respx.mock
-    @mock.patch.object(db_captcha.UpdateCaptchaEventWebookStatus, 'call')
+    @mock.patch.object(db_captcha.UpdateCaptchaEventWebhook, 'call')
     def test_send_webhook_event_ok(
         self,
         mocked_update_captcha_event_webhook_status_call

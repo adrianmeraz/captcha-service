@@ -106,7 +106,7 @@ class UpdateCaptchaEvent(RecaptchaV2DB):
         return cls.Response(response)
 
 
-class UpdateCaptchaEventWebookStatus(RecaptchaV2DB):
+class UpdateCaptchaEventWebhook(RecaptchaV2DB):
     """
         Updates Captcha Event Webhook Status
     """
@@ -129,14 +129,16 @@ class UpdateCaptchaEventWebookStatus(RecaptchaV2DB):
                 'PK': pk,
                 'SK': sk,
             }),
-            UpdateExpression=f'SET #wst = :wst, #mda = :mda',
+            UpdateExpression=f'SET #wst = :wst, #mda = :mda ADD #wa :inc',
             ExpressionAttributeNames={
                 '#wst': 'WebhookStatus',
+                '#wa': 'WebhookAttempts',
                 '#mda': 'ModifiedAt',
             },
             ExpressionAttributeValues=cls.serialize_types({
                 ':wst': webhook_status.value,
                 ':mda': cls.iso_8601_now_timestamp(),
+                ':inc': 1
             }),
             ReturnValues='ALL_NEW'
         )
