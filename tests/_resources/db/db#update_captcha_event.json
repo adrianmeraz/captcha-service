@@ -9,6 +9,12 @@
         "ExpiresAt": {
             "S": ""
         },
+        "CaptchaAttempts": {
+            "N": "1"
+        },
+        "CaptchaMaxAttempts": {
+            "N": "3"
+        },
         "CaptchaType": {
             "S": "RECAPTCHA_V2"
         },
@@ -25,13 +31,16 @@
             "S": "INIT"
         },
         "WebhookData": {
-            "NULL": true
+            "M": {}
         },
         "WebhookUrl": {
             "S": "https://www.example.com/captcha_webhook"
         },
         "WebhookAttempts": {
             "N": "2"
+        },
+        "WebhookMaxAttempts": {
+            "N": "3"
         },
         "SK": {
             "S": "CAPTCHA_EVENT#RECAPTCHA_V2#77219856370"
