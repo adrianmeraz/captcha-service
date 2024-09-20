@@ -1,5 +1,8 @@
 from enum import Enum
 
+DEFAULT_CAPTCHA_MAX_ATTEMPTS = 3
+DEFAULT_WEBHOOK_MAX_ATTEMPTS = 3
+
 
 class EventStatus(str, Enum):
     INIT = 'INIT'
@@ -7,12 +10,13 @@ class EventStatus(str, Enum):
     CAPTCHA_VALID = 'CAPTCHA_VALID'
     CAPTCHA_INVALID = 'CAPTCHA_INVALID'
     CAPTCHA_ERROR = 'CAPTCHA_ERROR'
+    CAPTCHA_SOLVING = 'CAPTCHA_SOLVING'
 
 
 class WebhookStatus(str, Enum):
     INIT = 'INIT'
-    WEBHOOK_SUCCESS = 'WEBHOOK_SUCCESS'
-    WEBHOOK_FAILED = 'WEBHOOK_FAILED'
+    SUCCESS = 'SUCCESS'
+    FAILED = 'FAILED'
 
 
 class EventCaptchaType(str, Enum):

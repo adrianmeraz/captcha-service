@@ -20,7 +20,7 @@ class TwoCaptcha(ICaptcha):
         page_url: str,
         webhook_url: str,
         webhook_data: typing.Dict[str, str] = None,
-        proxy_url: str = None,
+        proxy_url: str = '',
         **kwargs
     ):
         request = api_twocaptcha.SolveCaptcha.Request(
@@ -29,13 +29,16 @@ class TwoCaptcha(ICaptcha):
             proxy_url=proxy_url,
             pingback_url=api_twocaptcha.SolveCaptcha.get_webhook_url(),
         )
-        r = api_twocaptcha.SolveCaptcha.call(
+        r_solve_captcha = api_twocaptcha.SolveCaptcha.call(
             http_client=http_client,
             request=request
         )
         db_captcha.CreateRecaptchaV2Event.call(
             db_client=db_client,
-            captcha_id=r.request,
+            captcha_id=r_solve_captcha.request,
+            page_url=page_url,
+            proxy_url=proxy_url,
+            site_key=site_key,
             webhook_url=webhook_url,
             webhook_data=webhook_data
         )
@@ -58,7 +61,6 @@ class TwoCaptcha(ICaptcha):
             code=code,
             status=status
         )
-
 
     @classmethod
     def send_webhook_event(
@@ -87,9 +89,9 @@ class TwoCaptcha(ICaptcha):
 
         try:
             webhooks.PostWebhook.call(http_client=http_client, request=request)
-            webhook_status = const.WebhookStatus.WEBHOOK_SUCCESS
+            webhook_status = const.WebhookStatus.SUCCESS
         except exceptions.WebhookException:
-            webhook_status = const.WebhookStatus.WEBHOOK_FAILED
+            webhook_status = const.WebhookStatus.FAILED
 
         logger.info(f'{__name__}, Webhook response status: {webhook_status.value}')
         db_captcha.UpdateCaptchaEventWebookStatus.call(

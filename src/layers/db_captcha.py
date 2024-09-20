@@ -31,6 +31,9 @@ class CreateRecaptchaV2Event(RecaptchaV2DB):
         cls,
         db_client: DDBClient,
         captcha_id: str,
+        page_url: str,
+        proxy_url: str,
+        site_key: str,
         webhook_data: typing.Dict[str, str],
         webhook_url: str,
     ) -> int:
@@ -41,13 +44,19 @@ class CreateRecaptchaV2Event(RecaptchaV2DB):
             sk=sk,
             _type=entities.CaptchaEvent.type(),
             CaptchaId=captcha_id,
+            CaptchaAttempts=0,
+            CaptchaMaxAttempts=const.DEFAULT_CAPTCHA_MAX_ATTEMPTS,
             CaptchaType=cls.EVENT_TYPE.value,
             Code='',
             EventStatus=const.EventStatus.INIT.value,
+            PageUrl=page_url,
+            ProxyUrl=proxy_url,
+            SiteKey=site_key,
             WebhookData=webhook_data,
             WebhookUrl=webhook_url,
             WebhookStatus=const.WebhookStatus.INIT.value,
-            WebhookAttempts=0
+            WebhookAttempts=0,
+            WebhookMaxAttempts=const.DEFAULT_WEBHOOK_MAX_ATTEMPTS
         )]
         count = db_client.write_maps_to_db(item_maps=c_maps)
         logger.info(f'{cls.__qualname__}#call, pk: {pk}, {count} record(s) written')

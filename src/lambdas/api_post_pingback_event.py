@@ -29,14 +29,13 @@ def process_event(event: events.TwoCaptchaPostPingbackEvent, captcha_service: IC
         )
         captcha_event = response.captcha_event
         if captcha_event.EventStatus == const.EventStatus.CAPTCHA_ERROR.value:
-            # TODO Fix
             captcha_service.solve_captcha(
                 http_client=client,
-                site_key=event.site_key,
-                page_url=event.page_url,
-                webhook_url=event.webhook_url,
-                webhook_data=event.webhook_data,
-                proxy_url=event.proxy_url,
+                site_key=captcha_event.SiteKey,
+                page_url=captcha_event.PageUrl,
+                webhook_url=captcha_event.WebhookUrl,
+                webhook_data=captcha_event.WebhookData,
+                proxy_url=captcha_event.ProxyUrl,
             )
         else:
             captcha_service.send_webhook_event(
