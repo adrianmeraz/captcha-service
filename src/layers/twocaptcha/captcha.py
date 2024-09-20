@@ -48,12 +48,17 @@ class TwoCaptcha(ICaptcha):
             code=code,
             rate=rate
         )
+        if utils.is_valid_captcha_v2_token(captcha_token=code):
+            status = const.EventStatus.CAPTCHA_SOLVED
+        else:
+            status = const.EventStatus.CAPTCHA_ERROR
         return db_captcha.UpdateCaptchaEvent.call(
             db_client=db_client,
             captcha_id=captcha_id,
             code=code,
-            status=const.EventStatus.CAPTCHA_SOLVED
+            status=status
         )
+
 
     @classmethod
     def send_webhook_event(

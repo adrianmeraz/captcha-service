@@ -1,7 +1,7 @@
 from py_aws_core import decorators, utils as aws_utils
 from py_aws_core.clients import RetryClient
 
-from src.layers import events, exceptions, logs
+from src.layers import const, events, exceptions, logs
 from src.layers.interfaces import ICaptcha
 from src.layers.twocaptcha.captcha import TwoCaptcha
 
@@ -28,10 +28,21 @@ def process_event(event: events.TwoCaptchaPostPingbackEvent, captcha_service: IC
             rate=event.rate
         )
         captcha_event = response.captcha_event
-        captcha_service.send_webhook_event(
-            http_client=client,
-            captcha_id=event.id,
-            captcha_token=event.code,
-            webhook_url=captcha_event.WebhookUrl,
-            webhook_data=captcha_event.WebhookData
-        )
+        if captcha_event.EventStatus == const.EventStatus.CAPTCHA_ERROR.value:
+            # TODO Fix
+            captcha_service.solve_captcha(
+                http_client=client,
+                site_key=event.site_key,
+                page_url=event.page_url,
+                webhook_url=event.webhook_url,
+                webhook_data=event.webhook_data,
+                proxy_url=event.proxy_url,
+            )
+        else:
+            captcha_service.send_webhook_event(
+                http_client=client,
+                captcha_id=event.id,
+                captcha_token=event.code,
+                webhook_url=captcha_event.WebhookUrl,
+                webhook_data=captcha_event.WebhookData
+            )
