@@ -21,6 +21,15 @@
         "ModifiedAt": {
             "S": "2024-08-22T19:34:02+00:00"
         },
+        "PageUrl": {
+            "S": "https://example.com/webhook"
+        },
+        "ProxyUrl": {
+            "S": "https://example.com/proxy"
+        },
+        "SiteKey": {
+            "S": "6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-"
+        },
         "Type": {
             "S": "CAPTCHA_EVENT"
         },
