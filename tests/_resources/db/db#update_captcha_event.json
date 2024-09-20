@@ -60,7 +60,7 @@
         "PK": {
             "S": "CAPTCHA_EVENT#RECAPTCHA_V2#77219856370"
         },
-        "EventStatus": {
+        "CaptchaStatus": {
             "S": "CAPTCHA_SOLVED"
         },
         "CreatedAt": {

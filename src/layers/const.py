@@ -4,7 +4,7 @@ DEFAULT_CAPTCHA_MAX_ATTEMPTS = 3
 DEFAULT_WEBHOOK_MAX_ATTEMPTS = 3
 
 
-class EventStatus(str, Enum):
+class CaptchaStatus(str, Enum):
     INIT = 'INIT'
     CAPTCHA_SOLVED = 'CAPTCHA_SOLVED'
     CAPTCHA_VALID = 'CAPTCHA_VALID'

@@ -48,7 +48,7 @@ class CreateRecaptchaV2Event(RecaptchaV2DB):
             CaptchaMaxAttempts=const.DEFAULT_CAPTCHA_MAX_ATTEMPTS,
             CaptchaType=cls.EVENT_TYPE.value,
             Code='',
-            EventStatus=const.EventStatus.INIT.value,
+            CaptchaStatus=const.CaptchaStatus.INIT.value,
             PageUrl=page_url,
             ProxyUrl=proxy_url,
             SiteKey=site_key,
@@ -80,7 +80,7 @@ class UpdateCaptchaEvent(RecaptchaV2DB):
         cls,
         db_client: DDBClient,
         captcha_id: str,
-        status: const.EventStatus,
+        status: const.CaptchaStatus,
         code: str = None,
     ) -> Response:
         pk = sk = cls.recaptcha_v2_event_create_key(captcha_id=captcha_id)
@@ -91,7 +91,7 @@ class UpdateCaptchaEvent(RecaptchaV2DB):
             }),
             UpdateExpression=f'SET #est = :est, #mda = :mda, #cde = :cde',
             ExpressionAttributeNames={
-                '#est': 'EventStatus',
+                '#est': 'CaptchaStatus',
                 '#mda': 'ModifiedAt',
                 '#cde': 'Code',
             },

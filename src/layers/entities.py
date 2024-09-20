@@ -11,9 +11,9 @@ class CaptchaEvent(ABCEntity):
         self.CaptchaId = self.data['CaptchaId']
         self.CaptchaAttempts = self.data['CaptchaAttempts']
         self.CaptchaMaxAttempts = self.data['CaptchaMaxAttempts']
+        self.CaptchaStatus = self.data['CaptchaStatus']
         self.CaptchaType = self.data['CaptchaType']
         self.Code = self.data['Code']
-        self.EventStatus = self.data['EventStatus']
         self.PageUrl = self.data['PageUrl']
         self.ProxyUrl = self.data.get('ProxyUrl')
         self.SiteKey = self.data['SiteKey']
@@ -26,6 +26,10 @@ class CaptchaEvent(ABCEntity):
     @classmethod
     def create_key(cls, captcha_id: str, captcha_type: const.EventCaptchaType) -> str:
         return f'{cls.type()}#{captcha_type.value}#{captcha_id}'
+
+    @property
+    def has_captcha_error(self) -> bool:
+        return self.CaptchaStatus == const.CaptchaStatus.CAPTCHA_ERROR.value
 
     @property
     def can_retry_captcha(self):

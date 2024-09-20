@@ -28,7 +28,7 @@ def process_event(event: events.TwoCaptchaPostPingbackEvent, captcha_service: IC
             rate=event.rate
         )
         captcha_event = response.captcha_event
-        if captcha_event.EventStatus == const.EventStatus.CAPTCHA_ERROR.value:
+        if captcha_event.has_captcha_error:
             captcha_service.solve_captcha(
                 http_client=client,
                 site_key=captcha_event.SiteKey,

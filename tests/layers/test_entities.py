@@ -14,3 +14,4 @@ class CaptchaEventTests(CSTestFixture):
 
         self.assertTrue(captcha_event.can_retry_captcha)
         self.assertTrue(captcha_event.can_retry_webhook)
+        self.assertFalse(captcha_event.has_captcha_error)

@@ -52,9 +52,9 @@ class TwoCaptcha(ICaptcha):
             rate=rate
         )
         if utils.is_valid_captcha_v2_token(captcha_token=code):
-            status = const.EventStatus.CAPTCHA_SOLVED
+            status = const.CaptchaStatus.CAPTCHA_SOLVED
         else:
-            status = const.EventStatus.CAPTCHA_ERROR
+            status = const.CaptchaStatus.CAPTCHA_ERROR
         return db_captcha.UpdateCaptchaEvent.call(
             db_client=db_client,
             captcha_id=captcha_id,
