@@ -65,11 +65,11 @@ class TwoCaptcha(ICaptcha):
     @classmethod
     def send_webhook_event(
         cls,
+        http_client: Client,
         captcha_id: str,
         captcha_token: str,
         webhook_url: str,
         webhook_data: typing.Dict[str, str] = None,
-        http_client: Client = None,
         *args,
         **kwargs
     ):
@@ -85,15 +85,13 @@ class TwoCaptcha(ICaptcha):
             webhook_url=webhook_url,
             webhook_data=webhook_data
         )
-        logger.info(f'{__name__}, Webhook details, webhook_url: {webhook_url}, webhook_data: {webhook_data}')
-
         try:
             webhooks.PostWebhook.call(http_client=http_client, request=request)
             webhook_status = const.WebhookStatus.SUCCESS
         except exceptions.WebhookException:
             webhook_status = const.WebhookStatus.FAILED
 
-        logger.info(f'{__name__}, Webhook response status: {webhook_status.value}')
+        logger.info(f'{__name__} ->  Webhook url: {webhook_url}, data: {webhook_data}, status: {webhook_status.value}')
         db_captcha.UpdateCaptchaEventWebhook.call(
             db_client=db_client,
             captcha_id=captcha_id,

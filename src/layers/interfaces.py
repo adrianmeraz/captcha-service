@@ -31,6 +31,7 @@ class ICaptcha(ABC):
         cls,
         http_client: Client,
         captcha_id: str,
+        captcha_token: str,
         webhook_url: str,
         webhook_data: typing.Dict[str, str] = None,
         *args,
