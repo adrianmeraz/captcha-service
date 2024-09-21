@@ -7,7 +7,8 @@ from py_aws_core import decorators as aws_decorators
 from py_aws_core.secrets_manager import get_secrets_manager
 
 from . import decorators
-from .exceptions import CaptchaNotReady, TwoCaptchaException
+from .exceptions import TwoCaptchaException
+from src.layers import secrets
 
 logger = logging.getLogger(__name__)
 secrets_manager = get_secrets_manager()
@@ -18,11 +19,11 @@ class TwoCaptchaAPI:
 
     @classmethod
     def get_api_key(cls) -> str:
-        return secrets_manager.get_secret('CAPTCHA_PASSWORD')
+        return secrets.get_captcha_password()
 
     @classmethod
     def get_pingback_token(cls) -> str:
-        return secrets_manager.get_secret('TWOCAPTCHA_PINGBACK_TOKEN')
+        return secrets.get_twocaptcha_pingback_token()
 
     @classmethod
     def get_webhook_url(cls, params: typing.Dict = None) -> str:
@@ -34,15 +35,15 @@ class TwoCaptchaAPI:
 
     @classmethod
     def get_app_name(cls):
-        return secrets_manager.get_secret(secret_name='APP_NAME')
+        return secrets.get_app_name()
 
     @classmethod
     def get_base_domain_name(cls) -> str:
-        return secrets_manager.get_secret(secret_name='BASE_DOMAIN_NAME')
+        return secrets.get_base_domain_name()
 
     @classmethod
     def get_environment(cls) -> str:
-        return secrets_manager.get_secret(secret_name='ENVIRONMENT')
+        return secrets.get_environment()
 
 
 class TwoCaptchaResponse:
