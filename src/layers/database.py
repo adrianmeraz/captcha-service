@@ -3,6 +3,8 @@ import typing
 from . import const, db_dynamo, entities
 from .i_database import IDatabase
 
+db_client = db_dynamo.get_db_client()
+
 
 class Database(IDatabase):
     @classmethod
@@ -18,6 +20,7 @@ class Database(IDatabase):
         **kwargs
     ) -> entities.CaptchaEvent:
         return db_dynamo.GetOrCreateRecaptchaV2Event.call(
+            db_client=db_client,
             captcha_id=captcha_id,
             page_url=page_url,
             site_key=site_key,
@@ -35,7 +38,12 @@ class Database(IDatabase):
         *args,
         **kwargs
     ):
-        pass
+        return db_dynamo.UpdateCaptchaEventCode.call(
+            db_client=db_client,
+            captcha_id=captcha_id,
+            status=status,
+            code=code
+        )
 
     @classmethod
     def update_captcha_event_on_solve_attempt(
@@ -44,7 +52,10 @@ class Database(IDatabase):
         *args,
         **kwargs
     ):
-        pass
+        return db_dynamo.UpdateCaptchaEventOnSolveAttempt.call(
+            db_client=db_client,
+            captcha_id=captcha_id
+        )
 
     @classmethod
     def update_captcha_event_webhook(
@@ -54,4 +65,8 @@ class Database(IDatabase):
         *args,
         **kwargs
     ):
-        pass
+        return db_dynamo.UpdateCaptchaEventWebhook.call(
+            db_client=db_client,
+            captcha_id=captcha_id,
+            webhook_status=webhook_status
+        )
