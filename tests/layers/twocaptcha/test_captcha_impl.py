@@ -2,9 +2,8 @@ from unittest import mock
 
 import respx
 from py_aws_core.clients import RetryClient
-from py_aws_core.db_dynamo import DDBClient
 
-from src.layers import db_dynamo
+from src.layers.database import Database
 from src.layers.testing import CSTestFixture
 from src.layers.twocaptcha import api_twocaptcha, db_twocaptcha
 from src.layers.twocaptcha.captcha import TwoCaptcha
@@ -16,76 +15,66 @@ class TwoCaptchaImplTests(CSTestFixture):
     """
 
     @respx.mock
-    @mock.patch.object(DDBClient, 'batch_write_item_maps')
-    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_environment')
-    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_app_name')
-    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_base_domain_name')
-    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_api_key')
+    @mock.patch.object(api_twocaptcha.SolveCaptcha, 'call')
+    @mock.patch.object(api_twocaptcha.SolveCaptcha, 'get_webhook_url')
+    @mock.patch.object(Database, 'update_captcha_event_on_solve_attempt')
+    @mock.patch.object(Database, 'get_or_create_recaptcha_v2_event')
     def test_solve_captcha_ok(
         self,
-        mocked_get_api_key,
-        mocked_get_domain_name,
-        mocked_get_app_name,
-        mocked_get_environment,
-        mocked_batch_write_item_maps
+        mocked_get_or_create_recaptcha_v2_event,
+        mocked_update_captcha_event_on_solve_attempt,
+        mocked_get_webhook_url,
+        mocked_solve_captcha_call
     ):
-        mocked_get_api_key.return_value = 'IPSUMKEY'
-        mocked_get_domain_name.return_value = 'ipsumlorem.com'
-        mocked_get_app_name.return_value = 'big-service'
-        mocked_get_environment.return_value = 'dev'
-        mocked_batch_write_item_maps.return_value = 1
+        mocked_get_or_create_recaptcha_v2_event.return_value = 1
+        mocked_update_captcha_event_on_solve_attempt.return_value = 1
 
-        mocked_solve_captcha = self.create_route(
-            method='POST',
-            url__eq='http://2captcha.com/in.php?key=IPSUMKEY&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&pingback=https%3A%2F%2Fbig-service-dev.ipsumlorem.com%2Fpingback-event',
-            response_status_code=200,
-            response_json=self.get_api_resource_json('get_captcha_id.json')
-        )
+        _json = self.get_api_resource_json('get_captcha_id.json')
+        mocked_get_webhook_url.return_value = 'https://example.com/webhook'
+        mocked_solve_captcha_call.return_value = api_twocaptcha.SolveCaptcha.Response(_json)
 
         with RetryClient() as client:
-            TwoCaptcha.solve_captcha(
+            captcha_service = TwoCaptcha(database=Database())
+            captcha_service.solve_captcha(
                 http_client=client,
                 site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
                 page_url='https://example.com',
                 webhook_url='https://ipsumlorem.com/webhook'
             )
 
-
-        self.assertEqual(mocked_get_api_key.call_count, 1)
-        self.assertEqual(mocked_get_domain_name.call_count, 1)
-        self.assertEqual(mocked_get_app_name.call_count, 1)
-        self.assertEqual(mocked_get_environment.call_count, 1)
-        self.assertEqual(mocked_solve_captcha.call_count, 1)
-        self.assertEqual(mocked_batch_write_item_maps.call_count, 1)
+        self.assertEqual(mocked_get_or_create_recaptcha_v2_event.call_count, 1)
+        self.assertEqual(mocked_update_captcha_event_on_solve_attempt.call_count, 1)
+        self.assertEqual(mocked_solve_captcha_call.call_count, 1)
+        self.assertEqual(mocked_get_webhook_url.call_count, 1)
 
     @mock.patch.object(db_twocaptcha.CreateTCWebhookEvent, 'call')
-    @mock.patch.object(db_captcha.UpdateCaptchaEventCode, 'call')
+    @mock.patch.object(Database, 'update_captcha_event_code')
     def test_handle_webhook_event_ok(
         self,
-        mocked_update_captcha_event_call,
+        mocked_update_captcha_event_code,
         mocked_create_tc_webhook_event_call
     ):
-        mocked_update_captcha_event_call.return_value = True
+        mocked_update_captcha_event_code.return_value = True
         mocked_create_tc_webhook_event_call.return_value = True
 
         with RetryClient() as client:
-            TwoCaptcha.handle_webhook_event(
+            TwoCaptcha(database=Database()).handle_webhook_event(
                 http_client=client,
                 captcha_id='9991117777',
                 code=self.TEST_RECAPTCHA_V2_TOKEN,
                 rate='.00299'
             )
 
-        self.assertEqual(mocked_update_captcha_event_call.call_count, 1)
+        self.assertEqual(mocked_update_captcha_event_code.call_count, 1)
         self.assertEqual(mocked_create_tc_webhook_event_call.call_count, 1)
 
     @respx.mock
-    @mock.patch.object(db_captcha.UpdateCaptchaEventWebhook, 'call')
+    @mock.patch.object(Database, 'update_captcha_event_webhook')
     def test_send_webhook_event_ok(
         self,
-        mocked_update_captcha_event_webhook_status_call
+        mocked_update_captcha_event_webhook
     ):
-        mocked_update_captcha_event_webhook_status_call.return_value = True
+        mocked_update_captcha_event_webhook.return_value = True
 
         mocked_post_webhook = self.create_route(
             method='POST',
@@ -99,7 +88,7 @@ class TwoCaptchaImplTests(CSTestFixture):
                 'test1': 'val1',
                 'test33': 'ipsum lorem'
             }
-            TwoCaptcha.send_webhook_event(
+            TwoCaptcha(database=Database()).send_webhook_event(
                 http_client=client,
                 captcha_id='9991117777',
                 captcha_token=self.TEST_RECAPTCHA_V2_TOKEN,
@@ -108,7 +97,7 @@ class TwoCaptchaImplTests(CSTestFixture):
             )
 
         self.assertEqual(mocked_post_webhook.call_count, 1)
-        self.assertEqual(mocked_update_captcha_event_webhook_status_call.call_count, 1)
+        self.assertEqual(mocked_update_captcha_event_webhook.call_count, 1)
 
     @respx.mock
     @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_pingback_token')

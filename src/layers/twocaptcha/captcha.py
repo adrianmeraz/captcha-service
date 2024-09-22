@@ -2,9 +2,10 @@ import typing
 
 from httpx import Client
 
-from src.layers import logs, webhooks, db_dynamo, exceptions, utils
+from src.layers import logs, webhooks, exceptions, utils
 from src.layers.db_dynamo import const, get_db_client
 from src.layers.i_captcha import ICaptcha
+from src.layers.i_database import IDatabase
 from . import api_twocaptcha, db_twocaptcha, exceptions as tc_exceptions, const as tc_const
 
 logger = logs.logger
@@ -12,9 +13,11 @@ db_client = get_db_client()
 
 
 class TwoCaptcha(ICaptcha):
-    @classmethod
+    def __init__(self, database: IDatabase):
+        self._database = database
+
     def solve_captcha(
-        cls,
+        self,
         http_client: Client,
         site_key: str,
         page_url: str,
@@ -33,7 +36,7 @@ class TwoCaptcha(ICaptcha):
             http_client=http_client,
             request=request
         ).request
-        db_captcha.GetOrCreateRecaptchaV2Event.call(
+        self._database.get_or_create_recaptcha_v2_event(
             db_client=db_client,
             captcha_id=captcha_id,
             page_url=page_url,
@@ -42,13 +45,12 @@ class TwoCaptcha(ICaptcha):
             webhook_url=webhook_url,
             webhook_data=webhook_data
         )
-        db_captcha.UpdateCaptchaEventOnSolveAttempt.call(
+        self._database.update_captcha_event_on_solve_attempt(
             db_client=db_client,
             captcha_id=captcha_id
         )
 
-    @classmethod
-    def handle_webhook_event(cls, http_client: Client, captcha_id: str, code: str, rate: str, *args, **kwargs):
+    def handle_webhook_event(self, http_client: Client, captcha_id: str, code: str, rate: str, *args, **kwargs):
         db_twocaptcha.CreateTCWebhookEvent.call(
             db_client=db_client,
             _id=captcha_id,
@@ -59,16 +61,15 @@ class TwoCaptcha(ICaptcha):
             status = const.CaptchaStatus.CAPTCHA_SOLVED
         else:
             status = const.CaptchaStatus.CAPTCHA_ERROR
-        return db_captcha.UpdateCaptchaEventCode.call(
+        return self._database.update_captcha_event_code(
             db_client=db_client,
             captcha_id=captcha_id,
             code=code,
             status=status
         )
 
-    @classmethod
     def send_webhook_event(
-        cls,
+        self,
         http_client: Client,
         captcha_id: str,
         captcha_token: str,
@@ -94,7 +95,7 @@ class TwoCaptcha(ICaptcha):
             webhook_status = const.WebhookStatus.FAILED
 
         logger.info(f'{__name__} ->  Webhook url: {webhook_url}, data: {webhook_data}, status: {webhook_status.value}')
-        db_captcha.UpdateCaptchaEventWebhook.call(
+        self._database.update_captcha_event_webhook(
             db_client=db_client,
             captcha_id=captcha_id,
             webhook_status=webhook_status

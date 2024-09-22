@@ -261,15 +261,15 @@ class UpdateCaptchaEventWebhook(RecaptchaV2DB):
                 'PK': pk,
                 'SK': sk,
             }),
-            UpdateExpression=f'SET #wst = :wst, #mda = :mda ADD #wa :inc',
+            UpdateExpression=f'SET #wst = :ws, #ma = :ma ADD #wa :inc',
             ExpressionAttributeNames={
                 '#wst': 'WebhookStatus',
                 '#wa': 'WebhookAttempts',
-                '#mda': 'ModifiedAt',
+                '#ma': 'ModifiedAt',
             },
             ExpressionAttributeValues=cls.serialize_types({
-                ':wst': webhook_status.value,
-                ':mda': cls.iso_8601_now_timestamp(),
+                ':ws': webhook_status.value,
+                ':ma': cls.iso_8601_now_timestamp(),
                 ':inc': 1
             }),
             ReturnValues='ALL_NEW'

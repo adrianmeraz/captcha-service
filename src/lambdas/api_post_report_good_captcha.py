@@ -2,6 +2,7 @@ from py_aws_core import decorators, utils as aws_utils
 from py_aws_core.clients import RetryClient
 
 from src.layers import events, exceptions, logs
+from src.layers.database import Database
 from src.layers.i_captcha import ICaptcha
 from src.layers.twocaptcha.captcha import TwoCaptcha
 
@@ -12,13 +13,14 @@ logger = logs.logger
 def lambda_handler(raw_event, context):
     logger.info(f'{__name__}, Incoming event: {raw_event}')
     event = events.TwoCaptchaReportCaptchaEvent(raw_event)
-    process_event(event=event, captcha_impl=TwoCaptcha())
+    captcha_service = TwoCaptcha(database=Database())
+    process_event(event=event, captcha_service=captcha_service)
     return aws_utils.build_lambda_response(
         status_code=200,
         body={},
     )
 
 
-def process_event(event: events.TwoCaptchaReportCaptchaEvent, captcha_impl: ICaptcha):
+def process_event(event: events.TwoCaptchaReportCaptchaEvent, captcha_service: ICaptcha):
     with RetryClient() as client:
-        captcha_impl.report_good_captcha_id(http_client=client, captcha_id=event.captcha_id)
+        captcha_service.report_good_captcha_id(http_client=client, captcha_id=event.captcha_id)
