@@ -5,7 +5,6 @@ from py_aws_core.db_dynamo import DDBClient
 from src.lambdas import api_post_pingback_event
 from src.layers.testing import CSTestFixture
 from src.layers.twocaptcha.captcha import TwoCaptcha
-from src.layers import secrets
 
 
 class ApiPostPingbackEventTests(CSTestFixture):
