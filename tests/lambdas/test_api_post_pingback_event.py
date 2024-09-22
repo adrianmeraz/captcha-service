@@ -10,6 +10,7 @@ from src.layers import secrets
 
 class ApiPostPingbackEventTests(CSTestFixture):
 
+    @mock.patch.object(secrets, 'get_captcha_password')
     @mock.patch.object(secrets, 'get_base_domain_name')
     @mock.patch.object(secrets, 'get_environment')
     @mock.patch.object(secrets, 'get_app_name')
@@ -23,7 +24,8 @@ class ApiPostPingbackEventTests(CSTestFixture):
         mocked_send_webhook_event,
         mocked_get_app_name,
         mocked_get_environment,
-        mocked_get_base_domain_name
+        mocked_get_base_domain_name,
+        mocked_get_captcha_password
     ):
         mock_event = self.get_event_resource_json('event#api_post_pingback_event.json')
 
@@ -33,6 +35,7 @@ class ApiPostPingbackEventTests(CSTestFixture):
         mocked_get_app_name.return_value = 'test-app'
         mocked_get_environment.return_value = 'dev'
         mocked_get_base_domain_name.return_value = 'dev.example.com'
+        mocked_get_captcha_password.return_value = 'password123'
 
         val = api_post_pingback_event.lambda_handler(raw_event=mock_event, context=None)
         self.maxDiff = None
@@ -54,3 +57,7 @@ class ApiPostPingbackEventTests(CSTestFixture):
 
         self.assertEqual(mocked_update_item.call_count, 1)
         self.assertEqual(mocked_send_webhook_event.call_count, 1)
+        self.assertEqual(mocked_get_app_name.call_count, 1)
+        self.assertEqual(mocked_get_environment.call_count, 1)
+        self.assertEqual(mocked_get_base_domain_name.call_count, 1)
+        self.assertEqual(mocked_get_captcha_password.call_count, 1)

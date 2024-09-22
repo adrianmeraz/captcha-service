@@ -4,7 +4,7 @@ import respx
 from py_aws_core.clients import RetryClient
 from py_aws_core.db_dynamo import DDBClient
 
-from src.layers import db_captcha
+from src.layers import db_dynamo
 from src.layers.testing import CSTestFixture
 from src.layers.twocaptcha import api_twocaptcha, db_twocaptcha
 from src.layers.twocaptcha.captcha import TwoCaptcha
@@ -59,7 +59,7 @@ class TwoCaptchaImplTests(CSTestFixture):
         self.assertEqual(mocked_batch_write_item_maps.call_count, 1)
 
     @mock.patch.object(db_twocaptcha.CreateTCWebhookEvent, 'call')
-    @mock.patch.object(db_captcha.UpdateCaptchaEvent, 'call')
+    @mock.patch.object(db_captcha.UpdateCaptchaEventCode, 'call')
     def test_handle_webhook_event_ok(
         self,
         mocked_update_captcha_event_call,

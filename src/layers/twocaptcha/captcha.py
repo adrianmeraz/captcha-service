@@ -2,9 +2,9 @@ import typing
 
 from httpx import Client
 
-from src.layers import logs, webhooks, db_captcha, exceptions, utils
-from src.layers.db_captcha import const, get_db_client
-from src.layers.interfaces import ICaptcha
+from src.layers import logs, webhooks, db_dynamo, exceptions, utils
+from src.layers.db_dynamo import const, get_db_client
+from src.layers.i_captcha import ICaptcha
 from . import api_twocaptcha, db_twocaptcha, exceptions as tc_exceptions, const as tc_const
 
 logger = logs.logger
@@ -29,18 +29,22 @@ class TwoCaptcha(ICaptcha):
             proxy_url=proxy_url,
             pingback_url=api_twocaptcha.SolveCaptcha.get_webhook_url(),
         )
-        r_solve_captcha = api_twocaptcha.SolveCaptcha.call(
+        captcha_id = api_twocaptcha.SolveCaptcha.call(
             http_client=http_client,
             request=request
-        )
-        db_captcha.CreateRecaptchaV2Event.call(
+        ).request
+        db_captcha.GetOrCreateRecaptchaV2Event.call(
             db_client=db_client,
-            captcha_id=r_solve_captcha.request,
+            captcha_id=captcha_id,
             page_url=page_url,
             proxy_url=proxy_url,
             site_key=site_key,
             webhook_url=webhook_url,
             webhook_data=webhook_data
+        )
+        db_captcha.UpdateCaptchaEventOnSolveAttempt.call(
+            db_client=db_client,
+            captcha_id=captcha_id
         )
 
     @classmethod
@@ -55,7 +59,7 @@ class TwoCaptcha(ICaptcha):
             status = const.CaptchaStatus.CAPTCHA_SOLVED
         else:
             status = const.CaptchaStatus.CAPTCHA_ERROR
-        return db_captcha.UpdateCaptchaEvent.call(
+        return db_captcha.UpdateCaptchaEventCode.call(
             db_client=db_client,
             captcha_id=captcha_id,
             code=code,
@@ -81,11 +85,9 @@ class TwoCaptcha(ICaptcha):
         }
         if not utils.is_valid_captcha_v2_token(captcha_token):
             webhook_data['error'] = str(tc_exceptions.RESPONSE_EXCEPTION_MAP.get(captcha_token))
-        request = webhooks.PostWebhook.Request(
-            webhook_url=webhook_url,
-            webhook_data=webhook_data
-        )
+
         try:
+            request = webhooks.PostWebhook.Request(webhook_url=webhook_url, webhook_data=webhook_data)
             webhooks.PostWebhook.call(http_client=http_client, request=request)
             webhook_status = const.WebhookStatus.SUCCESS
         except exceptions.WebhookException:
