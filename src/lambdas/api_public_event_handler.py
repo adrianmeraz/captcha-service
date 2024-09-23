@@ -20,9 +20,9 @@ apigw_router.add_route(fn=api_post_solve_captcha.lambda_handler, http_method='PO
 
 
 @decorators.lambda_response_handler(raise_as=exceptions.CaptchaServiceException)
-def lambda_handler(raw_event, context):
-    logger.info(f'{__name__}, Incoming event: {raw_event}')
-    event = HttpEvent(raw_event)
+def lambda_handler(event, context):
+    logger.info(f'{__name__}, Incoming event: {event}')
+    event = HttpEvent(event)
     return route_event(event=event, context=context)
 
 

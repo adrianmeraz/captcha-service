@@ -9,9 +9,9 @@ from src.layers.twocaptcha.captcha import TwoCaptcha
 logger = logs.logger
 
 
-def lambda_handler(raw_event, context):
-    logger.info(f'{__name__}, Incoming event: {raw_event}')
-    event = events.TwoCaptchaReportCaptchaEvent(raw_event)
+def lambda_handler(event, context):
+    logger.info(f'{__name__}, Incoming event: {event}')
+    event = events.TwoCaptchaReportCaptchaEvent(event)
     captcha_service = TwoCaptcha(database=Database())
     process_event(event=event, captcha_service=captcha_service)
     return aws_utils.build_lambda_response(
