@@ -222,7 +222,7 @@ class UpdateCaptchaEventOnSolveAttempt(RecaptchaV2DB):
                 'PK': pk,
                 'SK': sk,
             }),
-            UpdateExpression=f'SET #cs = :cs, #mda = :mda ADD #cp 1',
+            UpdateExpression=f'SET #cs = :cs, #mda = :mda ADD #cp :inc',
             ExpressionAttributeNames={
                 '#ma': 'ModifiedAt',
                 '#cs': 'CaptchaStatus',
@@ -231,6 +231,7 @@ class UpdateCaptchaEventOnSolveAttempt(RecaptchaV2DB):
             ExpressionAttributeValues=cls.serialize_types({
                 ':ma': cls.iso_8601_now_timestamp(),
                 ':cs': const.CaptchaStatus.CAPTCHA_SOLVING,
+                ':inc': 1
             }),
             ReturnValues='ALL_NEW'
         )
