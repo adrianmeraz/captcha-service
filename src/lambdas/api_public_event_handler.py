@@ -24,18 +24,18 @@ def route_event(event: HttpEvent, context):
     http_method = event.request_context.http_method
     path = event.request_context.path
     logger.info(f'routing event -> http_method: {http_method}, path: {path}')
-    route_map = {
+    route_lambda_handler_map = {
         'GET': {
-            '/2captcha.txt': api_get_pingback_verification_token
+            '/2captcha.txt': api_get_pingback_verification_token.lambda_handler
         },
         'POST': {
-            '/pingback-event': api_post_pingback_event,
-            '/report-bad-captcha': api_post_report_bad_captcha,
-            '/report-good-captcha': api_post_report_good_captcha,
-            '/solve-captcha': api_post_solve_captcha,
+            '/pingback-event': api_post_pingback_event.lambda_handler,
+            '/report-bad-captcha': api_post_report_bad_captcha.lambda_handler,
+            '/report-good-captcha': api_post_report_good_captcha.lambda_handler,
+            '/solve-captcha': api_post_solve_captcha.lambda_handler,
         }
     }
     try:
-        return route_map[http_method][path](event, context)
+        return route_lambda_handler_map[http_method][path](event, context)
     except KeyError:
         raise exceptions.RouteNotFound(http_method, path)
