@@ -1,4 +1,5 @@
-from src.layers import router
+from py_aws_core.router import APIGatewayRouter
+
 from . import (
     api_get_pingback_verification_token,
     api_post_pingback_event,
@@ -7,8 +8,7 @@ from . import (
     api_post_solve_captcha
 )
 
-
-apigw_router = router.APIGatewayRouter()
+apigw_router = APIGatewayRouter()
 
 apigw_router.add_route(
     fn=api_get_pingback_verification_token.lambda_handler,
