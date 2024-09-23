@@ -1,6 +1,7 @@
 from py_aws_core import decorators
 
 from src.layers import exceptions, logs
+from src.layers.events import HttpEvent
 from ._routes import apigw_router
 
 logger = logs.logger
@@ -13,9 +14,10 @@ def lambda_handler(event, context):
 
 
 def route_event(event, context):
+    http_event = HttpEvent(event)
     return apigw_router.handle_event(
-        http_method=event.request_context.http_method,
-        path=event.request_context.path,
+        http_method=http_event.request_context.http_method,
+        path=http_event.request_context.path,
         event=event,
         context=context
     )

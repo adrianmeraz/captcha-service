@@ -10,7 +10,7 @@ logger = logs.logger
 
 def lambda_handler(event, context):
     logger.info(f'{__name__}, Incoming event: {event}')
-    events.TwoCaptchaGetVerificationEvent(event)
+    events.CSGetVerificationEvent(event)
     captcha_service = TwoCaptcha(database=Database())
     response = process_event(captcha_service=captcha_service)
     return aws_utils.build_lambda_response(

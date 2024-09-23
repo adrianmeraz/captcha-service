@@ -6,17 +6,17 @@ class HttpEvent(LambdaEvent):
     pass
 
 
-class TwoCaptchaGetVerificationEvent(HttpEvent):
+class CSGetVerificationEvent(HttpEvent):
     pass
 
 
-class TwoCaptchaReportCaptchaEvent(HttpEvent):
+class CSReportCaptchaEvent(HttpEvent):
     def __init__(self, data):
         super().__init__(data)
         self.captcha_id = self.body['captcha_id']
 
 
-class TwoCaptchaPostPingbackEvent(HttpEvent):
+class CSPostPingbackEvent(HttpEvent):
     def __init__(self, data):
         super().__init__(data)
         self.query = parse_qs(self._body)
@@ -25,7 +25,7 @@ class TwoCaptchaPostPingbackEvent(HttpEvent):
         self.rate = self.query['rate'][0]
 
 
-class TwoCaptchaSolveCaptchaEvent(HttpEvent):
+class CSSolveCaptchaEvent(HttpEvent):
     def __init__(self, data):
         super().__init__(data)
         self.site_key = self.body['site_key']

@@ -11,7 +11,7 @@ logger = logs.logger
 
 def lambda_handler(event, context):
     logger.info(f'{__name__}, Incoming event: {event}')
-    event = events.TwoCaptchaReportCaptchaEvent(event)
+    event = events.CSReportCaptchaEvent(event)
     captcha_service = TwoCaptcha(database=Database())
     process_event(event=event, captcha_service=captcha_service)
     return aws_utils.build_lambda_response(
@@ -20,6 +20,6 @@ def lambda_handler(event, context):
     )
 
 
-def process_event(event: events.TwoCaptchaReportCaptchaEvent, captcha_service: ICaptcha):
+def process_event(event: events.CSReportCaptchaEvent, captcha_service: ICaptcha):
     with RetryClient() as client:
         captcha_service.report_bad_captcha_id(http_client=client, captcha_id=event.captcha_id)

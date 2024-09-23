@@ -11,7 +11,7 @@ logger = logs.logger
 
 def lambda_handler(event, context):
     logger.info(f'{__name__}, Incoming event: {event}')
-    event = events.TwoCaptchaPostPingbackEvent(event)
+    event = events.CSPostPingbackEvent(event)
     captcha_service = TwoCaptcha(database=Database())
     process_event(event=event, captcha_service=captcha_service)
     return aws_utils.build_lambda_response(
@@ -20,7 +20,7 @@ def lambda_handler(event, context):
     )
 
 
-def process_event(event: events.TwoCaptchaPostPingbackEvent, captcha_service: ICaptcha):
+def process_event(event: events.CSPostPingbackEvent, captcha_service: ICaptcha):
     """
     1.  If valid, send webhook event
     2a. If invalid and can retry, send solve captcha
