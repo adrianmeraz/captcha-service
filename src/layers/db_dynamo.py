@@ -222,7 +222,7 @@ class UpdateCaptchaEventOnSolveAttempt(RecaptchaV2DB):
                 'PK': pk,
                 'SK': sk,
             }),
-            UpdateExpression=f'SET #cs = :cs, #mda = :mda ADD #cp :inc',
+            UpdateExpression=f'SET #cs = :cs, #ma = :ma ADD #cp :inc',
             ExpressionAttributeNames={
                 '#ma': 'ModifiedAt',
                 '#cs': 'CaptchaStatus',
