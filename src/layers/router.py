@@ -28,10 +28,11 @@ class APIGatewayRouter:
         if http_method not in self._route_map:
             self._route_map[http_method] = dict()
         self._route_map[http_method][path] = fn
+        logger.info(f'Added route to router -> http_method: {http_method}, path: {path}')
 
     def handle_event(self, http_method: str, path: str, *args, **kwargs):
-        logger.info(f'routing event -> http_method: {http_method}, path: {path}')
+        logger.info(f'Routing event -> http_method: {http_method}, path: {path}')
         try:
             return self._route_map[http_method][path](*args, **kwargs)
         except KeyError:
-            raise exceptions.RouteNotFound(http_method, path)
+            raise exceptions.RouteNotFound(http_method=http_method, path=path)

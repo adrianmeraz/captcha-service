@@ -18,7 +18,7 @@ class ApiGetPingbackVerificationTokenTests(CSTestFixture):
 
         mock_event = self.get_event_resource_json('event#api_get_pingback_verification_token.json')
 
-        val = api_get_pingback_verification_token.lambda_handler(raw_event=mock_event, context=None)
+        val = api_get_pingback_verification_token.lambda_handler(event=mock_event, context=None)
         self.maxDiff = None
         self.assertEqual(
             val,

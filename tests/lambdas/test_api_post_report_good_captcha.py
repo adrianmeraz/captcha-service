@@ -16,7 +16,7 @@ class ApiPostReportGoodCaptchaTests(CSTestFixture):
 
         mock_event = self.get_event_resource_json('event#api_post_report_good_captcha.json')
 
-        val = api_post_report_good_captcha.lambda_handler(raw_event=mock_event, context=None)
+        val = api_post_report_good_captcha.lambda_handler(event=mock_event, context=None)
         self.maxDiff = None
         self.assertEqual(
             val,

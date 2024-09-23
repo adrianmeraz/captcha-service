@@ -24,7 +24,7 @@ class ApiPostPingbackEventTests(CSTestFixture):
         mocked_send_webhook_event.return_value = True
         mocked_put_item.return_value = dict()
 
-        val = api_post_pingback_event.lambda_handler(raw_event=mock_event, context=None)
+        val = api_post_pingback_event.lambda_handler(event=mock_event, context=None)
         self.maxDiff = None
         self.assertEqual(
             val,
