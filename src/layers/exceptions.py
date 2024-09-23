@@ -17,6 +17,10 @@ class APIException(CaptchaServiceException):
     ERROR_MESSAGE = 'A generic API error occurred'
 
 
+class RouteAlreadyExists(CaptchaServiceException):
+    ERROR_MESSAGE = 'Route already exists'
+
+
 class RouteNotFound(CaptchaServiceException):
     ERROR_MESSAGE = 'Route not found'
 

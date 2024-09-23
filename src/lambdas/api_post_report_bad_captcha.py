@@ -1,7 +1,7 @@
-from py_aws_core import decorators, utils as aws_utils
+from py_aws_core import utils as aws_utils
 from py_aws_core.clients import RetryClient
 
-from src.layers import events, exceptions, logs
+from src.layers import events, logs
 from src.layers.database import Database
 from src.layers.i_captcha import ICaptcha
 from src.layers.twocaptcha.captcha import TwoCaptcha
@@ -9,7 +9,6 @@ from src.layers.twocaptcha.captcha import TwoCaptcha
 logger = logs.logger
 
 
-@decorators.lambda_response_handler(raise_as=exceptions.CaptchaServiceException)
 def lambda_handler(raw_event, context):
     logger.info(f'{__name__}, Incoming event: {raw_event}')
     event = events.TwoCaptchaReportCaptchaEvent(raw_event)
