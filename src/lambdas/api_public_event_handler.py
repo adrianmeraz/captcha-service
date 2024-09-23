@@ -1,7 +1,14 @@
-from py_aws_core import decorators, utils as aws_utils
+from py_aws_core import decorators
 
 from src.layers import exceptions, logs
 from src.layers.events import HttpEvent
+from . import (
+    api_get_pingback_verification_token,
+    api_post_pingback_event,
+    api_post_report_bad_captcha,
+    api_post_report_good_captcha,
+    api_post_solve_captcha
+)
 
 logger = logs.logger
 
@@ -10,15 +17,25 @@ logger = logs.logger
 def lambda_handler(raw_event, context):
     logger.info(f'{__name__}, Incoming event: {raw_event}')
     event = HttpEvent(raw_event)
-    response = route_event(event=event)
-    return aws_utils.build_lambda_response(
-        status_code=200,
-        body=response,
-        content_type='text/plain;charset=utf-8'
-    )
+    return route_event(event=event, context=context)
 
 
-def route_event(event: HttpEvent):
+def route_event(event: HttpEvent, context):
     http_method = event.request_context.http_method
     path = event.request_context.path
     logger.info(f'routing event -> http_method: {http_method}, path: {path}')
+    route_map = {
+        'GET': {
+            '/2captcha.txt': api_get_pingback_verification_token
+        },
+        'POST': {
+            '/pingback-event': api_post_pingback_event,
+            '/report-bad-captcha': api_post_report_bad_captcha,
+            '/report-good-captcha': api_post_report_good_captcha,
+            '/solve-captcha': api_post_solve_captcha,
+        }
+    }
+    try:
+        return route_map[http_method][path](event, context)
+    except KeyError:
+        raise exceptions.RouteNotFound(http_method, path)

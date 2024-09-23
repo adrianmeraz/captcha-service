@@ -17,6 +17,10 @@ class APIException(CaptchaServiceException):
     ERROR_MESSAGE = 'A generic API error occurred'
 
 
+class RouteNotFound(CaptchaServiceException):
+    ERROR_MESSAGE = 'Route not found'
+
+
 class WebhookException(CaptchaServiceException):
     ERROR_MESSAGE = 'A webhook error occurred'
 
