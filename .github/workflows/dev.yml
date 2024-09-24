@@ -22,6 +22,7 @@ jobs:
       ENVIRONMENT:           dev
       GH_PAT:                ${{ secrets.GH_PAT }}
       SHARED_APP_NAME:       expatmagic
+      TF_PLUGIN_CACHE_DIR:   ${{ github.workspace }}/.terraform.d/plugin-cache
     steps:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -74,13 +75,19 @@ jobs:
         token: ${{ env.GH_PAT }}
 
     # Caching Terraform plugin and modules per https://github.com/dflook/terraform-github-actions/issues/105
+    # New way of caching plugins:
+    # https://github.com/hashicorp/setup-terraform/issues/4#issuecomment-862039542
+
+    - name: Create Terraform Plugin Cache Dir
+      run: mkdir --parents $TF_PLUGIN_CACHE_DIR
+
     - name: Load Terraform cache
-      id: cache-virtualenv
+      id: cache-tf
       uses: actions/cache@v4
       with:
         path: |
-          ${{ runner.temp }}/_github_home/.terraform.d/plugin-cache
-          ${{ runner.temp }}/_github_home/.dflook-terraform-github-actions
+          ${{ env.TF_PLUGIN_CACHE_DIR }}
+          ${{ github.workspace }}/.dflook-terraform-github-actions
         key: ${{ runner.os }}-tf-${{ hashFiles('**/.terraform.lock.hcl') }}
 
     - name: Terraform apply
