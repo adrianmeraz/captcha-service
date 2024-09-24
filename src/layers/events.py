@@ -6,10 +6,6 @@ class HttpEvent(LambdaEvent):
     pass
 
 
-class CSGetVerificationEvent(HttpEvent):
-    pass
-
-
 class CSReportCaptchaEvent(HttpEvent):
     def __init__(self, data):
         super().__init__(data)

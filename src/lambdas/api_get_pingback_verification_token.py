@@ -1,6 +1,6 @@
 from py_aws_core import utils as aws_utils
 
-from src.layers import events, logs
+from src.layers import logs
 from src.layers.database import Database
 from src.layers.i_captcha import ICaptcha
 from src.layers.twocaptcha.captcha import TwoCaptcha
@@ -9,8 +9,6 @@ logger = logs.logger
 
 
 def lambda_handler(event, context):
-    logger.info(f'{__name__}, Incoming event: {event}')
-    events.CSGetVerificationEvent(event)
     captcha_service = TwoCaptcha(database=Database())
     response = process_event(captcha_service=captcha_service)
     return aws_utils.build_lambda_response(
