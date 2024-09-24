@@ -79,7 +79,7 @@ jobs:
     # https://github.com/hashicorp/setup-terraform/issues/4#issuecomment-862039542
 
     - name: Create Terraform Plugin Cache Dir
-      run: mkdir --parents $TF_PLUGIN_CACHE_DIR
+      run: mkdir --parents ${{ env.TF_PLUGIN_CACHE_DIR }}
 
     - name: Load Terraform cache
       id: cache-tf
