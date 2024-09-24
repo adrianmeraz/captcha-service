@@ -35,3 +35,4 @@ apigw_router.add_route(
     http_method='POST',
     path='/solve-captcha'
 )
+
