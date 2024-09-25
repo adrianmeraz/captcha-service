@@ -86,7 +86,8 @@ jobs:
       id: cache-tf
       uses: actions/cache@v4
       with:
-        path: ${{ env.TF_PLUGIN_CACHE_DIR }}
+        path: ${{ runner.temp }}/_github_home/.terraform.d/plugin-cache
+        # path: ${{ env.TF_PLUGIN_CACHE_DIR }}
 #        path: |
 #          ${{ env.TF_PLUGIN_CACHE_DIR }}
 #          ${{ github.workspace }}/.dflook-terraform-github-actions
