@@ -22,7 +22,7 @@ jobs:
       ENVIRONMENT:           dev
       GH_PAT:                ${{ secrets.GH_PAT }}
       SHARED_APP_NAME:       expatmagic
-      TF_PLUGIN_CACHE_DIR:   ~/.terraform.d/plugin-cache
+      TF_PLUGIN_CACHE_DIR:   ${{ github.workspace }}/.terraform.d/plugin-cache
 
     steps:
     - name: Configure AWS credentials
