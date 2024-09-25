@@ -94,7 +94,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ${{ env.TF_PLUGIN_CACHE_DIR }}
-        key: ${{ runner.os }}-tf-${{ hashFiles('**/.terraform.lock.hcl') }}-d
+        key: ${{ runner.os }}-tf-${{ hashFiles('**/.terraform.lock.hcl') }}
 
     - name: Set Terraform Working Directory
       run: |
