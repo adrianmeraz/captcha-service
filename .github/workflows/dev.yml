@@ -90,16 +90,16 @@ jobs:
       shell: bash
       run: mkdir --parents $TF_PLUGIN_CACHE_DIR
 
+    - name: Set Terraform Working Directory
+      run: |
+        echo "TF_WORKING_DIR=${{ env.TF_PATH_PREFIX }}/${{ env.ENVIRONMENT }}" >> $GITHUB_ENV
+
     - name: Terraform Plugin Cache
       id: tf-cache
       uses: actions/cache@v4
       with:
         path: ${{ env.TF_PLUGIN_CACHE_DIR }}
         key: ${{ runner.os }}-tf-${{ hashFiles('**/.terraform.lock.hcl') }}
-
-    - name: Set Terraform Working Directory
-      run: |
-        echo "TF_WORKING_DIR=${{ env.TF_PATH_PREFIX }}/${{ env.ENVIRONMENT }}" >> $GITHUB_ENV
 
     - name: Terraform Init
       working-directory: ${{ env.TF_WORKING_DIR }}
