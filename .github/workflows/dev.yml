@@ -23,7 +23,7 @@ jobs:
       GH_PAT:                ${{ secrets.GH_PAT }}
       SHARED_APP_NAME:       expatmagic
       TF_PATH_PREFIX:        apps/${{ github.event.repository.name }}/environments
-      TF_PLUGIN_CACHE_DIR:   ~/.terraform.d/plugin-cache
+      TF_PLUGIN_CACHE_DIR:   /github/workspace/.terraform.d/plugin-cache
 
     steps:
     - name: Configure AWS credentials
@@ -87,9 +87,10 @@ jobs:
         terraform_version: 1.8.1
 
     - name: Create Terraform Plugin Cache Dir
-      run: mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
+      shell: bash
+      run: mkdir --parents $TF_PLUGIN_CACHE_DIR
 
-    - name: Load Terraform cache
+    - name: Terraform Plugin Cache
       id: tf-cache
       uses: actions/cache@v4
       with:
@@ -100,7 +101,7 @@ jobs:
       run: |
         echo "TF_WORKING_DIR=${{ env.TF_PATH_PREFIX }}/${{ env.ENVIRONMENT }}" >> $GITHUB_ENV
 
-    - name: Terraform init
+    - name: Terraform Init
       working-directory: ${{ env.TF_WORKING_DIR }}
       id: tf-init
       run: terraform init
