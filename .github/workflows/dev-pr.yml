@@ -15,13 +15,15 @@ jobs:
     name: Pull Dependencies, Build, Test, Upload Coverage
     runs-on: ubuntu-latest
     env:
-      APP_NAME: ${{ github.event.repository.name }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
+      APP_NAME:              ${{ github.event.repository.name }}
+      AWS_ACCESS_KEY_ID:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_REGION:            ${{ secrets.AWS_REGION }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      ENVIRONMENT: dev
-      GH_PAT: ${{ secrets.GH_PAT }}
-      SHARED_APP_NAME: expatmagic
+      ENVIRONMENT:           dev
+      GH_PAT:                ${{ secrets.GH_PAT }}
+      SHARED_APP_NAME:       expatmagic
+      TF_WORKDIR_PREFIX:     apps/${{ github.event.repository.name }}/environments
+      TF_REPO:               'adrianmeraz/am-terraform'
     steps:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -87,27 +89,29 @@ jobs:
       env:
         CODECOV_TOKEN: ${{ env.EM_CODECOV_TOKEN }}
 
-    - name: Checkout Terraform Repo
-      uses: actions/checkout@v4
-      with:
-        ref: main
-        repository: 'adrianmeraz/am-terraform'
-        token: ${{ secrets.GH_PAT }}
+    - name: Set Terraform Working Directory
+      run: |
+        echo "TF_WORKDIR=${{ env.TF_WORKDIR_PREFIX }}/${{ env.ENVIRONMENT }}" >> $GITHUB_ENV
 
-    - name: terraform plan
-      uses: dflook/terraform-plan@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-        LABEL: ${{ env.APP_NAME }}-${{ env.ENVIRONMENT }}
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
       with:
-        add_github_comment: false
-        path: apps/${{ env.APP_NAME }}/environments/${{ env.ENVIRONMENT }}
-        label: ${{ env.LABEL }}
-        parallelism: 50
-        variables: |
-          app_name        = "${{ env.APP_NAME }}"
-          aws_access_key  = "${{ env.AWS_ACCESS_KEY_ID }}"
-          aws_region      = "${{ env.AWS_REGION }}"
-          aws_secret_key  = "${{ env.AWS_SECRET_ACCESS_KEY }}"
-          environment     = "${{ env.ENVIRONMENT }}"
-          shared_app_name = "${{ env.SHARED_APP_NAME }}"
+        terraform_version: 1.8.1
+
+    - name: Terraform Init
+      working-directory: ${{ env.TF_WORKDIR }}
+      id: tf-init
+      run: |
+        terraform init
+
+    - name: Terraform Plan
+      working-directory: ${{ env.TF_WORKDIR }}
+      id: tf-plan
+      run: |
+        terraform plan -input=false -parallelism=50 \
+          -var app_name="${{ env.APP_NAME }}" \
+          -var aws_access_key="${{ env.AWS_ACCESS_KEY_ID }}" \
+          -var aws_region="${{ env.AWS_REGION }}" \
+          -var aws_secret_key="${{ env.AWS_SECRET_ACCESS_KEY }}" \
+          -var environment="${{ env.ENVIRONMENT }}" \
+          -var shared_app_name="${{ env.SHARED_APP_NAME }}" \
