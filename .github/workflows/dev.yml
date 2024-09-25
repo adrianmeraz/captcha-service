@@ -87,7 +87,7 @@ jobs:
         terraform_version: 1.8.1
 
     - name: Create Terraform Plugin Cache Dir
-      run: mkdir --parents ${{ env.TF_PLUGIN_CACHE_DIR }}
+      run: mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
 
     - name: Load Terraform cache
       id: tf-cache
