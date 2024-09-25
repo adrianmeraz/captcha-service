@@ -91,7 +91,7 @@ jobs:
     - name: Configure Terraform plugin cache
       run: |
         echo "TF_PLUGIN_CACHE_DIR=$HOME/.terraform.d/plugin-cache" >> "$GITHUB_ENV"
-        mkdir --parents "$HOME/.terraform.d/plugin-cache"
+        mkdir --parents "~/.terraform.d/plugin-cache"
 
     - name: Load Terraform Plugin Cache
       id: tf-cache
