@@ -22,8 +22,9 @@ jobs:
       ENVIRONMENT:           dev
       GH_PAT:                ${{ secrets.GH_PAT }}
       SHARED_APP_NAME:       expatmagic
-      TF_PATH_PREFIX:        apps/${{ github.event.repository.name }}/environments
+      TF_WORKDIR_PREFIX:        apps/${{ github.event.repository.name }}/environments
       TF_PLUGIN_CACHE_DIR:   ${{ github.workspace }}/.terraform.d/plugin-cache
+      TF_REPO:               'adrianmeraz/am-terraform'
 
     steps:
     - name: Configure AWS credentials
@@ -73,7 +74,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         ref: main
-        repository: 'adrianmeraz/am-terraform'
+        repository: ${{ env.TF_REPO }}
         token: ${{ env.GH_PAT }}
 
     # Caching Terraform plugin and modules per:
@@ -92,17 +93,17 @@ jobs:
 
     - name: Set Terraform Working Directory
       run: |
-        echo "TF_WORKING_DIR=${{ env.TF_PATH_PREFIX }}/${{ env.ENVIRONMENT }}" >> $GITHUB_ENV
+        echo "TF_WORKDIR=${{ env.TF_WORKDIR_PREFIX }}/${{ env.ENVIRONMENT }}" >> $GITHUB_ENV
 
     - name: Terraform Plugin Cache
       id: tf-cache
       uses: actions/cache@v4
       with:
         path: ${{ env.TF_PLUGIN_CACHE_DIR }}
-        key: ${{ runner.os }}-tf-${{ hashFiles(format('**/{0}/.terraform.lock.hcl', env.TF_WORKING_DIR)) }}
+        key: ${{ runner.os }}-tf-${{ hashFiles(format('**/{0}/.terraform.lock.hcl', env.TF_WORKDIR)) }}
 
     - name: Terraform Init
-      working-directory: ${{ env.TF_WORKING_DIR }}
+      working-directory: ${{ env.TF_WORKDIR }}
       id: tf-init
       run: terraform init
 
