@@ -103,6 +103,8 @@ jobs:
 
     - name: Terraform Init
       working-directory: ${{ env.TF_WORKDIR }}
+      env:
+        TF_PLUGIN_CACHE_DIR: ${{ env.TF_PLUGIN_CACHE_DIR }}
       id: tf-init
       run: |
         terraform init
