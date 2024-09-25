@@ -97,8 +97,9 @@ jobs:
       id: tf-cache
       uses: actions/cache@v4
       with:
-        path: ~/.terraform.d/plugin-cache
-        key: tf-${{ runner.os }}-${{ hashFiles(format('**/{0}/.terraform.lock.hcl', env.TF_WORKDIR)) }}
+#        path: ~/.terraform.d/plugin-cache
+        path: /home/runner/.terraform.d/plugin-cache # TODO TEST
+        key: tf-${{ runner.os }}-${{ hashFiles(format('**/{0}/.terraform.lock.hcl', env.TF_WORKDIR)) }}-2
         restore-keys: tf-${{ runner.os }}-
 
     - name: Terraform Init
