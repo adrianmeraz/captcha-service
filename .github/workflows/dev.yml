@@ -22,7 +22,6 @@ jobs:
       ENVIRONMENT:           dev
       GH_PAT:                ${{ secrets.GH_PAT }}
       SHARED_APP_NAME:       expatmagic
-      TF_PLUGIN_CACHE_DIR:   /home/runner/.terraform.d/plugin-cache
       TF_WORKDIR_PREFIX:     apps/${{ github.event.repository.name }}/environments
       TF_REPO:               'adrianmeraz/am-terraform'
 
@@ -91,7 +90,7 @@ jobs:
 
     - name: Configure Terraform plugin cache
       run: |
-        echo "TF_PLUGIN_CACHE_DIR=$HOME/.terraform.d/plugin-cache" >> "$GITHUB_ENV"
+        echo "TF_PLUGIN_CACHE_DIR=/home/runner/.terraform.d/plugin-cache" >> "$GITHUB_ENV"
         mkdir --parents "$HOME/.terraform.d/plugin-cache"
 
     - name: Load Terraform Plugin Cache
