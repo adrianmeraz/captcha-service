@@ -23,7 +23,7 @@ jobs:
       GH_PAT:                ${{ secrets.GH_PAT }}
       SHARED_APP_NAME:       expatmagic
       TF_WORKDIR_PREFIX:     apps/${{ github.event.repository.name }}/environments
-      TF_PLUGIN_CACHE_DIR:   ${{ github.workspace }}/.terraform.d/plugin-cache
+      # TF_PLUGIN_CACHE_DIR:   ${{ github.workspace }}/.terraform.d/plugin-cache
       TF_REPO:               'adrianmeraz/am-terraform'
 
     steps:
@@ -87,9 +87,10 @@ jobs:
       with:
         terraform_version: 1.8.1
 
-    - name: Create Terraform Plugin Cache Dir
-      shell: bash
-      run: mkdir --parents $TF_PLUGIN_CACHE_DIR
+    - name: Configure Terraform plugin cache
+      run: |
+        echo "TF_PLUGIN_CACHE_DIR=$HOME/.terraform.d/plugin-cache" >> "$GITHUB_ENV"
+        mkdir --parents "$HOME/.terraform.d/plugin-cache"
 
     - name: Set Terraform Working Directory
       run: |
@@ -99,13 +100,14 @@ jobs:
       id: tf-cache
       uses: actions/cache@v4
       with:
-        path: ${{ env.TF_PLUGIN_CACHE_DIR }}
+        path: ~/.terraform.d/plugin-cache
         key: ${{ runner.os }}-tf-${{ hashFiles(format('**/{0}/.terraform.lock.hcl', env.TF_WORKDIR)) }}
 
     - name: Terraform Init
       working-directory: ${{ env.TF_WORKDIR }}
       id: tf-init
-      run: terraform init
+      run: |
+        terraform init
 
     - name: Terraform Apply
       working-directory: ${{ env.TF_WORKING_DIR }}
