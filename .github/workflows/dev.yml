@@ -23,7 +23,7 @@ jobs:
       GH_PAT:                ${{ secrets.GH_PAT }}
       SHARED_APP_NAME:       expatmagic
 #      TF_PLUGIN_CACHE_DIR:   ${{ github.workspace }}/.terraform.d/plugin-cache
-      TF_PLUGIN_CACHE_DIR:   ~/.terraform.d/plugin-cache
+      TF_PLUGIN_CACHE_DIR:   ${{ runner.temp }}/_github_home/.terraform.d/plugin-cache
     steps:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -86,8 +86,8 @@ jobs:
       id: cache-tf
       uses: actions/cache@v4
       with:
-        path: ${{ runner.temp }}/_github_home/.terraform.d/plugin-cache
-        # path: ${{ env.TF_PLUGIN_CACHE_DIR }}
+        # path: ${{ runner.temp }}/_github_home/.terraform.d/plugin-cache
+        path: ${{ env.TF_PLUGIN_CACHE_DIR }}
 #        path: |
 #          ${{ env.TF_PLUGIN_CACHE_DIR }}
 #          ${{ github.workspace }}/.dflook-terraform-github-actions
