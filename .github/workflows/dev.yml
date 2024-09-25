@@ -75,35 +75,58 @@ jobs:
         repository: 'adrianmeraz/am-terraform'
         token: ${{ env.GH_PAT }}
 
-    # Caching Terraform plugin and modules per https://github.com/dflook/terraform-github-actions/issues/105
-    # New way of caching plugins:
+    # Caching Terraform plugin and modules per:
+    # https://github.com/dflook/terraform-github-actions/issues/105
+    # Additional resources on caching plugins:
     # https://github.com/hashicorp/setup-terraform/issues/4#issuecomment-862039542
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.8.1
 
     - name: Create Terraform Plugin Cache Dir
       run: mkdir --parents ${{ env.TF_PLUGIN_CACHE_DIR }}
 
     - name: Load Terraform cache
-      id: cache-tf
+      id: tf-cache
       uses: actions/cache@v4
       with:
         path: ${{ env.TF_PLUGIN_CACHE_DIR }}
         key: ${{ runner.os }}-tf-${{ hashFiles('**/.terraform.lock.hcl') }}-d
 
-    - name: Terraform apply
-      uses: dflook/terraform-apply@v1
+    - name: Terraform init
+      id: tf-init
+      run: terraform init
+
+    - name: Terraform Apply
       env:
-        GITHUB_TOKEN: ${{ env.GH_PAT }}
-      with:
-        path:  apps/${{ env.APP_NAME }}/environments/${{ env.ENVIRONMENT }}
-        auto_approve: true
-        parallelism: 50
-        variables: |
-          app_name        = "${{ env.APP_NAME }}"
-          aws_access_key  = "${{ env.AWS_ACCESS_KEY_ID }}"
-          aws_region      = "${{ env.AWS_REGION }}"
-          aws_secret_key  = "${{ env.AWS_SECRET_ACCESS_KEY }}"
-          environment     = "${{ env.ENVIRONMENT }}"
-          shared_app_name = "${{ env.SHARED_APP_NAME }}"
+        TF_PATH: apps/${{ env.APP_NAME }}/environments/${{ env.ENVIRONMENT }}
+      run: |
+        cd ${{ env.TF_PATH }}
+        terraform apply -auto-approve -input=false -parallelism=50 \
+          -var app_name="${{ env.APP_NAME }}" \
+          -var aws_access_key="${{ env.AWS_ACCESS_KEY_ID }}" \
+          -var aws_region="${{ env.AWS_REGION }}" \
+          -var aws_secret_key="${{ env.AWS_SECRET_ACCESS_KEY }}" \
+          -var environment="${{ env.ENVIRONMENT }}" \
+          -var shared_app_name="${{ env.SHARED_APP_NAME }}" \
+
+#    - name: Terraform apply
+#      uses: dflook/terraform-apply@v1
+#      env:
+#        GITHUB_TOKEN: ${{ env.GH_PAT }}
+#      with:
+#        path:  apps/${{ env.APP_NAME }}/environments/${{ env.ENVIRONMENT }}
+#        auto_approve: true
+#        parallelism: 50
+#        variables: |
+#          app_name        = "${{ env.APP_NAME }}"
+#          aws_access_key  = "${{ env.AWS_ACCESS_KEY_ID }}"
+#          aws_region      = "${{ env.AWS_REGION }}"
+#          aws_secret_key  = "${{ env.AWS_SECRET_ACCESS_KEY }}"
+#          environment     = "${{ env.ENVIRONMENT }}"
+#          shared_app_name = "${{ env.SHARED_APP_NAME }}"
 
     - name: Checkout Main Branch
       uses: actions/checkout@v4
