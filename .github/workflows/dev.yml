@@ -22,7 +22,7 @@ jobs:
       ENVIRONMENT:           dev
       GH_PAT:                ${{ secrets.GH_PAT }}
       SHARED_APP_NAME:       expatmagic
-      TF_PATH_PREFIX:        apps/${{ github.event.repository.name }}/environments/${{ env.ENVIRONMENT }}
+      TF_PATH_PREFIX:        apps/${{ github.event.repository.name }}/environments
       TF_PLUGIN_CACHE_DIR:   ${{ github.workspace }}/.terraform.d/plugin-cache
 
     steps:
