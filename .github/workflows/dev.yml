@@ -79,18 +79,13 @@ jobs:
     # Caching Terraform plugin and modules per:
     # https://github.com/magnetikonline/terraform-github-action-cache-example/blob/main/.github/workflows/example.yaml
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: 1.8.1
-
     - name: Set Terraform Working Directory
       run: |
         echo "TF_WORKDIR=${{ env.TF_WORKDIR_PREFIX }}/${{ env.ENVIRONMENT }}" >> $GITHUB_ENV
 
     - name: Configure Terraform plugin cache
       run: |
-        echo "TF_PLUGIN_CACHE_DIR=/home/runner/.terraform.d/plugin-cache" >> "$GITHUB_ENV"
+        echo "TF_PLUGIN_CACHE_DIR=$HOME/.terraform.d/plugin-cache" >> "$GITHUB_ENV"
         mkdir --parents "$HOME/.terraform.d/plugin-cache"
 
     - name: Load Terraform Plugin Cache
@@ -100,6 +95,11 @@ jobs:
         path: ~/.terraform.d/plugin-cache
         key: tf-${{ runner.os }}-${{ hashFiles(format('**/{0}/.terraform.lock.hcl', env.TF_WORKDIR)) }}
         restore-keys: tf-${{ runner.os }}-
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.8.1
 
     - name: Terraform Init
       working-directory: ${{ env.TF_WORKDIR }}
