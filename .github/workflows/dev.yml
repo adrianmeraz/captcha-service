@@ -102,6 +102,8 @@ jobs:
       run: terraform init
 
     - name: Terraform Apply
+      working-directory: ${{ env.TF_PATH_PREFIX }}/${{ env.ENVIRONMENT }}
+      id: tf-apply
       run: |
         terraform apply -auto-approve -input=false -parallelism=50 \
           -var app_name="${{ env.APP_NAME }}" \
