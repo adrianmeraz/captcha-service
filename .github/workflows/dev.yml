@@ -78,9 +78,7 @@ jobs:
         token: ${{ env.GH_PAT }}
 
     # Caching Terraform plugin and modules per:
-    # https://github.com/dflook/terraform-github-actions/issues/105
-    # Additional resources on caching plugins:
-    # https://github.com/hashicorp/setup-terraform/issues/4#issuecomment-862039542
+    # https://github.com/magnetikonline/terraform-github-action-cache-example/blob/main/.github/workflows/example.yaml
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
