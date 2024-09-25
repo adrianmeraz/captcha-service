@@ -97,9 +97,8 @@ jobs:
       id: tf-cache
       uses: actions/cache@v4
       with:
-#        path: ~/.terraform.d/plugin-cache
-        path: /home/runner/.terraform.d/plugin-cache # TODO TEST
-        key: tf-${{ runner.os }}-${{ hashFiles(format('**/{0}/.terraform.lock.hcl', env.TF_WORKDIR)) }}-2
+        path: ~/.terraform.d/plugin-cache
+        key: tf-${{ runner.os }}-${{ hashFiles(format('**/{0}/.terraform.lock.hcl', env.TF_WORKDIR)) }}
         restore-keys: tf-${{ runner.os }}-
 
     - name: Terraform Init
@@ -136,4 +135,3 @@ jobs:
         branch: main-promotion
         delete-branch: true
         title: Promote dev to main branch
-
