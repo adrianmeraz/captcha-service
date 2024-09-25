@@ -121,4 +121,3 @@ jobs:
         branch: main-promotion
         delete-branch: true
         title: Promote dev to main branch
-
