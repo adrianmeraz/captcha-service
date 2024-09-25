@@ -110,7 +110,7 @@ jobs:
         terraform init
 
     - name: Terraform Apply
-      working-directory: ${{ env.TF_WORKING_DIR }}
+      working-directory: ${{ env.TF_WORKDIR }}
       id: tf-apply
       run: |
         terraform apply -auto-approve -input=false -parallelism=50 \
