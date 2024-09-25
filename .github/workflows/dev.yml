@@ -87,7 +87,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ${{ env.TF_PLUGIN_CACHE_DIR }}
-        key: ${{ runner.os }}-tf-${{ hashFiles('**/.terraform.lock.hcl') }}
+        key: ${{ runner.os }}-tf-${{ hashFiles('**/.terraform.lock.hcl') }}-d
 
     - name: Terraform apply
       uses: dflook/terraform-apply@v1
