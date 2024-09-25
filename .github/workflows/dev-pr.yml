@@ -57,6 +57,7 @@ jobs:
       with:
         path: ~/.local
         key: dotlocal-${{ runner.os }}-${{ hashFiles('.github/workflows/dev.yml') }}
+        restore-keys: dotlocal-${{ runner.os }}-
 
     - name: Install / Load Poetry
       uses: snok/install-poetry@v1
@@ -70,6 +71,7 @@ jobs:
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('.github/workflows/dev.yml') }}
+        restore-keys: venv-${{ runner.os }}-
 
     - name: Install / Load Poetry dependencies
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
