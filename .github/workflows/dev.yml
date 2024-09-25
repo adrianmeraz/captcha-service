@@ -22,6 +22,7 @@ jobs:
       ENVIRONMENT:           dev
       GH_PAT:                ${{ secrets.GH_PAT }}
       SHARED_APP_NAME:       expatmagic
+      TF_PATH:               apps/${{ env.APP_NAME }}/environments/${{ env.ENVIRONMENT }}
       TF_PLUGIN_CACHE_DIR:   ${{ github.workspace }}/.terraform.d/plugin-cache
 
     steps:
@@ -96,14 +97,12 @@ jobs:
         key: ${{ runner.os }}-tf-${{ hashFiles('**/.terraform.lock.hcl') }}-d
 
     - name: Terraform init
+      working-directory: ${{ env.TF_PATH }}
       id: tf-init
       run: terraform init
 
     - name: Terraform Apply
-      env:
-        TF_PATH: apps/${{ env.APP_NAME }}/environments/${{ env.ENVIRONMENT }}
       run: |
-        cd ${{ env.TF_PATH }}
         terraform apply -auto-approve -input=false -parallelism=50 \
           -var app_name="${{ env.APP_NAME }}" \
           -var aws_access_key="${{ env.AWS_ACCESS_KEY_ID }}" \
