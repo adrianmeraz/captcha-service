@@ -89,6 +89,13 @@ jobs:
       env:
         CODECOV_TOKEN: ${{ env.EM_CODECOV_TOKEN }}
 
+    - name: Checkout Terraform Repo
+      uses: actions/checkout@v4
+      with:
+        ref: main
+        repository: ${{ env.TF_REPO }}
+        token: ${{ env.GH_PAT }}
+
     - name: Set Terraform Working Directory
       run: |
         echo "TF_WORKDIR=${{ env.TF_WORKDIR_PREFIX }}/${{ env.ENVIRONMENT }}" >> $GITHUB_ENV
