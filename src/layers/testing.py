@@ -19,18 +19,12 @@ class CSTestFixture(BaseTestFixture):
 
     @classmethod
     def get_api_resource_json(cls, *descendants) -> typing.Dict:
-        return cls.get_resource_json(*descendants, _path=cls.TEST_API_RESOURCE_PATH)
+        return cls.get_resource_json(*descendants, path=cls.TEST_API_RESOURCE_PATH)
 
     @classmethod
     def get_event_resource_json(cls,  *descendants) -> typing.Dict:
-        return cls.get_resource_json(*descendants, _path=cls.TEST_EVENT_RESOURCE_PATH)
+        return cls.get_resource_json(*descendants, path=cls.TEST_EVENT_RESOURCE_PATH)
 
     @classmethod
     def get_db_resource_json(cls, *descendants) -> typing.Dict:
-        return cls.get_resource_json(*descendants, _path=cls.TEST_DB_RESOURCE_PATH)
-
-    @classmethod
-    def get_resource_json(cls, *descendants, _path: Traversable):
-        source = _path.joinpath(*descendants)
-        with as_file(source) as event_json:
-            return json.loads(event_json.read_text())
+        return cls.get_resource_json(*descendants, path=cls.TEST_DB_RESOURCE_PATH)
