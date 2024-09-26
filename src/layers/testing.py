@@ -1,7 +1,5 @@
-import json
 import typing
-from importlib.abc import Traversable
-from importlib.resources import as_file, files
+from importlib.resources import files
 
 from py_aws_core.testing import BaseTestFixture
 
