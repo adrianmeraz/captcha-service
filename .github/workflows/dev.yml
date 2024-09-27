@@ -101,7 +101,7 @@ jobs:
           -var aws_region="${{ env.AWS_REGION }}" \
           -var aws_secret_key="${{ env.AWS_SECRET_ACCESS_KEY }}" \
           -var environment="${{ env.ENVIRONMENT }}" \
-          -var shared_app_name="${{ env.SHARED_APP_NAME }}" \
+          -var shared_app_name="${{ env.SHARED_APP_NAME }}"
 
     - name: Checkout Main Branch
       uses: actions/checkout@v4
