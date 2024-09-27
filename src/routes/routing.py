@@ -1,12 +1,7 @@
 from py_aws_core.router import APIGatewayRouter
 
-from src.lambdas import (
-    api_get_pingback_verification_token,
-    api_post_pingback_event,
-    api_post_report_bad_captcha,
-    api_post_report_good_captcha,
-    api_post_solve_captcha
-)
+from src.api_lambdas import api_post_report_bad_captcha, api_post_report_good_captcha, api_post_solve_captcha, \
+    api_get_pingback_verification_token, api_post_pingback_event
 
 apigw_router = APIGatewayRouter()
 

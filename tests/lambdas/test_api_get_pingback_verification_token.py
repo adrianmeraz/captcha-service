@@ -2,7 +2,7 @@ from unittest import mock
 
 import respx
 
-from src.lambdas import api_get_pingback_verification_token
+from src.api_lambdas import api_get_pingback_verification_token
 from src.layers.testing import CSTestFixture
 from src.layers.twocaptcha import api_twocaptcha
 
