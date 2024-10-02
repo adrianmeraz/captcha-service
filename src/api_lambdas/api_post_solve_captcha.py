@@ -4,8 +4,8 @@ from py_aws_core.clients import RetryClient
 from src.layers import events, logs
 from src.layers.database import Database
 from src.layers.i_captcha import ICaptcha
-from src.layers.twocaptcha.captcha import TwoCaptcha
 from src.layers.routing import apigw_router
+from src.layers.twocaptcha.captcha import TwoCaptcha
 
 logger = logs.logger
 

@@ -3,8 +3,8 @@ from py_aws_core import utils as aws_utils
 from src.layers import logs
 from src.layers.database import Database
 from src.layers.i_captcha import ICaptcha
-from src.layers.twocaptcha.captcha import TwoCaptcha
 from src.layers.routing import apigw_router
+from src.layers.twocaptcha.captcha import TwoCaptcha
 
 logger = logs.logger
 
