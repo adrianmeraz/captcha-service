@@ -5,10 +5,12 @@ from src.layers import events, logs
 from src.layers.database import Database
 from src.layers.i_captcha import ICaptcha
 from src.layers.twocaptcha.captcha import TwoCaptcha
+from src.layers.routing import apigw_router
 
 logger = logs.logger
 
 
+@apigw_router.route(path='/pingback-event', http_method='POST')
 def lambda_handler(event, context):
     event = events.CSPostPingbackEvent(event)
     captcha_service = TwoCaptcha(database=Database())

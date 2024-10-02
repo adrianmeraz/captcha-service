@@ -2,7 +2,7 @@ from py_aws_core import decorators
 
 from src.layers import exceptions, logs
 from src.layers.events import HttpEvent
-from src.routes.routing import apigw_router
+from src.layers.routing import apigw_router
 
 logger = logs.logger
 
