@@ -4,11 +4,11 @@ from py_aws_core.clients import RetryClient
 from src.layers import events, logs
 from src.layers.database import Database
 from src.layers.i_captcha import ICaptcha
-from py_aws_core.router import APIGatewayRouter
+from src.layers.routing import get_router
 from src.layers.twocaptcha.captcha import TwoCaptcha
 
 logger = logs.logger
-apigw_router = APIGatewayRouter()
+apigw_router = get_router()
 
 
 @apigw_router.route(path='/pingback-event', http_method='POST')
