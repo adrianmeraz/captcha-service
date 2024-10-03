@@ -2,9 +2,10 @@ from py_aws_core import decorators
 
 from src.layers import exceptions, logs
 from src.layers.events import HttpEvent
-from src.layers.routing import apigw_router
+from src.layers.routing import get_router
 
 logger = logs.logger
+apigw_router = get_router()
 
 
 @decorators.lambda_response_handler(raise_as=exceptions.CaptchaServiceException)

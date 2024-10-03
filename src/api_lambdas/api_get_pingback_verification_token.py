@@ -3,11 +3,11 @@ from py_aws_core import utils as aws_utils
 from src.layers import logs
 from src.layers.database import Database
 from src.layers.i_captcha import ICaptcha
-from src.layers.routing import apigw_router
+from src.layers.routing import get_router
 from src.layers.twocaptcha.captcha import TwoCaptcha
 
 logger = logs.logger
-
+apigw_router = get_router()
 
 @apigw_router.route(path='/2captcha.txt', http_method='GET')
 def lambda_handler(event, context):
