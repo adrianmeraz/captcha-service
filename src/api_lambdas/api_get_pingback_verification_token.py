@@ -9,6 +9,7 @@ from src.layers.twocaptcha.captcha import TwoCaptcha
 logger = logs.logger
 apigw_router = get_router()
 
+
 @apigw_router.route(path='/2captcha.txt', http_method='GET')
 def lambda_handler(event, context):
     captcha_service = TwoCaptcha(database=Database())
@@ -22,3 +23,4 @@ def lambda_handler(event, context):
 
 def process_event(captcha_service: ICaptcha):
     return captcha_service.get_verification_token()
+
