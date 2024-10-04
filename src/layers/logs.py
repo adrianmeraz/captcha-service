@@ -1,17 +1,5 @@
-import structlog
-
-structlog.configure(
-    processors=[
-        structlog.processors.CallsiteParameterAdder(),
-        structlog.processors.TimeStamper(fmt="iso"),
-        structlog.processors.add_log_level,
-        structlog.processors.EventRenamer("message"),
-        structlog.processors.JSONRenderer(),
-    ]
-)
-
-__logger = structlog.get_logger(__name__)
+from py_aws_core.logs import get_logger as aws_get_logger
 
 
 def get_logger():
-    return __logger
+    return aws_get_logger()

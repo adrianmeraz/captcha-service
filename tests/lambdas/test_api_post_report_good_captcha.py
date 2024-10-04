@@ -1,6 +1,6 @@
 from unittest import mock
 
-from src.api_lambdas import api_post_report_good_captcha
+from src.lambdas import api_post_report_good_captcha
 from src.layers.testing import CSTestFixture
 from src.layers.twocaptcha.captcha import TwoCaptcha
 

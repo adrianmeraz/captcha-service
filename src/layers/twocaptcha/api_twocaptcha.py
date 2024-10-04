@@ -1,4 +1,3 @@
-import logging
 import typing
 from urllib.parse import urlencode, urlparse
 
@@ -6,11 +5,11 @@ from httpx import Client
 from py_aws_core import decorators as aws_decorators
 from py_aws_core.secrets_manager import get_secrets_manager
 
+from src.layers import logs, secrets
 from . import decorators
 from .exceptions import TwoCaptchaException
-from src.layers import secrets
 
-logger = logging.getLogger(__name__)
+logger = logs.get_logger()
 secrets_manager = get_secrets_manager()
 
 
@@ -114,7 +113,7 @@ class SolveCaptcha(TwoCaptchaAPI):
                 'pingback': request.pingback_url
             }
 
-        logger.info(f'{__name__}.{cls.__qualname__}.call#, Passing form data: {request.params}')
+        logger.info(f'Passing form data: {request.params}')
         r = http_client.post(url, params=params, follow_redirects=False)  # Disable redirects to network splash pages
         if not r.status_code == 200:
             raise TwoCaptchaException(f'Non 200 Response. Proxy: {request.proxy}, Response: {r.text}')

@@ -2,7 +2,7 @@ from unittest import mock
 
 import respx
 
-from src.api_lambdas import api_post_solve_captcha
+from src.lambdas import api_post_solve_captcha
 from src.layers.testing import CSTestFixture
 from src.layers.twocaptcha.captcha import TwoCaptcha
 

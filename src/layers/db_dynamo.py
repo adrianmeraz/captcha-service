@@ -196,7 +196,7 @@ class UpdateCaptchaEventCode(RecaptchaV2DB):
             }),
             ReturnValues='ALL_NEW'
         )
-        logger.info(f'{cls.__qualname__}#call, pk: {pk}, record updated')
+        logger.info(f'CaptchaEvent record updated', pk=pk)
         return cls.Response(response)
 
 
@@ -235,7 +235,7 @@ class UpdateCaptchaEventOnSolveAttempt(RecaptchaV2DB):
             }),
             ReturnValues='ALL_NEW'
         )
-        logger.info(f'{cls.__qualname__}#call, pk: {pk}, record updated')
+        logger.info(f'CaptchaEvent record updated', pk=pk)
         return cls.Response(response)
 
 
@@ -275,5 +275,5 @@ class UpdateCaptchaEventWebhook(RecaptchaV2DB):
             }),
             ReturnValues='ALL_NEW'
         )
-        logger.info(f'{cls.__qualname__}#call, pk: {pk}, record updated')
+        logger.info(f'CaptchaEvent record updated', pk=pk)
         return cls.Response(response)

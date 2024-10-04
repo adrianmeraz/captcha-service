@@ -94,7 +94,7 @@ class TwoCaptcha(ICaptcha):
         except exceptions.WebhookException:
             webhook_status = const.WebhookStatus.FAILED
 
-        logger.info(f'{__name__} ->  Webhook url: {webhook_url}, data: {webhook_data}, status: {webhook_status.value}')
+        logger.info(f'Webhook url: {webhook_url}, data: {webhook_data}, status: {webhook_status.value}')
         self._database.update_captcha_event_webhook(
             db_client=db_client,
             captcha_id=captcha_id,

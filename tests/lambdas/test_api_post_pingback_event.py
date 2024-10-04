@@ -2,7 +2,7 @@ from unittest import mock
 
 from py_aws_core.db_dynamo import DDBClient
 
-from src.api_lambdas import api_post_pingback_event
+from src.lambdas import api_post_pingback_event
 from src.layers.testing import CSTestFixture
 from src.layers.twocaptcha.captcha import TwoCaptcha
 
