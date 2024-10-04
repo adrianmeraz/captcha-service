@@ -1,0 +1,87 @@
+{
+  "resource": "/report-bad-captcha",
+  "path": "/report-bad-captcha",
+  "httpMethod": "POST",
+  "headers": {
+    "Accept": "*/*",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Content-Type": "application/json",
+    "Host": "dev-captcha-service.mechnetworks.com",
+    "Postman-Token": "a845c212-6c6c-4607-806d-301b58cbf6c8",
+    "User-Agent": "PostmanRuntime/7.41.1",
+    "X-Amzn-Trace-Id": "Root=1-66c78cb4-09d24c5b2dbb576a2d991c18",
+    "X-Forwarded-For": "107.213.20.204",
+    "X-Forwarded-Port": "443",
+    "X-Forwarded-Proto": "https"
+  },
+  "multiValueHeaders": {
+    "Accept": [
+      "*/*"
+    ],
+    "Accept-Encoding": [
+      "gzip, deflate, br"
+    ],
+    "Content-Type": [
+      "application/json"
+    ],
+    "Host": [
+      "dev-captcha-service.mechnetworks.com"
+    ],
+    "Postman-Token": [
+      "a845c212-6c6c-4607-806d-301b58cbf6c8"
+    ],
+    "User-Agent": [
+      "PostmanRuntime/7.41.1"
+    ],
+    "X-Amzn-Trace-Id": [
+      "Root=1-66c78cb4-09d24c5b2dbb576a2d991c18"
+    ],
+    "X-Forwarded-For": [
+      "107.213.20.204"
+    ],
+    "X-Forwarded-Port": [
+      "443"
+    ],
+    "X-Forwarded-Proto": [
+      "https"
+    ]
+  },
+  "queryStringParameters": null,
+  "multiValueQueryStringParameters": null,
+  "pathParameters": null,
+  "stageVariables": null,
+  "requestContext": {
+    "resourceId": "0n60i4",
+    "resourcePath": "/report-bad-captcha",
+    "operationName": "report-bad-captcha-POST",
+    "httpMethod": "POST",
+    "extendedRequestId": "c7LsNGhnvHcEI4A=",
+    "requestTime": "22/Aug/2024:19:08:36 +0000",
+    "path": "/report-bad-captcha",
+    "accountId": "687272729792",
+    "protocol": "HTTP/1.1",
+    "stage": "dev",
+    "domainPrefix": "dev-captcha-service",
+    "requestTimeEpoch": 1724353716257,
+    "requestId": "e7ee1350-ae9b-4da2-869e-a771cc4da8e4",
+    "identity": {
+      "cognitoIdentityPoolId": null,
+      "accountId": null,
+      "cognitoIdentityId": null,
+      "caller": null,
+      "sourceIp": "107.213.20.204",
+      "principalOrgId": null,
+      "accessKey": null,
+      "cognitoAuthenticationType": null,
+      "cognitoAuthenticationProvider": null,
+      "userArn": null,
+      "userAgent": "PostmanRuntime/7.41.1",
+      "user": null
+    },
+    "domainName": "dev-captcha-service.mechnetworks.com",
+    "deploymentId": "lzixub",
+    "apiId": "a67pq1vkta"
+  },
+  "body": "{\"captcha_id\":\"77219595289\"}",
+  "isBase64Encoded": false
+}

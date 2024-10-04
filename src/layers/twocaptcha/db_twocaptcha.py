@@ -1,11 +1,10 @@
-import typing
-import uuid
+from py_aws_core import decorators as aws_decorators
+from py_aws_core.db_dynamo import ABCCommonAPI, DDBClient, DDBItemResponse
 
-from py_aws_core import decorators as aws_decorators, exceptions as aws_exceptions, entities
-from py_aws_core.db_dynamo import ABCCommonAPI, DDBClient
+from src.layers import logs
+from src.layers.twocaptcha import const, entities, exceptions
 
-from . import const, entities
-
+logger = logs.logger
 __db_client = DDBClient()
 
 
@@ -17,49 +16,64 @@ def get_db_client():
     return __db_client
 
 
-class TCDBAPI(ABCCommonAPI):
-    CANCELLATION_ERROR_MAPS = []
+class TwoCaptchaDB(ABCCommonAPI):
+    pass
+
+
+class CreateTCWebhookEvent(TwoCaptchaDB):
+    ERR_CODE_MAP = {
+        'ConditionalCheckFailedException': exceptions.DuplicateTCWebhookEvent
+    }
+
+    class Response(DDBItemResponse):
+        pass
 
     @classmethod
-    def build_recaptcha_event_map(
-        cls,
-        _id: uuid.UUID,
-        code: str,
-        params: typing.Dict[str, str],
-    ):
-        pk = sk = entities.RecaptchaEvent.create_key(_id)
-        return cls.get_batch_entity_create_map(
-            expire_in_seconds=None,
+    @aws_decorators.dynamodb_handler(client_err_map=ERR_CODE_MAP, cancellation_err_maps=[])
+    def call(cls, db_client: DDBClient, _id: str, code: str, rate: str):
+        pk = sk = entities.TCWebhookEvent.create_key(_id=_id)
+        _type = entities.TCWebhookEvent.type()
+        item = cls.get_put_item_map(
             pk=pk,
             sk=sk,
-            _type=entities.RecaptchaEvent.type(),
+            _type=_type,
+            expire_in_seconds=None,
+            Id=_id,
             Code=code,
-            Params=params,
-            Status=const.EventStatus.INIT.value,
+            Rate=rate
         )
+        response = db_client.put_item(
+            Item=item,
+            ConditionExpression='attribute_not_exists(PK)',
+        )
+        logger.debug(f'{cls.__qualname__}.call# -> response: {response}')
+        return cls.Response(response)
 
-    class UpdateCaptchaEvent:
-        """
-            Updates Captcha Event statuses
-        """
 
-        @classmethod
-        @aws_decorators.dynamodb_handler(client_err_map=aws_exceptions.ERR_CODE_MAP, cancellation_err_maps=[])
-        def call(
-            cls,
-            db_client: DDBClient,
-            _id: uuid,
-            status: const.EventStatus,
-        ):
-            pk = sk = entities.RecaptchaEvent.create_key(_id=_id)
-            return db_client.update_item(
-                key={
-                    'PK': pk,
-                    'SK': sk,
-                },
-                update_expression=f'SET Status = :sts, ModifiedAt = :mda',
-                expression_attribute_values={
-                    ':sts': {'S': status.value},
-                    ':mda': {'S': TCDBAPI.iso_8601_now_timestamp()}
-                },
-            )
+class CreateTCCaptchaReport(TwoCaptchaDB):
+    ERR_CODE_MAP = {
+        'ConditionalCheckFailedException': exceptions.DuplicateTCCaptchaReport
+    }
+
+    class Response(DDBItemResponse):
+        pass
+
+    @classmethod
+    @aws_decorators.dynamodb_handler(client_err_map=ERR_CODE_MAP, cancellation_err_maps=[])
+    def call(cls, db_client: DDBClient, _id: str, status: const.ReportStatus):
+        pk = sk = entities.TCCaptchaReport.create_key(_id=_id)
+        _type = entities.TCCaptchaReport.type()
+        item = cls.get_put_item_map(
+            pk=pk,
+            sk=sk,
+            _type=_type,
+            expire_in_seconds=None,
+            Id=_id,
+            Status=status.value,
+        )
+        response = db_client.put_item(
+            Item=item,
+            ConditionExpression='attribute_not_exists(PK)',
+        )
+        logger.debug(f'{cls.__qualname__}.call# -> response: {response}')
+        return cls.Response(response)

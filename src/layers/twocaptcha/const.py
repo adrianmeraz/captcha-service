@@ -1,7 +1,6 @@
 from enum import Enum
 
 
-class EventStatus(str, Enum):
-    INIT = 'INIT'
-    ACCEPTED = 'ACCEPTED'
-    REJECTED = 'REJECTED'
+class ReportStatus(str, Enum):
+    GOOD = 'GOOD'
+    BAD = 'BAD'
