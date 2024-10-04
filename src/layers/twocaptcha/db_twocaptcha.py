@@ -4,7 +4,7 @@ from py_aws_core.db_dynamo import ABCCommonAPI, DDBClient, DDBItemResponse
 from src.layers import logs
 from src.layers.twocaptcha import const, entities, exceptions
 
-logger = logs.logger
+logger = logs.get_logger()
 __db_client = DDBClient()
 
 
@@ -46,7 +46,7 @@ class CreateTCWebhookEvent(TwoCaptchaDB):
             Item=item,
             ConditionExpression='attribute_not_exists(PK)',
         )
-        logger.debug(f'{cls.__qualname__}.call# -> response: {response}')
+        logger.debug(response)
         return cls.Response(response)
 
 
@@ -75,5 +75,5 @@ class CreateTCCaptchaReport(TwoCaptchaDB):
             Item=item,
             ConditionExpression='attribute_not_exists(PK)',
         )
-        logger.debug(f'{cls.__qualname__}.call# -> response: {response}')
+        logger.debug(response)
         return cls.Response(response)

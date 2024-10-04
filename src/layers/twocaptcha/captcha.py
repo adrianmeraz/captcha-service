@@ -8,7 +8,7 @@ from src.layers.i_captcha import ICaptcha
 from src.layers.i_database import IDatabase
 from . import api_twocaptcha, db_twocaptcha, exceptions as tc_exceptions, const as tc_const
 
-logger = logs.logger
+logger = logs.get_logger()
 db_client = get_db_client()
 
 

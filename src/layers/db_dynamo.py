@@ -5,7 +5,7 @@ from py_aws_core.db_dynamo import ABCCommonAPI, DDBClient, UpdateItemResponse
 
 from src.layers import const, logs, entities
 
-logger = logs.logger
+logger = logs.get_logger()
 __db_client = DDBClient()
 
 
@@ -115,7 +115,7 @@ class GetOrCreateRecaptchaV2Event(RecaptchaV2DB):
             ReturnValues='ALL_NEW'
         )
 
-        logger.debug(f'{cls.__qualname__}.call# -> response: {response}')
+        logger.debug(response)
         return cls.Response(response)
 
 
@@ -153,7 +153,7 @@ class CreateRecaptchaV2Event(RecaptchaV2DB):
             WebhookMaxAttempts=const.DEFAULT_WEBHOOK_MAX_ATTEMPTS
         )]
         count = db_client.write_maps_to_db(item_maps=c_maps)
-        logger.info(f'{cls.__qualname__}#call, pk: {pk}, {count} record(s) written')
+        logger.info(f'pk: {pk}, {count} record(s) written')
         return count
 
 

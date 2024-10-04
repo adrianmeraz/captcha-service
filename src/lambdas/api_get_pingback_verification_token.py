@@ -6,7 +6,7 @@ from src.layers.i_captcha import ICaptcha
 from src.layers.routing import get_router
 from src.layers.twocaptcha.captcha import TwoCaptcha
 
-logger = logs.logger
+logger = logs.get_logger()
 apigw_router = get_router()
 
 
