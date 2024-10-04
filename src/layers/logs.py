@@ -1,7 +1,12 @@
-import logging
+import structlog
 
-from py_aws_core.logs import Logging
+structlog.configure(
+    processors=[
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.add_log_level,
+        structlog.processors.EventRenamer("msg"),
+        structlog.processors.JSONRenderer(),
+    ]
+)
 
-logger = logging.getLogger(__name__)
-
-Logging.configure_logger()
+logger = structlog.get_logger(__name__)
