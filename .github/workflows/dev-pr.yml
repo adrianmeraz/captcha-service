@@ -32,17 +32,6 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region:            ${{ secrets.AWS_REGION }}
 
-    # Empty prefixes not supported yet, pending this PR: https://github.com/aws-actions/aws-secretsmanager-get-secrets/pull/16
-    # Using EM for now
-    - name: Get Secrets
-      uses: aws-actions/aws-secretsmanager-get-secrets@v1
-      env:
-        SSM_SECRET_ID: ${{ env.APP_NAME }}/${{ env.ENVIRONMENT }}/secret
-      with:
-        secret-ids: |
-          EM,${{ env.SSM_SECRET_ID }}
-        parse-json-secrets: true
-
     - name: Checkout code
       uses: actions/checkout@v4
       with:
