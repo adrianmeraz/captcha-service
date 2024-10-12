@@ -1,4 +1,4 @@
-from py_aws_core.secrets_manager import get_secrets_manager
+from py_aws_core.ssm_parameter_store import get_secrets_manager
 
 __secrets_manager = get_secrets_manager()
 
