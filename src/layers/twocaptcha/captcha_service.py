@@ -12,9 +12,9 @@ logger = logs.get_logger()
 db_client = get_db_client()
 
 
-class TwoCaptcha(ICaptcha):
-    def __init__(self, database: IDatabase):
-        self._database = database
+class TwoCaptchaService(ICaptcha):
+    def __init__(self, db_service: IDatabase):
+        self._db_service = db_service
 
     def solve_captcha(
         self,
@@ -36,7 +36,7 @@ class TwoCaptcha(ICaptcha):
             http_client=http_client,
             request=request
         ).request
-        self._database.get_or_create_recaptcha_v2_event(
+        self._db_service.get_or_create_recaptcha_v2_event(
             db_client=db_client,
             captcha_id=captcha_id,
             page_url=page_url,
@@ -45,7 +45,7 @@ class TwoCaptcha(ICaptcha):
             webhook_url=webhook_url,
             webhook_data=webhook_data
         )
-        self._database.update_captcha_event_on_solve_attempt(
+        self._db_service.update_captcha_event_on_solve_attempt(
             db_client=db_client,
             captcha_id=captcha_id
         )
@@ -61,7 +61,7 @@ class TwoCaptcha(ICaptcha):
             status = const.CaptchaStatus.CAPTCHA_SOLVED
         else:
             status = const.CaptchaStatus.CAPTCHA_ERROR
-        return self._database.update_captcha_event_code(
+        return self._db_service.update_captcha_event_code(
             db_client=db_client,
             captcha_id=captcha_id,
             code=code,
@@ -95,7 +95,7 @@ class TwoCaptcha(ICaptcha):
             webhook_status = const.WebhookStatus.FAILED
 
         logger.info(f'Webhook url: {webhook_url}, data: {webhook_data}, status: {webhook_status.value}')
-        self._database.update_captcha_event_webhook(
+        self._db_service.update_captcha_event_webhook(
             db_client=db_client,
             captcha_id=captcha_id,
             webhook_status=webhook_status

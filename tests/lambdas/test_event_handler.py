@@ -5,12 +5,12 @@ from py_aws_core.db_dynamo import DDBClient
 
 from src.lambdas import event_handler
 from src.layers.testing import CSTestFixture
-from src.layers.twocaptcha.captcha import TwoCaptcha
+from src.layers.twocaptcha.captcha_service import TwoCaptchaService
 
 
 class EventHandlerTests(CSTestFixture):
     @respx.mock
-    @mock.patch.object(TwoCaptcha, 'solve_captcha')
+    @mock.patch.object(TwoCaptchaService, 'solve_captcha')
     def test_solve_captcha_ok(
         self,
         mocked_solve_captcha,
@@ -39,7 +39,7 @@ class EventHandlerTests(CSTestFixture):
 
         self.assertEqual(mocked_solve_captcha.call_count, 1)
 
-    @mock.patch.object(TwoCaptcha, 'send_webhook_event')
+    @mock.patch.object(TwoCaptchaService, 'send_webhook_event')
     @mock.patch.object(DDBClient, 'put_item')
     @mock.patch.object(DDBClient, 'update_item')
     def test_solve_captcha_ok(

@@ -6,7 +6,7 @@ from .i_database import IDatabase
 db_client = db_dynamo.get_db_client()
 
 
-class Database(IDatabase):
+class DatabaseService(IDatabase):
     @classmethod
     def get_or_create_recaptcha_v2_event(
         cls,

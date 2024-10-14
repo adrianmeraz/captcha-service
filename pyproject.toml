@@ -9,6 +9,7 @@ package-mode = true
 [tool.poetry.dependencies]
 python = "~3.12"
 py-aws-core = "~0.2"
+dependency-injector = "^4.42.0"
 
 
 [build-system]

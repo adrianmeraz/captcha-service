@@ -3,10 +3,10 @@ from unittest import mock
 import respx
 from py_aws_core.clients import RetryClient
 
-from src.layers.database import Database
+from src.layers.db_service import DatabaseService
 from src.layers.testing import CSTestFixture
 from src.layers.twocaptcha import api_twocaptcha, db_twocaptcha
-from src.layers.twocaptcha.captcha import TwoCaptcha
+from src.layers.twocaptcha.captcha_service import TwoCaptchaService
 
 
 class TwoCaptchaImplTests(CSTestFixture):
@@ -17,8 +17,8 @@ class TwoCaptchaImplTests(CSTestFixture):
     @respx.mock
     @mock.patch.object(api_twocaptcha.SolveCaptcha, 'call')
     @mock.patch.object(api_twocaptcha.SolveCaptcha, 'get_webhook_url')
-    @mock.patch.object(Database, 'update_captcha_event_on_solve_attempt')
-    @mock.patch.object(Database, 'get_or_create_recaptcha_v2_event')
+    @mock.patch.object(DatabaseService, 'update_captcha_event_on_solve_attempt')
+    @mock.patch.object(DatabaseService, 'get_or_create_recaptcha_v2_event')
     def test_solve_captcha_ok(
         self,
         mocked_get_or_create_recaptcha_v2_event,
@@ -34,7 +34,7 @@ class TwoCaptchaImplTests(CSTestFixture):
         mocked_solve_captcha_call.return_value = api_twocaptcha.SolveCaptcha.Response(_json)
 
         with RetryClient() as client:
-            captcha_service = TwoCaptcha(database=Database())
+            captcha_service = TwoCaptchaService(db_service=DatabaseService())
             captcha_service.solve_captcha(
                 http_client=client,
                 site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
@@ -48,7 +48,7 @@ class TwoCaptchaImplTests(CSTestFixture):
         self.assertEqual(mocked_get_webhook_url.call_count, 1)
 
     @mock.patch.object(db_twocaptcha.CreateTCWebhookEvent, 'call')
-    @mock.patch.object(Database, 'update_captcha_event_code')
+    @mock.patch.object(DatabaseService, 'update_captcha_event_code')
     def test_handle_webhook_event_ok(
         self,
         mocked_update_captcha_event_code,
@@ -58,7 +58,7 @@ class TwoCaptchaImplTests(CSTestFixture):
         mocked_create_tc_webhook_event_call.return_value = True
 
         with RetryClient() as client:
-            TwoCaptcha(database=Database()).handle_webhook_event(
+            TwoCaptchaService(db_service=DatabaseService()).handle_webhook_event(
                 http_client=client,
                 captcha_id='9991117777',
                 code=self.TEST_RECAPTCHA_V2_TOKEN,
@@ -69,7 +69,7 @@ class TwoCaptchaImplTests(CSTestFixture):
         self.assertEqual(mocked_create_tc_webhook_event_call.call_count, 1)
 
     @respx.mock
-    @mock.patch.object(Database, 'update_captcha_event_webhook')
+    @mock.patch.object(DatabaseService, 'update_captcha_event_webhook')
     def test_send_webhook_event_ok(
         self,
         mocked_update_captcha_event_webhook
@@ -88,7 +88,7 @@ class TwoCaptchaImplTests(CSTestFixture):
                 'test1': 'val1',
                 'test33': 'ipsum lorem'
             }
-            TwoCaptcha(database=Database()).send_webhook_event(
+            TwoCaptchaService(db_service=DatabaseService()).send_webhook_event(
                 http_client=client,
                 captcha_id='9991117777',
                 captcha_token=self.TEST_RECAPTCHA_V2_TOKEN,
@@ -107,7 +107,7 @@ class TwoCaptchaImplTests(CSTestFixture):
     ):
         mocked_get_pingback_token.return_value = 'token123xyz'
 
-        r = TwoCaptcha.get_verification_token()
+        r = TwoCaptchaService.get_verification_token()
 
         self.assertEqual(r, 'token123xyz')
         self.assertEqual(mocked_get_pingback_token.call_count, 1)
@@ -123,7 +123,7 @@ class TwoCaptchaImplTests(CSTestFixture):
         mocked_create_tc_captcha_report.return_value = True
 
         with RetryClient() as client:
-            TwoCaptcha.report_bad_captcha_id(
+            TwoCaptchaService.report_bad_captcha_id(
                 http_client=client,
                 captcha_id='9991117777'
             )
@@ -142,7 +142,7 @@ class TwoCaptchaImplTests(CSTestFixture):
         mocked_create_tc_captcha_report.return_value = True
 
         with RetryClient() as client:
-            TwoCaptcha.report_good_captcha_id(
+            TwoCaptchaService.report_good_captcha_id(
                 http_client=client,
                 captcha_id='9991117777'
             )

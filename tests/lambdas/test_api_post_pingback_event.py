@@ -4,12 +4,12 @@ from py_aws_core.db_dynamo import DDBClient
 
 from src.lambdas import api_post_pingback_event
 from src.layers.testing import CSTestFixture
-from src.layers.twocaptcha.captcha import TwoCaptcha
+from src.layers.twocaptcha.captcha_service import TwoCaptchaService
 
 
 class ApiPostPingbackEventTests(CSTestFixture):
 
-    @mock.patch.object(TwoCaptcha, 'send_webhook_event')
+    @mock.patch.object(TwoCaptchaService, 'send_webhook_event')
     @mock.patch.object(DDBClient, 'put_item')
     @mock.patch.object(DDBClient, 'update_item')
     def test_ok(
