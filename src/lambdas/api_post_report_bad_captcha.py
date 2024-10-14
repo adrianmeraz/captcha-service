@@ -4,10 +4,8 @@ from py_aws_core.clients import RetryClient
 
 from src.layers import events, logs
 from src.layers.containers import Container
-from src.layers.db_service import DatabaseService
 from src.layers.i_captcha import ICaptcha
 from src.layers.routing import get_router
-from src.layers.twocaptcha.captcha_service import TwoCaptchaService
 
 logger = logs.get_logger()
 apigw_router = get_router()
@@ -17,7 +15,6 @@ apigw_router = get_router()
 @inject
 def lambda_handler(event, context, captcha_service: ICaptcha = Provide[Container.captcha_service]):
     event = events.CSReportCaptchaEvent(event)
-    captcha_service = TwoCaptchaService(db_service=DatabaseService())
     process_event(event=event, captcha_service=captcha_service)
     return aws_utils.build_lambda_response(
         status_code=200,
