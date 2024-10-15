@@ -1,13 +1,13 @@
 from unittest import mock
 
 from src.lambdas import api_post_report_good_captcha
+from src.layers.captcha_service import CaptchaService
 from src.layers.testing import CSTestFixture
-from src.layers.twocaptcha.captcha_service import TwoCaptchaService
 
 
 class ApiPostReportGoodCaptchaTests(CSTestFixture):
 
-    @mock.patch.object(TwoCaptchaService, 'report_good_captcha_id')
+    @mock.patch.object(CaptchaService, 'report_good_captcha_id')
     def test_ok(
         self,
         mocked_report_good_captcha_id

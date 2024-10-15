@@ -1,19 +1,11 @@
 from py_aws_core import decorators as aws_decorators
-from py_aws_core.db_dynamo import ABCCommonAPI, DDBClient, DDBItemResponse
+from py_aws_core.db_dynamo import ABCCommonAPI, DDBItemResponse
 
 from src.layers import logs
-from src.layers.twocaptcha import const, entities, exceptions
+from src.layers.db_dynamo import DBClient
+from src.layers.twocaptcha import tc_const, entities, exceptions
 
 logger = logs.get_logger()
-__db_client = DDBClient()
-
-
-def get_db_client():
-    """
-    Reuses db client across all modules for efficiency
-    :return:
-    """
-    return __db_client
 
 
 class TwoCaptchaDB(ABCCommonAPI):
@@ -30,15 +22,15 @@ class CreateTCWebhookEvent(TwoCaptchaDB):
 
     @classmethod
     @aws_decorators.dynamodb_handler(client_err_map=ERR_CODE_MAP, cancellation_err_maps=[])
-    def call(cls, db_client: DDBClient, _id: str, code: str, rate: str):
-        pk = sk = entities.TCWebhookEvent.create_key(_id=_id)
+    def call(cls, db_client: DBClient, captcha_id: str, code: str, rate: str):
+        pk = sk = entities.TCWebhookEvent.create_key(_id=captcha_id)
         _type = entities.TCWebhookEvent.type()
         item = cls.get_put_item_map(
             pk=pk,
             sk=sk,
             _type=_type,
             expire_in_seconds=None,
-            Id=_id,
+            Id=captcha_id,
             Code=code,
             Rate=rate
         )
@@ -60,15 +52,15 @@ class CreateTCCaptchaReport(TwoCaptchaDB):
 
     @classmethod
     @aws_decorators.dynamodb_handler(client_err_map=ERR_CODE_MAP, cancellation_err_maps=[])
-    def call(cls, db_client: DDBClient, _id: str, status: const.ReportStatus):
-        pk = sk = entities.TCCaptchaReport.create_key(_id=_id)
+    def call(cls, db_client: DBClient, captcha_id: str, status: tc_const.ReportStatus):
+        pk = sk = entities.TCCaptchaReport.create_key(_id=captcha_id)
         _type = entities.TCCaptchaReport.type()
         item = cls.get_put_item_map(
             pk=pk,
             sk=sk,
             _type=_type,
             expire_in_seconds=None,
-            Id=_id,
+            Id=captcha_id,
             Status=status.value,
         )
         response = db_client.put_item(

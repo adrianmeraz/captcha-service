@@ -3,13 +3,13 @@ from unittest import mock
 import respx
 
 from src.lambdas import api_post_solve_captcha
+from src.layers.captcha_service import CaptchaService
 from src.layers.testing import CSTestFixture
-from src.layers.twocaptcha.captcha_service import TwoCaptchaService
 
 
 class ApiPostSolveCaptchaTests(CSTestFixture):
     @respx.mock
-    @mock.patch.object(TwoCaptchaService, 'solve_captcha')
+    @mock.patch.object(CaptchaService, 'solve_captcha')
     def test_ok(
         self,
         mocked_solve_captcha,

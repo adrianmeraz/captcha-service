@@ -1,15 +1,18 @@
 import typing
 
 from . import const, db_dynamo, entities
-from .i_database import IDatabase
+from .db_dynamo import DBClient
+from .db_interface import IDatabase
+from .twocaptcha import tc_const, tc_db_dynamo
+from .twocaptcha.db_interface import ITwoCaptchaDatabase
 
-db_client = db_dynamo.get_db_client()
 
+class DatabaseService(IDatabase, ITwoCaptchaDatabase):
+    def __init__(self, db_client: DBClient):
+        self._db_client = db_client
 
-class DatabaseService(IDatabase):
-    @classmethod
     def get_or_create_recaptcha_v2_event(
-        cls,
+        self,
         captcha_id: str,
         page_url: str,
         site_key: str,
@@ -20,7 +23,7 @@ class DatabaseService(IDatabase):
         **kwargs
     ) -> entities.CaptchaEvent:
         return db_dynamo.GetOrCreateRecaptchaV2Event.call(
-            db_client=db_client,
+            db_client=self._db_client,
             captcha_id=captcha_id,
             page_url=page_url,
             site_key=site_key,
@@ -29,9 +32,8 @@ class DatabaseService(IDatabase):
             proxy_url=proxy_url
         ).captcha_event
 
-    @classmethod
     def update_captcha_event_code(
-        cls,
+        self,
         captcha_id: str,
         status: const.CaptchaStatus,
         code: str,
@@ -39,34 +41,52 @@ class DatabaseService(IDatabase):
         **kwargs
     ):
         return db_dynamo.UpdateCaptchaEventCode.call(
-            db_client=db_client,
+            db_client=self._db_client,
             captcha_id=captcha_id,
             status=status,
             code=code
         )
 
-    @classmethod
     def update_captcha_event_on_solve_attempt(
-        cls,
+        self,
         captcha_id: str,
         *args,
         **kwargs
     ):
         return db_dynamo.UpdateCaptchaEventOnSolveAttempt.call(
-            db_client=db_client,
+            db_client=self._db_client,
             captcha_id=captcha_id
         )
 
-    @classmethod
     def update_captcha_event_webhook(
-        cls,
+        self,
         captcha_id: str,
         webhook_status: const.WebhookStatus,
         *args,
         **kwargs
     ):
         return db_dynamo.UpdateCaptchaEventWebhook.call(
-            db_client=db_client,
+            db_client=self._db_client,
             captcha_id=captcha_id,
             webhook_status=webhook_status
         )
+
+    def create_webhook_event(
+        self,
+        captcha_id: str,
+        code: str,
+        rate: str,
+    ):
+        tc_db_dynamo.CreateTCWebhookEvent.call(
+            db_client=self._db_client,
+            captcha_id=captcha_id,
+            code=code,
+            rate=rate
+        )
+
+    def create_captcha_report(
+        self,
+        captcha_id: str,
+        status: tc_const.ReportStatus,
+    ):
+        tc_db_dynamo.CreateTCCaptchaReport.call(db_client=self._db_client, captcha_id=captcha_id, status=status)

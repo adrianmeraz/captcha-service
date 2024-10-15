@@ -2,12 +2,11 @@ from dependency_injector.wiring import Provide, inject
 from py_aws_core import utils as aws_utils
 from py_aws_core.clients import RetryClient
 
-from src.layers import events, logs
+from src.layers import events
 from src.layers.containers import Container
-from src.layers.i_captcha import ICaptcha
+from src.layers.captcha_interface import ICaptcha
 from src.layers.routing import get_router
 
-logger = logs.get_logger()
 apigw_router = get_router()
 
 

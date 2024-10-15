@@ -3,17 +3,17 @@ import typing
 from httpx import Client
 
 from src.layers import logs, webhooks, exceptions, utils
-from src.layers.db_dynamo import const, get_db_client
-from src.layers.i_captcha import ICaptcha
-from src.layers.i_database import IDatabase
-from . import api_twocaptcha, db_twocaptcha, exceptions as tc_exceptions, const as tc_const
+from src.layers.captcha_interface import ICaptcha
+from src.layers.db_interface import IDatabase
+from src.layers.db_dynamo import const
+from src.layers.twocaptcha import api_twocaptcha, exceptions as tc_exceptions
+from src.layers.twocaptcha.db_interface import ITwoCaptchaDatabase
 
 logger = logs.get_logger()
-db_client = get_db_client()
 
 
-class TwoCaptchaService(ICaptcha):
-    def __init__(self, db_service: IDatabase):
+class CaptchaService(ICaptcha):
+    def __init__(self, db_service: IDatabase | ITwoCaptchaDatabase):
         self._db_service = db_service
 
     def solve_captcha(
@@ -37,7 +37,6 @@ class TwoCaptchaService(ICaptcha):
             request=request
         ).request
         self._db_service.get_or_create_recaptcha_v2_event(
-            db_client=db_client,
             captcha_id=captcha_id,
             page_url=page_url,
             proxy_url=proxy_url,
@@ -46,14 +45,12 @@ class TwoCaptchaService(ICaptcha):
             webhook_data=webhook_data
         )
         self._db_service.update_captcha_event_on_solve_attempt(
-            db_client=db_client,
             captcha_id=captcha_id
         )
 
     def handle_webhook_event(self, http_client: Client, captcha_id: str, code: str, rate: str, *args, **kwargs):
-        db_twocaptcha.CreateTCWebhookEvent.call(
-            db_client=db_client,
-            _id=captcha_id,
+        self._db_service.create_webhook_event(
+            captcha_id=captcha_id,
             code=code,
             rate=rate
         )
@@ -62,7 +59,6 @@ class TwoCaptchaService(ICaptcha):
         else:
             status = const.CaptchaStatus.CAPTCHA_ERROR
         return self._db_service.update_captcha_event_code(
-            db_client=db_client,
             captcha_id=captcha_id,
             code=code,
             status=status
@@ -96,7 +92,6 @@ class TwoCaptchaService(ICaptcha):
 
         logger.info(f'Webhook url: {webhook_url}, data: {webhook_data}, status: {webhook_status.value}')
         self._db_service.update_captcha_event_webhook(
-            db_client=db_client,
             captcha_id=captcha_id,
             webhook_status=webhook_status
         )
@@ -105,14 +100,12 @@ class TwoCaptchaService(ICaptcha):
     def get_verification_token(cls):
         return api_twocaptcha.TwoCaptchaAPI.get_pingback_token()
 
-    @classmethod
-    def report_bad_captcha_id(cls, http_client: Client, captcha_id: str, **kwargs):
-        db_twocaptcha.CreateTCCaptchaReport.call(db_client=db_client, _id=captcha_id, status=tc_const.ReportStatus.BAD)
+    def report_bad_captcha_id(self, http_client: Client, captcha_id: str, **kwargs):
+        self._db_service.create_bad_captcha_report(captcha_id=captcha_id)
         request = api_twocaptcha.ReportBadCaptcha.Request(captcha_id=captcha_id)
         return api_twocaptcha.ReportBadCaptcha.call(http_client=http_client, request=request)
 
-    @classmethod
-    def report_good_captcha_id(cls, http_client: Client, captcha_id: str, **kwargs):
-        db_twocaptcha.CreateTCCaptchaReport.call(db_client=db_client, _id=captcha_id, status=tc_const.ReportStatus.GOOD)
+    def report_good_captcha_id(self, http_client: Client, captcha_id: str, **kwargs):
+        self._db_service.create_good_captcha_report(_id=captcha_id)
         request = api_twocaptcha.ReportGoodCaptcha.Request(captcha_id=captcha_id)
         return api_twocaptcha.ReportGoodCaptcha.call(http_client=http_client, request=request)

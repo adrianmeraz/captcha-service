@@ -6,15 +6,10 @@ from py_aws_core.db_dynamo import ABCCommonAPI, DDBClient, UpdateItemResponse
 from src.layers import const, logs, entities
 
 logger = logs.get_logger()
-__db_client = DDBClient()
 
 
-def get_db_client():
-    """
-    Reuses db client across all modules for efficiency
-    :return:
-    """
-    return __db_client
+class DBClient(DDBClient):
+    pass
 
 
 class RecaptchaV2DB(ABCCommonAPI):
@@ -35,7 +30,7 @@ class GetOrCreateRecaptchaV2Event(RecaptchaV2DB):
     @aws_decorators.dynamodb_handler(client_err_map=aws_exceptions.ERR_CODE_MAP, cancellation_err_maps=[])
     def call(
         cls,
-        db_client: DDBClient,
+        db_client: DBClient,
         captcha_id: str,
         page_url: str,
         site_key: str,
@@ -123,7 +118,7 @@ class CreateRecaptchaV2Event(RecaptchaV2DB):
     @classmethod
     def call(
         cls,
-        db_client: DDBClient,
+        db_client: DBClient,
         captcha_id: str,
         page_url: str,
         proxy_url: str,
@@ -172,7 +167,7 @@ class UpdateCaptchaEventCode(RecaptchaV2DB):
     @aws_decorators.dynamodb_handler(client_err_map=aws_exceptions.ERR_CODE_MAP, cancellation_err_maps=[])
     def call(
         cls,
-        db_client: DDBClient,
+        db_client: DBClient,
         captcha_id: str,
         status: const.CaptchaStatus,
         code: str,
@@ -213,7 +208,7 @@ class UpdateCaptchaEventOnSolveAttempt(RecaptchaV2DB):
     @aws_decorators.dynamodb_handler(client_err_map=aws_exceptions.ERR_CODE_MAP, cancellation_err_maps=[])
     def call(
         cls,
-        db_client: DDBClient,
+        db_client: DBClient,
         captcha_id: str,
     ) -> Response:
         pk = sk = cls.recaptcha_v2_event_create_key(captcha_id=captcha_id)
@@ -252,7 +247,7 @@ class UpdateCaptchaEventWebhook(RecaptchaV2DB):
     @aws_decorators.dynamodb_handler(client_err_map=aws_exceptions.ERR_CODE_MAP, cancellation_err_maps=[])
     def call(
         cls,
-        db_client: DDBClient,
+        db_client: DBClient,
         captcha_id: str,
         webhook_status: const.WebhookStatus,
     ) -> Response:
