@@ -1,11 +1,10 @@
 import typing
+import logging
 
 from py_aws_core import decorators as aws_decorators, exceptions as aws_exceptions, entities
 from py_aws_core.db_dynamo import ABCCommonAPI, DDBClient, UpdateItemResponse
 
 from src.layers import const, logs, entities
-
-logger = logs.get_logger()
 
 
 class DBClient(DDBClient):
@@ -110,7 +109,7 @@ class GetOrCreateRecaptchaV2Event(RecaptchaV2DB):
             ReturnValues='ALL_NEW'
         )
 
-        logger.debug(response)
+        logging.debug(response)
         return cls.Response(response)
 
 
@@ -148,7 +147,7 @@ class CreateRecaptchaV2Event(RecaptchaV2DB):
             WebhookMaxAttempts=const.DEFAULT_WEBHOOK_MAX_ATTEMPTS
         )]
         count = db_client.write_maps_to_db(item_maps=c_maps)
-        logger.info(f'pk: {pk}, {count} record(s) written')
+        logging.info(f'pk: {pk}, {count} record(s) written')
         return count
 
 

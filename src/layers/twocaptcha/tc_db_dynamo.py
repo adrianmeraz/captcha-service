@@ -1,11 +1,8 @@
 from py_aws_core import decorators as aws_decorators
 from py_aws_core.db_dynamo import ABCCommonAPI, DDBItemResponse
 
-from src.layers import logs
 from src.layers.db_dynamo import DBClient
 from src.layers.twocaptcha import tc_const, entities, exceptions
-
-logger = logs.get_logger()
 
 
 class TwoCaptchaDB(ABCCommonAPI):
@@ -38,7 +35,6 @@ class CreateTCWebhookEvent(TwoCaptchaDB):
             Item=item,
             ConditionExpression='attribute_not_exists(PK)',
         )
-        logger.debug(response)
         return cls.Response(response)
 
 
@@ -67,5 +63,4 @@ class CreateTCCaptchaReport(TwoCaptchaDB):
             Item=item,
             ConditionExpression='attribute_not_exists(PK)',
         )
-        logger.debug(response)
         return cls.Response(response)

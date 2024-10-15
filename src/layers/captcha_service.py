@@ -13,8 +13,9 @@ logger = logs.get_logger()
 
 
 class CaptchaService(ICaptcha):
-    def __init__(self, db_service: IDatabase | ITwoCaptchaDatabase):
+    def __init__(self, db_service: IDatabase | ITwoCaptchaDatabase) -> None:
         self._db_service = db_service
+        # self._logger = logger
 
     def solve_captcha(
         self,
