@@ -24,6 +24,7 @@ jobs:
       SHARED_APP_NAME:       expatmagic
       TF_WORKDIR_PREFIX:     apps/${{ github.event.repository.name }}/environments
       TF_REPO:               'adrianmeraz/am-terraform'
+      WORKFLOW_FILE:         '.github/workflows/dev-pr.yml'
     steps:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -43,11 +44,11 @@ jobs:
         python-version: 3.12
 
     # https://www.peterbe.com/plog/install-python-poetry-github-actions-faster
-    - name: Load cached Poetry via ~/.local
+    - name: Load cached ~/.local
       uses: actions/cache@v4
       with:
         path: ~/.local
-        key: dotlocal-${{ runner.os }}-${{ hashFiles('.github/workflows/dev.yml') }}
+        key: dotlocal-${{ runner.os }}-${{ hashFiles(env.WORKFLOW_FILE) }}
         restore-keys: dotlocal-${{ runner.os }}-
 
     - name: Install / Load Poetry
@@ -56,12 +57,12 @@ jobs:
         virtualenvs-create: true
         virtualenvs-in-project: true
 
-    - name: Load cached dependencies via .venv
+    - name: Load cached .venv
       id: cache-virtualenv
       uses: actions/cache@v4
       with:
         path: .venv
-        key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('.github/workflows/dev.yml') }}
+        key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles(env.WORKFLOW_FILE) }}
         restore-keys: venv-${{ runner.os }}-
 
     - name: Install / Load Poetry dependencies

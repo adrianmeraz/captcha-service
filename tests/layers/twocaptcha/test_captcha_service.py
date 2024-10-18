@@ -18,14 +18,12 @@ class CaptchaServiceTests(CSTestFixture):
     """
 
     @respx.mock
-    @mock.patch.object(api_twocaptcha.SolveCaptcha, 'call')
     @mock.patch.object(DatabaseService, 'update_captcha_event_on_solve_attempt')
     @mock.patch.object(DatabaseService, 'get_or_create_recaptcha_v2_event')
     def test_solve_captcha_ok(
         self,
         mocked_get_or_create_recaptcha_v2_event,
         mocked_update_captcha_event_on_solve_attempt,
-        mocked_solve_captcha_call
     ):
         mocked_get_or_create_recaptcha_v2_event.return_value = 1
         mocked_update_captcha_event_on_solve_attempt.return_value = 1
@@ -33,12 +31,6 @@ class CaptchaServiceTests(CSTestFixture):
         _json = self.get_api_resource_json('get_captcha_id.json')
 
         with RetryClient() as client:
-            boto_client = DynamoDBClientFactory.new_client()
-
-            stubber = Stubber(boto_client)
-            stubber.activate()
-            stubber.add_response(method='get_item', service_response=_json)
-
             boto_client = DynamoDBClientFactory.new_client()
             secrets = Secrets(_dynamo_db_table_name='TEST_TABLE')
             db_service = DatabaseService(boto_client=boto_client, secrets=secrets)
@@ -52,7 +44,6 @@ class CaptchaServiceTests(CSTestFixture):
 
         self.assertEqual(mocked_get_or_create_recaptcha_v2_event.call_count, 1)
         self.assertEqual(mocked_update_captcha_event_on_solve_attempt.call_count, 1)
-        self.assertEqual(mocked_solve_captcha_call.call_count, 1)
 
     @mock.patch.object(tc_db_dynamo.CreateTCWebhookEvent, 'call')
     @mock.patch.object(DatabaseService, 'update_captcha_event_code')
@@ -61,11 +52,17 @@ class CaptchaServiceTests(CSTestFixture):
         mocked_update_captcha_event_code,
         mocked_create_tc_webhook_event_call
     ):
+        mocked_report_bad_captcha = self.create_route(
+            method='GET',
+            url__eq='http://2captcha.com/res.php?key=IPSUMKEY&action=reportbad&id=2122988149&json=1',
+            response_status_code=200,
+            response_json=self.get_api_resource_json('invalid_response.json')
+        )
         mocked_update_captcha_event_code.return_value = True
         mocked_create_tc_webhook_event_call.return_value = True
 
         boto_client = DynamoDBClientFactory.new_client()
-        secrets = Secrets(_dynamo_db_table_name='TEST_TABLE')
+        secrets = Secrets(_dynamo_db_table_name='TEST_TABLE', _captcha_password='123')
         db_service = DatabaseService(boto_client=boto_client, secrets=secrets)
         captcha_service = CaptchaService(db_service=db_service, secrets=secrets)
 

@@ -6,6 +6,7 @@ from py_aws_core.ssm_parameter_store import SSMParameterStore
 
 @dataclass
 class Secrets(SSMParameterStore):
+    boto_client: 
     _app_name: str = None
     _base_domain_name: str = None
     _dynamo_db_table_name: str = None

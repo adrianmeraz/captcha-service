@@ -15,13 +15,13 @@ class ApiPostPingbackEventTests(CSTestFixture):
     @mock.patch.object(CaptchaService, 'handle_webhook_event')
     def test_ok(
         self,
-        handle_webhook_event,
-        send_webhook_event,
+        mocked_handle_webhook_event,
+        mocked_send_webhook_event,
     ):
         mock_event = self.get_event_resource_json('event#api_post_pingback_event.json')
 
-        handle_webhook_event.return_value = True
-        send_webhook_event.return_value = True
+        mocked_handle_webhook_event.return_value = self.get_db_resource_json('db#update_captcha_event.json')
+        mocked_send_webhook_event.return_value = True
 
         boto_client = DynamoDBClientFactory.new_client()
         secrets = Secrets(_dynamo_db_table_name='TEST_TABLE', _twocaptcha_pingback_token=self.TEST_VERIFICATION_TOKEN)
@@ -46,5 +46,5 @@ class ApiPostPingbackEventTests(CSTestFixture):
             }
         )
 
-        self.assertEqual(handle_webhook_event.call_count, 1)
-        self.assertEqual(send_webhook_event.call_count, 1)
+        self.assertEqual(mocked_handle_webhook_event.call_count, 1)
+        self.assertEqual(mocked_send_webhook_event.call_count, 1)
