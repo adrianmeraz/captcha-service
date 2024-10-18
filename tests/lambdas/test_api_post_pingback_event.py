@@ -1,32 +1,26 @@
-from unittest import mock
-
+from botocore.stub import Stubber
 from py_aws_core.boto_clients import DynamoDBClientFactory
 
 from src.lambdas import api_post_pingback_event
-from src.layers.captcha_service import CaptchaService
-from src.layers.db_service import DatabaseService
-from src.layers.secrets import Secrets
 from src.layers.testing import CSTestFixture
 
 
 class ApiPostPingbackEventTests(CSTestFixture):
 
-    @mock.patch.object(CaptchaService, 'send_webhook_event')
-    @mock.patch.object(CaptchaService, 'handle_webhook_event')
-    def test_ok(
-        self,
-        mocked_handle_webhook_event,
-        mocked_send_webhook_event,
-    ):
+    def test_ok(self):
         mock_event = self.get_event_resource_json('event#api_post_pingback_event.json')
 
-        mocked_handle_webhook_event.return_value = self.get_db_resource_json('db#update_captcha_event.json')
-        mocked_send_webhook_event.return_value = True
-
         boto_client = DynamoDBClientFactory.new_client()
-        secrets = Secrets(_dynamo_db_table_name='TEST_TABLE', _twocaptcha_pingback_token=self.TEST_VERIFICATION_TOKEN)
-        db_service = DatabaseService(boto_client=boto_client, secrets=secrets)
-        captcha_service = CaptchaService(db_service=db_service, secrets=secrets)
+
+        stubber_1 = Stubber(boto_client)
+        put_item_json = self.get_db_resource_json('db#put_item.json')
+        update_item_json = self.get_db_resource_json('db#update_captcha_event.json')
+        stubber_1.add_response(method='put_item', service_response=put_item_json)
+        stubber_1.add_response(method='update_item', service_response=update_item_json)
+        stubber_1.add_response(method='update_item', service_response=update_item_json)
+        stubber_1.activate()
+
+        captcha_service = self.get_mock_captcha_service(boto_client=boto_client)
 
         val = api_post_pingback_event.lambda_handler(event=mock_event, context=None, captcha_service=captcha_service)
         self.maxDiff = None
@@ -46,5 +40,4 @@ class ApiPostPingbackEventTests(CSTestFixture):
             }
         )
 
-        self.assertEqual(mocked_handle_webhook_event.call_count, 1)
-        self.assertEqual(mocked_send_webhook_event.call_count, 1)
+        stubber_1.assert_no_pending_responses()

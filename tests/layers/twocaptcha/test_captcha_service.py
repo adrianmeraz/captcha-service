@@ -1,15 +1,13 @@
 from unittest import mock
 
 import respx
-from botocore.stub import Stubber
+from py_aws_core.boto_clients import SSMClientFactory
 from py_aws_core.clients import RetryClient
-from py_aws_core.boto_clients import DynamoDBClientFactory
 
+from src.layers.captcha_service import CaptchaService
 from src.layers.db_service import DatabaseService
-from src.layers.secrets import Secrets
 from src.layers.testing import CSTestFixture
 from src.layers.twocaptcha import api_twocaptcha, tc_db_dynamo
-from src.layers.captcha_service import CaptchaService
 
 
 class CaptchaServiceTests(CSTestFixture):
@@ -27,14 +25,16 @@ class CaptchaServiceTests(CSTestFixture):
     ):
         mocked_get_or_create_recaptcha_v2_event.return_value = 1
         mocked_update_captcha_event_on_solve_attempt.return_value = 1
-
-        _json = self.get_api_resource_json('get_captcha_id.json')
+        mocked_solve_captcha = self.create_route(
+            method='POST',
+            url__eq='http://2captcha.com/in.php?key=test-password-1&method=userrecaptcha&googlekey=6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-&pageurl=https%3A%2F%2Fexample.com&json=1&pingback=https%3A%2F%2Fbig-service-dev.ipsumlorem.com%2Fpingback-event',
+            response_status_code=200,
+            response_json=self.get_api_resource_json('get_captcha_id.json')
+        )
 
         with RetryClient() as client:
-            boto_client = DynamoDBClientFactory.new_client()
-            secrets = Secrets(_dynamo_db_table_name='TEST_TABLE')
-            db_service = DatabaseService(boto_client=boto_client, secrets=secrets)
-            captcha_service = CaptchaService(db_service=db_service, secrets=secrets)
+            boto_client = SSMClientFactory.new_client()
+            captcha_service = self.get_mock_captcha_service(boto_client=boto_client)
             captcha_service.solve_captcha(
                 http_client=client,
                 site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
@@ -44,6 +44,7 @@ class CaptchaServiceTests(CSTestFixture):
 
         self.assertEqual(mocked_get_or_create_recaptcha_v2_event.call_count, 1)
         self.assertEqual(mocked_update_captcha_event_on_solve_attempt.call_count, 1)
+        self.assertEqual(mocked_solve_captcha.call_count, 1)
 
     @mock.patch.object(tc_db_dynamo.CreateTCWebhookEvent, 'call')
     @mock.patch.object(DatabaseService, 'update_captcha_event_code')
@@ -61,10 +62,8 @@ class CaptchaServiceTests(CSTestFixture):
         mocked_update_captcha_event_code.return_value = True
         mocked_create_tc_webhook_event_call.return_value = True
 
-        boto_client = DynamoDBClientFactory.new_client()
-        secrets = Secrets(_dynamo_db_table_name='TEST_TABLE', _captcha_password='123')
-        db_service = DatabaseService(boto_client=boto_client, secrets=secrets)
-        captcha_service = CaptchaService(db_service=db_service, secrets=secrets)
+        boto_client = SSMClientFactory.new_client()
+        captcha_service = self.get_mock_captcha_service(boto_client=boto_client)
 
         with RetryClient() as client:
             captcha_service.handle_webhook_event(
@@ -92,10 +91,8 @@ class CaptchaServiceTests(CSTestFixture):
             response_text=''
         )
 
-        boto_client = DynamoDBClientFactory.new_client()
-        secrets = Secrets(_dynamo_db_table_name='TEST_TABLE')
-        db_service = DatabaseService(boto_client=boto_client, secrets=secrets)
-        captcha_service = CaptchaService(db_service=db_service, secrets=secrets)
+        boto_client = SSMClientFactory.new_client()
+        captcha_service = self.get_mock_captcha_service(boto_client=boto_client)
 
         with RetryClient() as client:
             webhook_data = {
@@ -115,14 +112,11 @@ class CaptchaServiceTests(CSTestFixture):
 
     @respx.mock
     def test_get_verification_token_ok(self):
-        boto_client = DynamoDBClientFactory.new_client()
-
-        secrets = Secrets(_dynamo_db_table_name='TEST_TABLE', _twocaptcha_pingback_token='token123xyz')
-        db_service = DatabaseService(boto_client=boto_client, secrets=secrets)
-        captcha_service = CaptchaService(db_service=db_service, secrets=secrets)
+        boto_client = SSMClientFactory.new_client()
+        captcha_service = self.get_mock_captcha_service(boto_client=boto_client)
         r = captcha_service.get_verification_token()
 
-        self.assertEqual(r, 'token123xyz')
+        self.assertEqual(r, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c')
 
     @mock.patch.object(tc_db_dynamo.CreateTCCaptchaReport, 'call')
     @mock.patch.object(api_twocaptcha.ReportBadCaptcha, 'call')
@@ -135,11 +129,8 @@ class CaptchaServiceTests(CSTestFixture):
         mocked_create_tc_captcha_report.return_value = True
 
         with RetryClient() as client:
-            boto_client = DynamoDBClientFactory.new_client()
-            secrets = Secrets(_dynamo_db_table_name='TEST_TABLE', _twocaptcha_pingback_token='token123xyz')
-            db_service = DatabaseService(boto_client=boto_client, secrets=secrets)
-            secrets = Secrets(_captcha_password='password123')
-            captcha_service = CaptchaService(db_service=db_service, secrets=secrets)
+            boto_client = SSMClientFactory.new_client()
+            captcha_service = self.get_mock_captcha_service(boto_client=boto_client)
             captcha_service.report_bad_captcha_id(
                 http_client=client,
                 captcha_id='9991117777'
@@ -159,11 +150,8 @@ class CaptchaServiceTests(CSTestFixture):
         mocked_create_tc_captcha_report.return_value = True
 
         with RetryClient() as client:
-            boto_client = DynamoDBClientFactory.new_client()
-            secrets = Secrets(_dynamo_db_table_name='TEST_TABLE', _twocaptcha_pingback_token='token123xyz')
-            db_service = DatabaseService(boto_client=boto_client, secrets=secrets)
-            secrets = Secrets(_captcha_password='password123')
-            captcha_service = CaptchaService(db_service=db_service, secrets=secrets)
+            boto_client = SSMClientFactory.new_client()
+            captcha_service = self.get_mock_captcha_service(boto_client=boto_client)
             captcha_service.report_good_captcha_id(
                 http_client=client,
                 captcha_id='9991117777'

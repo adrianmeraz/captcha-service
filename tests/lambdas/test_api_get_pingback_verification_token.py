@@ -14,9 +14,7 @@ class ApiGetPingbackVerificationTokenTests(CSTestFixture):
         mock_event = self.get_event_resource_json('event#api_get_pingback_verification_token.json')
 
         boto_client = DynamoDBClientFactory.new_client()
-        secrets = Secrets(_dynamo_db_table_name='TEST_TABLE', _twocaptcha_pingback_token=self.TEST_VERIFICATION_TOKEN)
-        db_service = DatabaseService(boto_client=boto_client, secrets=secrets)
-        captcha_service = CaptchaService(db_service=db_service, secrets=secrets)
+        captcha_service = self.get_mock_captcha_service(boto_client=boto_client)
         val = api_get_pingback_verification_token.lambda_handler(
             event=mock_event,
             context=None,

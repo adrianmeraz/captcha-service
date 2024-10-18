@@ -9,15 +9,11 @@ from src.layers.twocaptcha.exceptions import DuplicateTCCaptchaReport, Duplicate
 class CreateTCWebhookEventTests(CSTestFixture):
 
     def test_DuplicateTCWebhookEvent(self):
-        _json = self.get_db_resource_json('errors', 'db#tc_webhook_event#duplicate_error.json')
-        # mocked_put_item.side_effect = ClientError(error_response=_json, operation_name='dummy')
-
         boto_client = DynamoDBClientFactory.new_client()
 
         stubber = Stubber(boto_client)
+        stubber.add_client_error(method='put_item', service_error_code='ConditionalCheckFailedException')
         stubber.activate()
-        stubber.add_client_error(method='put_item', service_error_meta=_json)
-        # stubber.add_response(method='put_item', _json)
 
         with self.assertRaises(DuplicateTCWebhookEvent):
             tc_db_dynamo.CreateTCWebhookEvent.call(
@@ -31,14 +27,11 @@ class CreateTCWebhookEventTests(CSTestFixture):
 
 class CreateTCCaptchaReportTests(CSTestFixture):
     def test_DuplicateTCCaptchaReport(self):
-        _json = self.get_db_resource_json('errors', 'db#tc_webhook_event#duplicate_error.json')
-        # mocked_put_item.side_effect = ClientError(error_response=_json, operation_name='dummy')
-
         boto_client = DynamoDBClientFactory.new_client()
 
         stubber = Stubber(boto_client)
-        stubber.activate()
         stubber.add_client_error(method='put_item', service_error_code='ConditionalCheckFailedException')
+        stubber.activate()
 
         with self.assertRaises(DuplicateTCCaptchaReport):
             tc_db_dynamo.CreateTCCaptchaReport.call(
