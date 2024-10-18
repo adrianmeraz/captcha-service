@@ -1,28 +1,34 @@
 from unittest import mock
 
+from py_aws_core.boto_clients import DynamoDBClientFactory
+
 from src.lambdas import api_post_pingback_event
 from src.layers.captcha_service import CaptchaService
+from src.layers.db_service import DatabaseService
+from src.layers.secrets import Secrets
 from src.layers.testing import CSTestFixture
 
 
 class ApiPostPingbackEventTests(CSTestFixture):
 
     @mock.patch.object(CaptchaService, 'send_webhook_event')
-    @mock.patch.object(CSDynamoDBService, 'put_item')
-    @mock.patch.object(CSDynamoDBService, 'update_item')
+    @mock.patch.object(CaptchaService, 'handle_webhook_event')
     def test_ok(
         self,
-        mocked_update_item,
-        mocked_put_item,
-        mocked_send_webhook_event,
+        handle_webhook_event,
+        send_webhook_event,
     ):
         mock_event = self.get_event_resource_json('event#api_post_pingback_event.json')
 
-        mocked_update_item.return_value = self.get_db_resource_json('db#update_captcha_event.json')
-        mocked_send_webhook_event.return_value = True
-        mocked_put_item.return_value = dict()
+        handle_webhook_event.return_value = True
+        send_webhook_event.return_value = True
 
-        val = api_post_pingback_event.lambda_handler(event=mock_event, context=None)
+        boto_client = DynamoDBClientFactory.new_client()
+        secrets = Secrets(_dynamo_db_table_name='TEST_TABLE', _twocaptcha_pingback_token=self.TEST_VERIFICATION_TOKEN)
+        db_service = DatabaseService(boto_client=boto_client, secrets=secrets)
+        captcha_service = CaptchaService(db_service=db_service, secrets=secrets)
+
+        val = api_post_pingback_event.lambda_handler(event=mock_event, context=None, captcha_service=captcha_service)
         self.maxDiff = None
         self.assertEqual(
             val,
@@ -40,5 +46,5 @@ class ApiPostPingbackEventTests(CSTestFixture):
             }
         )
 
-        self.assertEqual(mocked_update_item.call_count, 1)
-        self.assertEqual(mocked_send_webhook_event.call_count, 1)
+        self.assertEqual(handle_webhook_event.call_count, 1)
+        self.assertEqual(send_webhook_event.call_count, 1)
