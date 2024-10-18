@@ -1,3 +1,4 @@
+import respx
 from botocore.stub import Stubber
 from py_aws_core.boto_clients import DynamoDBClientFactory
 
@@ -7,6 +8,7 @@ from src.layers.testing import CSTestFixture
 
 class ApiPostPingbackEventTests(CSTestFixture):
 
+    @respx.mock
     def test_ok(self):
         mock_event = self.get_event_resource_json('event#api_post_pingback_event.json')
 
