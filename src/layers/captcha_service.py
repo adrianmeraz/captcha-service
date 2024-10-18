@@ -1,11 +1,10 @@
-import typing
-
 from httpx import Client
 
 from src.layers import logs, webhooks, exceptions, utils
 from src.layers.captcha_interface import ICaptcha
 from src.layers.db_interface import IDatabase
-from src.layers.db_dynamo import const
+from src.layers.dynamodb_api import const
+from src.layers.secrets import Secrets
 from src.layers.twocaptcha import api_twocaptcha, exceptions as tc_exceptions
 from src.layers.twocaptcha.db_interface import ITwoCaptchaDatabase
 
@@ -13,8 +12,9 @@ logger = logs.get_logger()
 
 
 class CaptchaService(ICaptcha):
-    def __init__(self, db_service: IDatabase | ITwoCaptchaDatabase) -> None:
+    def __init__(self, db_service: IDatabase | ITwoCaptchaDatabase, secrets: Secrets) -> None:
         self._db_service = db_service
+        self._secrets = secrets
         # self._logger = logger
 
     def solve_captcha(
@@ -23,15 +23,16 @@ class CaptchaService(ICaptcha):
         site_key: str,
         page_url: str,
         webhook_url: str,
-        webhook_data: typing.Dict[str, str] = None,
+        webhook_data: dict[str, str] = None,
         proxy_url: str = '',
         **kwargs
     ):
         request = api_twocaptcha.SolveCaptcha.Request(
+            api_key=self._secrets.captcha_password,
             site_key=site_key,
             page_url=page_url,
             proxy_url=proxy_url,
-            pingback_url=api_twocaptcha.SolveCaptcha.get_webhook_url(),
+            pingback_url=self._secrets.get_webhook_url(),
         )
         captcha_id = api_twocaptcha.SolveCaptcha.call(
             http_client=http_client,
@@ -71,7 +72,7 @@ class CaptchaService(ICaptcha):
         captcha_id: str,
         captcha_token: str,
         webhook_url: str,
-        webhook_data: typing.Dict[str, str] = None,
+        webhook_data: dict[str, str] = None,
         *args,
         **kwargs
     ):
@@ -97,16 +98,21 @@ class CaptchaService(ICaptcha):
             webhook_status=webhook_status
         )
 
-    @classmethod
-    def get_verification_token(cls):
-        return api_twocaptcha.TwoCaptchaAPI.get_pingback_token()
+    def get_verification_token(self):
+        return self._secrets.twocaptcha_pingback_token
 
     def report_bad_captcha_id(self, http_client: Client, captcha_id: str, **kwargs):
         self._db_service.create_bad_captcha_report(captcha_id=captcha_id)
-        request = api_twocaptcha.ReportBadCaptcha.Request(captcha_id=captcha_id)
+        request = api_twocaptcha.ReportBadCaptcha.Request(
+            api_key=self._secrets.captcha_password,
+            captcha_id=captcha_id
+        )
         return api_twocaptcha.ReportBadCaptcha.call(http_client=http_client, request=request)
 
     def report_good_captcha_id(self, http_client: Client, captcha_id: str, **kwargs):
         self._db_service.create_good_captcha_report(_id=captcha_id)
-        request = api_twocaptcha.ReportGoodCaptcha.Request(captcha_id=captcha_id)
+        request = api_twocaptcha.ReportGoodCaptcha.Request(
+            api_key=self._secrets.captcha_password,
+            captcha_id=captcha_id
+        )
         return api_twocaptcha.ReportGoodCaptcha.call(http_client=http_client, request=request)

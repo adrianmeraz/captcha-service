@@ -2,15 +2,14 @@ from unittest import mock
 
 from src.lambdas import api_post_pingback_event
 from src.layers.captcha_service import CaptchaService
-from src.layers.db_dynamo import DBClient
 from src.layers.testing import CSTestFixture
 
 
 class ApiPostPingbackEventTests(CSTestFixture):
 
     @mock.patch.object(CaptchaService, 'send_webhook_event')
-    @mock.patch.object(DBClient, 'put_item')
-    @mock.patch.object(DBClient, 'update_item')
+    @mock.patch.object(CSDynamoDBService, 'put_item')
+    @mock.patch.object(CSDynamoDBService, 'update_item')
     def test_ok(
         self,
         mocked_update_item,

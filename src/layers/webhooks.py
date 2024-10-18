@@ -1,5 +1,3 @@
-import typing
-
 from httpx import Client
 from py_aws_core import decorators as aws_decorators
 
@@ -8,7 +6,7 @@ from .exceptions import WebhookException, WebhookHttpStatusException
 
 class PostWebhook:
     class Request:
-        def __init__(self, webhook_url: str, webhook_data: typing.Dict = None):
+        def __init__(self, webhook_url: str, webhook_data: dict = None):
             self.webhook_url = webhook_url
             self.webhook_data = webhook_data or dict()
 

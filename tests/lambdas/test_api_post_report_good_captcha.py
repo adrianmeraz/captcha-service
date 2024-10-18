@@ -1,7 +1,11 @@
 from unittest import mock
 
+from py_aws_core.boto_clients import DynamoDBClientFactory
+
 from src.lambdas import api_post_report_good_captcha
 from src.layers.captcha_service import CaptchaService
+from src.layers.db_service import DatabaseService
+from src.layers.secrets import Secrets
 from src.layers.testing import CSTestFixture
 
 
@@ -16,7 +20,11 @@ class ApiPostReportGoodCaptchaTests(CSTestFixture):
 
         mock_event = self.get_event_resource_json('event#api_post_report_good_captcha.json')
 
-        val = api_post_report_good_captcha.lambda_handler(event=mock_event, context=None)
+        boto_client = DynamoDBClientFactory.new_client()
+        secrets = Secrets(_dynamo_db_table_name='TEST_TABLE', _twocaptcha_pingback_token=self.TEST_VERIFICATION_TOKEN)
+        db_service = DatabaseService(boto_client=boto_client, secrets=secrets)
+        captcha_service = CaptchaService(db_service=db_service, secrets=secrets)
+        val = api_post_report_good_captcha.lambda_handler(event=mock_event, context=None, captcha_service=captcha_service)
         self.maxDiff = None
         self.assertEqual(
             val,

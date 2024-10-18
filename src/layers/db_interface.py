@@ -1,4 +1,3 @@
-import typing
 from abc import ABC, abstractmethod
 
 from . import const, entities
@@ -11,7 +10,7 @@ class IDatabase(ABC):
         captcha_id: str,
         page_url: str,
         site_key: str,
-        webhook_data: typing.Dict[str, str],
+        webhook_data: dict[str, str],
         webhook_url: str,
         proxy_url: str = '',
         *args,

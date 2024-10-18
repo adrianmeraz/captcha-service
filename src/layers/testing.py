@@ -1,4 +1,3 @@
-import typing
 from importlib.resources import files
 
 from py_aws_core.testing import BaseTestFixture
@@ -16,13 +15,13 @@ class CSTestFixture(BaseTestFixture):
     TEST_SITEKEY = '6LeN_osaAAAAAL-8U6H1IWdcFCY9kDBS34OBYqL_'
 
     @classmethod
-    def get_api_resource_json(cls, *descendants) -> typing.Dict:
+    def get_api_resource_json(cls, *descendants) -> dict:
         return cls.get_resource_json(*descendants, path=cls.TEST_API_RESOURCE_PATH)
 
     @classmethod
-    def get_event_resource_json(cls,  *descendants) -> typing.Dict:
+    def get_event_resource_json(cls,  *descendants) -> dict:
         return cls.get_resource_json(*descendants, path=cls.TEST_EVENT_RESOURCE_PATH)
 
     @classmethod
-    def get_db_resource_json(cls, *descendants) -> typing.Dict:
+    def get_db_resource_json(cls, *descendants) -> dict:
         return cls.get_resource_json(*descendants, path=cls.TEST_DB_RESOURCE_PATH)

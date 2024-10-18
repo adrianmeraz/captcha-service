@@ -1,24 +1,27 @@
-from unittest import mock
-
 import respx
+from py_aws_core.boto_clients import DynamoDBClientFactory
 
 from src.lambdas import api_get_pingback_verification_token
+from src.layers.captcha_service import CaptchaService
+from src.layers.db_service import DatabaseService
+from src.layers.secrets import Secrets
 from src.layers.testing import CSTestFixture
-from src.layers.twocaptcha import api_twocaptcha
 
 
 class ApiGetPingbackVerificationTokenTests(CSTestFixture):
     @respx.mock
-    @mock.patch.object(api_twocaptcha.TwoCaptchaAPI, 'get_pingback_token')
-    def test_ok(
-        self,
-        mocked_get_pingback_token
-    ):
-        mocked_get_pingback_token.return_value = self.TEST_VERIFICATION_TOKEN
-
+    def test_ok(self):
         mock_event = self.get_event_resource_json('event#api_get_pingback_verification_token.json')
 
-        val = api_get_pingback_verification_token.lambda_handler(event=mock_event, context=None)
+        boto_client = DynamoDBClientFactory.new_client()
+        secrets = Secrets(_dynamo_db_table_name='TEST_TABLE', _twocaptcha_pingback_token=self.TEST_VERIFICATION_TOKEN)
+        db_service = DatabaseService(boto_client=boto_client, secrets=secrets)
+        captcha_service = CaptchaService(db_service=db_service, secrets=secrets)
+        val = api_get_pingback_verification_token.lambda_handler(
+            event=mock_event,
+            context=None,
+            captcha_service=captcha_service
+        )
         self.maxDiff = None
         self.assertEqual(
             val,
@@ -35,5 +38,3 @@ class ApiGetPingbackVerificationTokenTests(CSTestFixture):
                 'statusCode': 200
             }
         )
-
-        self.assertEqual(mocked_get_pingback_token.call_count, 1)

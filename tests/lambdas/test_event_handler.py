@@ -3,7 +3,6 @@ from unittest import mock
 import respx
 
 from src.lambdas import event_handler
-from src.layers.db_dynamo import DBClient
 from src.layers.testing import CSTestFixture
 from src.layers.captcha_service import CaptchaService
 
@@ -40,8 +39,8 @@ class EventHandlerTests(CSTestFixture):
         self.assertEqual(mocked_solve_captcha.call_count, 1)
 
     @mock.patch.object(CaptchaService, 'send_webhook_event')
-    @mock.patch.object(DBClient, 'put_item')
-    @mock.patch.object(DBClient, 'update_item')
+    @mock.patch.object(CSDynamoDBService, 'put_item')
+    @mock.patch.object(CSDynamoDBService, 'update_item')
     def test_solve_captcha_ok(
         self,
         mocked_update_item,

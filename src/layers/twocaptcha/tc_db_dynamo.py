@@ -1,25 +1,26 @@
+from botocore.client import BaseClient
 from py_aws_core import decorators as aws_decorators
-from py_aws_core.db_dynamo import ABCCommonAPI, DDBItemResponse
+from py_aws_core.dynamodb_api import DynamoDBAPI
+from py_aws_core.dynamodb_entities import ItemResponse
 
-from src.layers.db_dynamo import DBClient
 from src.layers.twocaptcha import tc_const, entities, exceptions
 
 
-class TwoCaptchaDB(ABCCommonAPI):
+class TCDynamoDBAPI(DynamoDBAPI):
     pass
 
 
-class CreateTCWebhookEvent(TwoCaptchaDB):
+class CreateTCWebhookEvent(TCDynamoDBAPI):
     ERR_CODE_MAP = {
         'ConditionalCheckFailedException': exceptions.DuplicateTCWebhookEvent
     }
 
-    class Response(DDBItemResponse):
+    class Response(ItemResponse):
         pass
 
     @classmethod
     @aws_decorators.dynamodb_handler(client_err_map=ERR_CODE_MAP, cancellation_err_maps=[])
-    def call(cls, db_client: DBClient, captcha_id: str, code: str, rate: str):
+    def call(cls, boto_client: BaseClient, table_name: str, captcha_id: str, code: str, rate: str):
         pk = sk = entities.TCWebhookEvent.create_key(_id=captcha_id)
         _type = entities.TCWebhookEvent.type()
         item = cls.get_put_item_map(
@@ -31,24 +32,25 @@ class CreateTCWebhookEvent(TwoCaptchaDB):
             Code=code,
             Rate=rate
         )
-        response = db_client.put_item(
+        response = boto_client.put_item(
+            TableName=table_name,
             Item=item,
             ConditionExpression='attribute_not_exists(PK)',
         )
         return cls.Response(response)
 
 
-class CreateTCCaptchaReport(TwoCaptchaDB):
+class CreateTCCaptchaReport(TCDynamoDBAPI):
     ERR_CODE_MAP = {
         'ConditionalCheckFailedException': exceptions.DuplicateTCCaptchaReport
     }
 
-    class Response(DDBItemResponse):
+    class Response(ItemResponse):
         pass
 
     @classmethod
     @aws_decorators.dynamodb_handler(client_err_map=ERR_CODE_MAP, cancellation_err_maps=[])
-    def call(cls, db_client: DBClient, captcha_id: str, status: tc_const.ReportStatus):
+    def call(cls, boto_client: BaseClient, table_name: str, captcha_id: str, status: tc_const.ReportStatus):
         pk = sk = entities.TCCaptchaReport.create_key(_id=captcha_id)
         _type = entities.TCCaptchaReport.type()
         item = cls.get_put_item_map(
@@ -59,7 +61,8 @@ class CreateTCCaptchaReport(TwoCaptchaDB):
             Id=captcha_id,
             Status=status.value,
         )
-        response = db_client.put_item(
+        response = boto_client.put_item(
+            TableName=table_name,
             Item=item,
             ConditionExpression='attribute_not_exists(PK)',
         )

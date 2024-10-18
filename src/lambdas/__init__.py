@@ -9,8 +9,8 @@ import_all_package_modules(__name__)  # Registers routes of lambda handlers
 def wire_all_modules_in_package(package: str):
     container = Container()
     f = files(package)
-    modules = [fp for fp in f.iterdir() if fp.is_file and fp.name.endswith('.py')]
-    imports = [f'{package}.{Path(fp.name).stem}' for fp in modules if not fp.name.startswith('__')]
+    modules = [fp for fp in f.iterdir() if fp.is_file and fp.name.endswith('.py') and not fp.name.startswith('__')]
+    imports = [f'{package}.{Path(fp.name).stem}' for fp in modules]
     container.wire(modules=imports)
 
 

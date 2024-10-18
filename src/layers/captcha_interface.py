@@ -1,4 +1,3 @@
-import typing
 from abc import ABC, abstractmethod
 
 from httpx import Client
@@ -13,7 +12,7 @@ class ICaptcha(ABC):
         site_key: str,
         page_url: str,
         webhook_url: str,
-        webhook_data: typing.Dict[str, str] = None,
+        webhook_data: dict[str, str] = None,
         proxy_url: str = None,
         *args,
         **kwargs
@@ -33,7 +32,7 @@ class ICaptcha(ABC):
         captcha_id: str,
         captcha_token: str,
         webhook_url: str,
-        webhook_data: typing.Dict[str, str] = None,
+        webhook_data: dict[str, str] = None,
         *args,
         **kwargs
     ):
