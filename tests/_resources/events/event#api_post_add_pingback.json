@@ -1,0 +1,87 @@
+{
+  "resource": "/pingback",
+  "path": "/pingback",
+  "httpMethod": "POST",
+  "headers": {
+    "Accept": "*/*",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Content-Type": "application/json",
+    "Host": "niw7lgbxdd.execute-api.us-west-2.amazonaws.com",
+    "Postman-Token": "2b1039ec-038d-45ac-8e8c-c751d85d48c0",
+    "User-Agent": "PostmanRuntime/7.41.1",
+    "X-Amzn-Trace-Id": "Root=1-66be398a-7deb094529c5e5cc57888a3e",
+    "X-Forwarded-For": "107.213.20.204",
+    "X-Forwarded-Port": "443",
+    "X-Forwarded-Proto": "https"
+  },
+  "multiValueHeaders": {
+    "Accept": [
+      "*/*"
+    ],
+    "Accept-Encoding": [
+      "gzip, deflate, br"
+    ],
+    "Content-Type": [
+      "application/json"
+    ],
+    "Host": [
+      "niw7lgbxdd.execute-api.us-west-2.amazonaws.com"
+    ],
+    "Postman-Token": [
+      "2b1039ec-038d-45ac-8e8c-c751d85d48c0"
+    ],
+    "User-Agent": [
+      "PostmanRuntime/7.41.1"
+    ],
+    "X-Amzn-Trace-Id": [
+      "Root=1-66be398a-7deb094529c5e5cc57888a3e"
+    ],
+    "X-Forwarded-For": [
+      "107.213.20.204"
+    ],
+    "X-Forwarded-Port": [
+      "443"
+    ],
+    "X-Forwarded-Proto": [
+      "https"
+    ]
+  },
+  "queryStringParameters": null,
+  "multiValueQueryStringParameters": null,
+  "pathParameters": null,
+  "stageVariables": null,
+  "requestContext": {
+    "resourceId": "eo6tgw",
+    "resourcePath": "/pingback",
+    "operationName": "pingback-POST",
+    "httpMethod": "POST",
+    "extendedRequestId": "cj3tvEDaPHcEWiQ=",
+    "requestTime": "15/Aug/2024:17:23:22 +0000",
+    "path": "/dev/pingback",
+    "accountId": "687272729792",
+    "protocol": "HTTP/1.1",
+    "stage": "dev",
+    "domainPrefix": "niw7lgbxdd",
+    "requestTimeEpoch": 1723742602860,
+    "requestId": "ae84a7ed-243c-4d85-9809-0ca94968fa39",
+    "identity": {
+      "cognitoIdentityPoolId": null,
+      "accountId": null,
+      "cognitoIdentityId": null,
+      "caller": null,
+      "sourceIp": "107.213.20.204",
+      "principalOrgId": null,
+      "accessKey": null,
+      "cognitoAuthenticationType": null,
+      "cognitoAuthenticationProvider": null,
+      "userArn": null,
+      "userAgent": "PostmanRuntime/7.41.1",
+      "user": null
+    },
+    "domainName": "niw7lgbxdd.execute-api.us-west-2.amazonaws.com",
+    "deploymentId": "7t9fht",
+    "apiId": "niw7lgbxdd"
+  },
+  "body": "{\"pingback_url\":\"https://niw7lgbxdd.execute-api.us-west-2.amazonaws.com/dev/post-pingback-event\"}",
+  "isBase64Encoded": false
+}

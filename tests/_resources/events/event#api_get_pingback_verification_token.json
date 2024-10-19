@@ -1,0 +1,83 @@
+{
+  "resource": "/2captcha.txt",
+  "path": "/2captcha.txt",
+  "httpMethod": "GET",
+  "headers": {
+    "Accept": "*/*",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Host": "niw7lgbxdd.execute-api.us-west-2.amazonaws.com",
+    "Postman-Token": "d685ede3-75ad-46ea-9e50-ffde51ea0498",
+    "User-Agent": "PostmanRuntime/7.41.1",
+    "X-Amzn-Trace-Id": "Root=1-66be446e-3d9981b9765cc322504fe281",
+    "X-Forwarded-For": "107.213.20.204",
+    "X-Forwarded-Port": "443",
+    "X-Forwarded-Proto": "https"
+  },
+  "multiValueHeaders": {
+    "Accept": [
+      "*/*"
+    ],
+    "Accept-Encoding": [
+      "gzip, deflate, br"
+    ],
+    "Host": [
+      "niw7lgbxdd.execute-api.us-west-2.amazonaws.com"
+    ],
+    "Postman-Token": [
+      "d685ede3-75ad-46ea-9e50-ffde51ea0498"
+    ],
+    "User-Agent": [
+      "PostmanRuntime/7.41.1"
+    ],
+    "X-Amzn-Trace-Id": [
+      "Root=1-66be446e-3d9981b9765cc322504fe281"
+    ],
+    "X-Forwarded-For": [
+      "107.213.20.204"
+    ],
+    "X-Forwarded-Port": [
+      "443"
+    ],
+    "X-Forwarded-Proto": [
+      "https"
+    ]
+  },
+  "queryStringParameters": null,
+  "multiValueQueryStringParameters": null,
+  "pathParameters": null,
+  "stageVariables": null,
+  "requestContext": {
+    "resourceId": "jrohoc",
+    "resourcePath": "/2captcha.txt",
+    "operationName": "2captcha.txt-GET",
+    "httpMethod": "GET",
+    "extendedRequestId": "cj-hQHC4vHcEA7Q=",
+    "requestTime": "15/Aug/2024:18:09:50 +0000",
+    "path": "/dev/2captcha.txt",
+    "accountId": "687272729792",
+    "protocol": "HTTP/1.1",
+    "stage": "dev",
+    "domainPrefix": "niw7lgbxdd",
+    "requestTimeEpoch": 1723745390100,
+    "requestId": "ed882481-056b-4416-9b46-8c85fbe86311",
+    "identity": {
+      "cognitoIdentityPoolId": null,
+      "accountId": null,
+      "cognitoIdentityId": null,
+      "caller": null,
+      "sourceIp": "107.213.20.204",
+      "principalOrgId": null,
+      "accessKey": null,
+      "cognitoAuthenticationType": null,
+      "cognitoAuthenticationProvider": null,
+      "userArn": null,
+      "userAgent": "PostmanRuntime/7.41.1",
+      "user": null
+    },
+    "domainName": "niw7lgbxdd.execute-api.us-west-2.amazonaws.com",
+    "deploymentId": "7t9fht",
+    "apiId": "niw7lgbxdd"
+  },
+  "body": null,
+  "isBase64Encoded": false
+}

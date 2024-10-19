@@ -1,0 +1,20 @@
+{
+  "ConsumedCapacity": {
+    "CapacityUnits": 1,
+    "TableName": "TEST_TABLE"
+  },
+  "ResponseMetadata": {
+    "RequestId": "52D2BQPQ5K6EGTGJ0PA8CJADP3VV4KQNSO5AEMVJF66Q9ASUAAJG",
+    "HTTPStatusCode": 200,
+    "HTTPHeaders": {
+      "server": "Server",
+      "date": "Sun, 28 Jul 2024 03:38:22 GMT",
+      "content-type": "application/x-amz-json-1.0",
+      "content-length": "1744",
+      "connection": "keep-alive",
+      "x-amzn-requestid": "52D2BQPQ5K6EGTGJ0PA8CJADP3VV4KQNSO5AEMVJF66Q9ASUAAJG",
+      "x-amz-crc32": "1403213889"
+    },
+    "RetryAttempts": 0
+  }
+}
