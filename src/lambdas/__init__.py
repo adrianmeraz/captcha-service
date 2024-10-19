@@ -1,17 +1,21 @@
-from py_aws_core.utils import import_all_package_modules
-from src.layers.containers import Container
 from importlib.resources import files
 from pathlib import Path
 
-import_all_package_modules(__name__)  # Registers routes of lambda handlers
+from py_aws_core.utils import import_all_package_modules
+
+from src.layers.containers import Container
+from src.layers.logs import get_logger
+
+logger = get_logger()
 
 
-def wire_all_modules_in_package(package: str):
-    container = Container()
-    f = files(package)
-    modules = [fp for fp in f.iterdir() if fp.is_file and fp.name.endswith('.py') and not fp.name.startswith('__')]
+def autowire_modules(package: str):
+    modules = [fp for fp in files(package).iterdir() if all([fp.is_file, fp.name.endswith('.py'), not fp.name.startswith('__')])]
     imports = [f'{package}.{Path(fp.name).stem}' for fp in modules]
-    container.wire(modules=imports)
+    Container().wire(modules=imports)
+    logger.info(f'Autowired modules: {', '.join(imports)}')
 
 
-wire_all_modules_in_package('src.lambdas')
+autowire_modules(package='src.lambdas')
+
+import_all_package_modules(__name__)  # Registers routes of lambda handlers

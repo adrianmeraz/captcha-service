@@ -5,8 +5,6 @@ from py_aws_core.boto_clients import DynamoDBClientFactory
 
 from src.lambdas import api_post_solve_captcha
 from src.layers.captcha_service import CaptchaService
-from src.layers.db_service import DatabaseService
-from src.layers.secrets import Secrets
 from src.layers.testing import CSTestFixture
 
 

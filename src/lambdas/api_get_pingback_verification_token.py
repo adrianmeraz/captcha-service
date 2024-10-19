@@ -5,7 +5,8 @@ from src.layers.captcha_interface import ICaptcha
 from src.layers.containers import Container
 from src.layers.routing import get_router
 
-apigw_router = get_router()
+# apigw_router = get_router()
+apigw_router = Container.apigw_router
 
 
 @apigw_router.route(path='/2captcha.txt', http_method='GET')
