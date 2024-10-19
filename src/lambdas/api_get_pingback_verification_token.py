@@ -3,9 +3,8 @@ from py_aws_core import utils as aws_utils
 
 from src.layers.captcha_interface import ICaptcha
 from src.layers.containers import Container
-from src.layers.routing import get_router
 
-# apigw_router = get_router()
+
 apigw_router = Container.apigw_router
 
 
