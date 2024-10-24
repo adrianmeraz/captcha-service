@@ -1,7 +1,5 @@
-import logging
+from py_aws_core.logs import get_logger as aws_get_logger
 
-from py_aws_core.logs import Logging
 
-logger = logging.getLogger(__name__)
-
-Logging.configure_logger()
+def get_logger():
+    return aws_get_logger()
