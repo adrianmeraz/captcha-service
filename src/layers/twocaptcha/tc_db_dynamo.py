@@ -1,7 +1,7 @@
 from botocore.client import BaseClient
 from py_aws_core import decorators as aws_decorators
 from py_aws_core.dynamodb_api import DynamoDBAPI
-from py_aws_core.dynamodb_entities import ItemResponse
+from py_aws_core.boto_responses import ItemResponse
 
 from src.layers.twocaptcha import tc_const, entities, exceptions
 

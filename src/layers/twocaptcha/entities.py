@@ -1,14 +1,14 @@
-from py_aws_core.entities import ABCEntity
+from py_aws_core.dynamodb_entities import ABCEntity
 
 
 class TCWebhookEvent(ABCEntity):
     TYPE = 'TC_WEBHOOK_EVENT'
 
-    def __init__(self, data):
+    def __init__(self, data: dict):
         super().__init__(data)
-        self.Id = self.data['Id']
-        self.Code = self.data['Code']
-        self.Rate = self.data['Rate']
+        self.Id = data['Id']
+        self.Code = data['Code']
+        self.Rate = data['Rate']
 
     @classmethod
     def create_key(cls, _id: str) -> str:
@@ -18,10 +18,10 @@ class TCWebhookEvent(ABCEntity):
 class TCCaptchaReport(ABCEntity):
     TYPE = 'TC_CAPTCHA_REPORT'
 
-    def __init__(self, data):
+    def __init__(self, data: dict):
         super().__init__(data)
-        self.Id = self.data['Id']
-        self.Status = self.data['Status']
+        self.Id = data['Id']
+        self.Status = data['Status']
 
     @classmethod
     def create_key(cls, _id: str) -> str:

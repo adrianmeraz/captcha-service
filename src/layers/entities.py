@@ -1,4 +1,4 @@
-from py_aws_core.entities import ABCEntity
+from py_aws_core.dynamodb_entities import ABCEntity
 
 from src.layers import const
 
@@ -8,20 +8,20 @@ class CaptchaEvent(ABCEntity):
 
     def __init__(self, data):
         super().__init__(data)
-        self.CaptchaId = self.data['CaptchaId']
-        self.CaptchaAttempts = self.data['CaptchaAttempts']
-        self.CaptchaMaxAttempts = self.data['CaptchaMaxAttempts']
-        self.CaptchaStatus = self.data['CaptchaStatus']
-        self.CaptchaType = self.data['CaptchaType']
-        self.Code = self.data['Code']
-        self.PageUrl = self.data['PageUrl']
-        self.ProxyUrl = self.data.get('ProxyUrl')
-        self.SiteKey = self.data['SiteKey']
-        self.WebhookUrl = self.data['WebhookUrl']
-        self.WebhookData = self.data['WebhookData']
-        self.WebhookStatus = self.data['WebhookStatus']
-        self.WebhookAttempts = self.data['WebhookAttempts']
-        self.WebhookMaxAttempts = self.data['WebhookMaxAttempts']
+        self.CaptchaId = data['CaptchaId']
+        self.CaptchaAttempts = data['CaptchaAttempts']
+        self.CaptchaMaxAttempts = data['CaptchaMaxAttempts']
+        self.CaptchaStatus = data['CaptchaStatus']
+        self.CaptchaType = data['CaptchaType']
+        self.Code = data['Code']
+        self.PageUrl = data['PageUrl']
+        self.ProxyUrl = data.get('ProxyUrl')
+        self.SiteKey = data['SiteKey']
+        self.WebhookUrl = data['WebhookUrl']
+        self.WebhookData = data['WebhookData']
+        self.WebhookStatus = data['WebhookStatus']
+        self.WebhookAttempts = data['WebhookAttempts']
+        self.WebhookMaxAttempts = data['WebhookMaxAttempts']
 
     @classmethod
     def create_key(cls, captcha_id: str, captcha_type: const.EventCaptchaType) -> str:

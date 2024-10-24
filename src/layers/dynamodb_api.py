@@ -1,8 +1,8 @@
 from boto3.dynamodb.table import TableResource
 from botocore.client import BaseClient
-from py_aws_core import decorators as aws_decorators, exceptions as aws_exceptions, entities, utils as aws_utils
+from py_aws_core import decorators as aws_decorators, exceptions as aws_exceptions, utils as aws_utils
+from py_aws_core.boto_responses import UpdateItemResponse
 from py_aws_core.dynamodb_api import DynamoDBAPI
-from py_aws_core.dynamodb_entities import UpdateItemResponse
 
 from src.layers import const, entities, logs
 
