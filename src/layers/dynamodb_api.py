@@ -58,10 +58,10 @@ class GetOrCreateRecaptchaV2Event(RecaptchaV2DB):
             cls.UpdateField(expression_attr='wm', set_once=True),
         ]
         response = table.update_item(
-            Key=cls.serialize_types({
+            Key={
                 'PK': pk,
                 'SK': sk,
-            }),
+            },
             UpdateExpression=cls.build_update_expression(update_fields),
             ExpressionAttributeNames={
                 '#ea': 'ExpiresAt',
@@ -83,7 +83,7 @@ class GetOrCreateRecaptchaV2Event(RecaptchaV2DB):
                 "#wa": 'WebhookAttempts',
                 "#wm": 'WebhookMaxAttempts',
             },
-            ExpressionAttributeValues=cls.serialize_types({
+            ExpressionAttributeValues={
                 ':ea': cls.calc_expire_at_timestamp(expire_in_seconds=None),
                 ':ca': now,
                 ':ma': now,
@@ -102,7 +102,7 @@ class GetOrCreateRecaptchaV2Event(RecaptchaV2DB):
                 ':ws': const.WebhookStatus.INIT.value,
                 ':wa': 0,
                 ':wm': const.DEFAULT_WEBHOOK_MAX_ATTEMPTS
-            }),
+            },
             ReturnValues='ALL_NEW'
         )
 
@@ -170,21 +170,21 @@ class UpdateCaptchaEventCode(RecaptchaV2DB):
     ) -> Response:
         pk = sk = cls.recaptcha_v2_event_create_key(captcha_id=captcha_id)
         response = table.update_item(
-            Key=cls.serialize_types({
+            Key={
                 'PK': pk,
                 'SK': sk,
-            }),
+            },
             UpdateExpression=f'SET #est = :est, #mda = :mda, #cde = :cde',
             ExpressionAttributeNames={
                 '#est': 'CaptchaStatus',
                 '#mda': 'ModifiedAt',
                 '#cde': 'Code',
             },
-            ExpressionAttributeValues=cls.serialize_types({
+            ExpressionAttributeValues={
                 ':est': status.value,
                 ':mda': aws_utils.to_iso_8601(),
                 ':cde': code,
-            }),
+            },
             ReturnValues='ALL_NEW'
         )
         logger.info(f'CaptchaEvent record updated', pk=pk)
@@ -209,21 +209,21 @@ class UpdateCaptchaEventOnSolveAttempt(RecaptchaV2DB):
     ) -> Response:
         pk = sk = cls.recaptcha_v2_event_create_key(captcha_id=captcha_id)
         response = table.update_item(
-            Key=cls.serialize_types({
+            Key={
                 'PK': pk,
                 'SK': sk,
-            }),
+            },
             UpdateExpression=f'SET #cs = :cs, #ma = :ma ADD #cp :inc',
             ExpressionAttributeNames={
                 '#ma': 'ModifiedAt',
                 '#cs': 'CaptchaStatus',
                 '#cp': 'CaptchaAttempts',
             },
-            ExpressionAttributeValues=cls.serialize_types({
+            ExpressionAttributeValues={
                 ':ma': aws_utils.to_iso_8601(),
                 ':cs': const.CaptchaStatus.CAPTCHA_SOLVING,
                 ':inc': 1
-            }),
+            },
             ReturnValues='ALL_NEW'
         )
         logger.info(f'CaptchaEvent record updated', pk=pk)
@@ -249,21 +249,21 @@ class UpdateCaptchaEventWebhook(RecaptchaV2DB):
     ) -> Response:
         pk = sk = cls.recaptcha_v2_event_create_key(captcha_id=captcha_id)
         response = table.update_item(
-            Key=cls.serialize_types({
+            Key={
                 'PK': pk,
                 'SK': sk,
-            }),
+            },
             UpdateExpression=f'SET #wst = :ws, #ma = :ma ADD #wa :inc',
             ExpressionAttributeNames={
                 '#wst': 'WebhookStatus',
                 '#wa': 'WebhookAttempts',
                 '#ma': 'ModifiedAt',
             },
-            ExpressionAttributeValues=cls.serialize_types({
+            ExpressionAttributeValues={
                 ':ws': webhook_status.value,
                 ':ma': aws_utils.to_iso_8601(),
                 ':inc': 1
-            }),
+            },
             ReturnValues='ALL_NEW'
         )
         logger.info(f'CaptchaEvent record updated', pk=pk)
