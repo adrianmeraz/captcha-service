@@ -1,11 +1,10 @@
 from unittest import mock
 
-from py_aws_core.boto_clients import DynamoDBClientFactory
+from botocore.stub import Stubber
+from py_aws_core.boto_clients import DynamoTableFactory
 
 from src.lambdas import api_post_report_good_captcha
 from src.layers.captcha_service import CaptchaService
-from src.layers.db_service import DatabaseService
-from src.layers.secrets import Secrets
 from src.layers.testing import CSTestFixture
 
 
@@ -20,8 +19,11 @@ class ApiPostReportGoodCaptchaTests(CSTestFixture):
 
         mock_event = self.get_event_resource_json('event#api_post_report_good_captcha.json')
 
-        boto_client = DynamoDBClientFactory.new_client()
-        captcha_service = self.get_mock_captcha_service(boto_client=boto_client)
+        table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+        stubber = Stubber(table.meta.client)
+        stubber.activate()
+
+        captcha_service = self.get_mock_captcha_service(table=table)
         val = api_post_report_good_captcha.lambda_handler(event=mock_event, context=None, captcha_service=captcha_service)
         self.maxDiff = None
         self.assertEqual(
@@ -41,3 +43,4 @@ class ApiPostReportGoodCaptchaTests(CSTestFixture):
         )
 
         self.assertEqual(mocked_report_good_captcha_id.call_count, 1)
+        stubber.assert_no_pending_responses()

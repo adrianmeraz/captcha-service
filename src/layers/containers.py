@@ -1,5 +1,7 @@
+from msilib import Table
+
 from dependency_injector import containers, providers
-from py_aws_core.boto_clients import DynamoDBClientFactory, SSMClientFactory
+from py_aws_core.boto_clients import DynamoDBClientFactory, SSMClientFactory, DynamoTableFactory
 from py_aws_core.router import APIGatewayRouter
 
 from .captcha_service import CaptchaService
@@ -17,9 +19,8 @@ class Container(containers.DeclarativeContainer):
     logger = providers.Resource(lambda: get_logger)
 
     apigw_router = APIGatewayRouter()
-    dynamo_db_client = providers.Factory(DynamoDBClientFactory.new_client)
     ssm_client = providers.Factory(SSMClientFactory.new_client)
     secrets = providers.Singleton(Secrets, boto_client=ssm_client)
-    db_service = providers.Singleton(DatabaseService, boto_client=dynamo_db_client, secrets=secrets)
+    table = providers.Factory(DynamoTableFactory.new_client)
+    db_service = providers.Singleton(DatabaseService, table=table)
     captcha_service = providers.Singleton(CaptchaService, db_service=db_service, secrets=secrets)
-

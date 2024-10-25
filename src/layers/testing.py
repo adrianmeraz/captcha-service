@@ -1,7 +1,7 @@
 from importlib.resources import files
 from botocore.client import BaseClient
 
-from py_aws_core.boto_clients import SSMClientFactory
+from py_aws_core.boto_clients import DynamoTableFactory, SSMClientFactory
 
 from py_aws_core.testing import BaseTestFixture
 
@@ -34,9 +34,9 @@ class CSTestFixture(BaseTestFixture):
         return cls.get_resource_json(*descendants, path=cls.TEST_DB_RESOURCE_PATH)
 
     @classmethod
-    def get_mock_captcha_service(cls, boto_client: BaseClient):
+    def get_mock_captcha_service(cls, table):
         secrets = cls.get_mock_secrets()
-        db_service = DatabaseService(boto_client=boto_client, secrets=secrets)
+        db_service = DatabaseService(table=table)
         return CaptchaService(db_service=db_service, secrets=secrets)
 
     @classmethod

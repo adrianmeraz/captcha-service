@@ -1,16 +1,12 @@
-from botocore.client import BaseClient
-
 from . import const, dynamodb_api, entities
 from .db_interface import IDatabase
-from .secrets import Secrets
 from .twocaptcha import tc_const, tc_db_dynamo
 from .twocaptcha.db_interface import ITwoCaptchaDatabase
 
 
 class DatabaseService(IDatabase, ITwoCaptchaDatabase):
-    def __init__(self, boto_client: BaseClient, secrets: Secrets):
-        self._boto_client = boto_client
-        self._table_name = secrets.dynamo_db_table_name
+    def __init__(self, table):
+        self._table = table
 
     def get_or_create_recaptcha_v2_event(
         self,
@@ -24,8 +20,7 @@ class DatabaseService(IDatabase, ITwoCaptchaDatabase):
         **kwargs
     ) -> entities.CaptchaEvent:
         return dynamodb_api.GetOrCreateRecaptchaV2Event.call(
-            boto_client=self._boto_client,
-            table_name=self._table_name,
+            table=self._table,
             captcha_id=captcha_id,
             page_url=page_url,
             site_key=site_key,
@@ -43,8 +38,7 @@ class DatabaseService(IDatabase, ITwoCaptchaDatabase):
         **kwargs
     ):
         return dynamodb_api.UpdateCaptchaEventCode.call(
-            boto_client=self._boto_client,
-            table_name=self._table_name,
+            table=self._table,
             captcha_id=captcha_id,
             status=status,
             code=code
@@ -57,8 +51,7 @@ class DatabaseService(IDatabase, ITwoCaptchaDatabase):
         **kwargs
     ):
         return dynamodb_api.UpdateCaptchaEventOnSolveAttempt.call(
-            boto_client=self._boto_client,
-            table_name=self._table_name,
+            table=self._table,
             captcha_id=captcha_id
         )
 
@@ -70,8 +63,7 @@ class DatabaseService(IDatabase, ITwoCaptchaDatabase):
         **kwargs
     ):
         return dynamodb_api.UpdateCaptchaEventWebhook.call(
-            boto_client=self._boto_client,
-            table_name=self._table_name,
+            table=self._table,
             captcha_id=captcha_id,
             webhook_status=webhook_status
         )
@@ -83,8 +75,7 @@ class DatabaseService(IDatabase, ITwoCaptchaDatabase):
         rate: str,
     ):
         tc_db_dynamo.CreateTCWebhookEvent.call(
-            boto_client=self._boto_client,
-            table_name=self._table_name,
+            table=self._table,
             captcha_id=captcha_id,
             code=code,
             rate=rate
@@ -96,8 +87,7 @@ class DatabaseService(IDatabase, ITwoCaptchaDatabase):
         status: tc_const.ReportStatus,
     ):
         tc_db_dynamo.CreateTCCaptchaReport.call(
-            boto_client=self._boto_client,
-            table_name=self._table_name,
+            table=self._table,
             captcha_id=captcha_id,
             status=status
         )

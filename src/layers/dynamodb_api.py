@@ -1,5 +1,4 @@
 from boto3.dynamodb.table import TableResource
-from botocore.client import BaseClient
 from py_aws_core import decorators as aws_decorators, exceptions as aws_exceptions, utils as aws_utils
 from py_aws_core.boto_responses import UpdateItemResponse
 from py_aws_core.dynamodb_api import DynamoDBAPI
@@ -27,8 +26,7 @@ class GetOrCreateRecaptchaV2Event(RecaptchaV2DB):
     @aws_decorators.dynamodb_handler(client_err_map=aws_exceptions.ERR_CODE_MAP, cancellation_err_maps=[])
     def call(
         cls,
-        boto_client: BaseClient,
-        table_name: str,
+        table,
         captcha_id: str,
         page_url: str,
         site_key: str,
@@ -59,8 +57,7 @@ class GetOrCreateRecaptchaV2Event(RecaptchaV2DB):
             cls.UpdateField(expression_attr='wa', set_once=True),
             cls.UpdateField(expression_attr='wm', set_once=True),
         ]
-        response = boto_client.update_item(
-            TableName=table_name,
+        response = table.update_item(
             Key=cls.serialize_types({
                 'PK': pk,
                 'SK': sk,
@@ -117,7 +114,7 @@ class CreateRecaptchaV2Event(RecaptchaV2DB):
     @classmethod
     def call(
         cls,
-        table_resource: TableResource,
+        table: TableResource,
         captcha_id: str,
         page_url: str,
         proxy_url: str,
@@ -146,7 +143,7 @@ class CreateRecaptchaV2Event(RecaptchaV2DB):
             WebhookAttempts=0,
             WebhookMaxAttempts=const.DEFAULT_WEBHOOK_MAX_ATTEMPTS
         )]
-        count = cls.batch_write_item_maps(table_resource=table_resource, item_maps=c_maps)
+        count = cls.batch_write_item_maps(table_resource=table, item_maps=c_maps)
         logger.info(f'pk: {pk}, {count} record(s) written')
         return count
 
@@ -166,15 +163,13 @@ class UpdateCaptchaEventCode(RecaptchaV2DB):
     @aws_decorators.dynamodb_handler(client_err_map=aws_exceptions.ERR_CODE_MAP, cancellation_err_maps=[])
     def call(
         cls,
-        boto_client: BaseClient,
-        table_name: str,
+        table,
         captcha_id: str,
         status: const.CaptchaStatus,
         code: str,
     ) -> Response:
         pk = sk = cls.recaptcha_v2_event_create_key(captcha_id=captcha_id)
-        response = boto_client.update_item(
-            TableName=table_name,
+        response = table.update_item(
             Key=cls.serialize_types({
                 'PK': pk,
                 'SK': sk,
@@ -209,13 +204,11 @@ class UpdateCaptchaEventOnSolveAttempt(RecaptchaV2DB):
     @aws_decorators.dynamodb_handler(client_err_map=aws_exceptions.ERR_CODE_MAP, cancellation_err_maps=[])
     def call(
         cls,
-        boto_client: BaseClient,
-        table_name: str,
+        table,
         captcha_id: str,
     ) -> Response:
         pk = sk = cls.recaptcha_v2_event_create_key(captcha_id=captcha_id)
-        response = boto_client.update_item(
-            TableName=table_name,
+        response = table.update_item(
             Key=cls.serialize_types({
                 'PK': pk,
                 'SK': sk,
@@ -250,14 +243,12 @@ class UpdateCaptchaEventWebhook(RecaptchaV2DB):
     @aws_decorators.dynamodb_handler(client_err_map=aws_exceptions.ERR_CODE_MAP, cancellation_err_maps=[])
     def call(
         cls,
-        boto_client: BaseClient,
-        table_name: str,
+        table,
         captcha_id: str,
         webhook_status: const.WebhookStatus,
     ) -> Response:
         pk = sk = cls.recaptcha_v2_event_create_key(captcha_id=captcha_id)
-        response = boto_client.update_item(
-            TableName=table_name,
+        response = table.update_item(
             Key=cls.serialize_types({
                 'PK': pk,
                 'SK': sk,

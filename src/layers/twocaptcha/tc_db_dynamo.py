@@ -1,7 +1,6 @@
-from botocore.client import BaseClient
 from py_aws_core import decorators as aws_decorators
-from py_aws_core.dynamodb_api import DynamoDBAPI
 from py_aws_core.boto_responses import ItemResponse
+from py_aws_core.dynamodb_api import DynamoDBAPI
 
 from src.layers.twocaptcha import tc_const, entities, exceptions
 
@@ -20,7 +19,7 @@ class CreateTCWebhookEvent(TCDynamoDBAPI):
 
     @classmethod
     @aws_decorators.dynamodb_handler(client_err_map=ERR_CODE_MAP, cancellation_err_maps=[])
-    def call(cls, boto_client: BaseClient, table_name: str, captcha_id: str, code: str, rate: str):
+    def call(cls, table, captcha_id: str, code: str, rate: str):
         pk = sk = entities.TCWebhookEvent.create_key(_id=captcha_id)
         _type = entities.TCWebhookEvent.type()
         item = cls.get_put_item_map(
@@ -32,8 +31,7 @@ class CreateTCWebhookEvent(TCDynamoDBAPI):
             Code=code,
             Rate=rate
         )
-        response = boto_client.put_item(
-            TableName=table_name,
+        response = table.put_item(
             Item=item,
             ConditionExpression='attribute_not_exists(PK)',
         )
@@ -50,7 +48,7 @@ class CreateTCCaptchaReport(TCDynamoDBAPI):
 
     @classmethod
     @aws_decorators.dynamodb_handler(client_err_map=ERR_CODE_MAP, cancellation_err_maps=[])
-    def call(cls, boto_client: BaseClient, table_name: str, captcha_id: str, status: tc_const.ReportStatus):
+    def call(cls, table, captcha_id: str, status: tc_const.ReportStatus):
         pk = sk = entities.TCCaptchaReport.create_key(_id=captcha_id)
         _type = entities.TCCaptchaReport.type()
         item = cls.get_put_item_map(
@@ -61,8 +59,7 @@ class CreateTCCaptchaReport(TCDynamoDBAPI):
             Id=captcha_id,
             Status=status.value,
         )
-        response = boto_client.put_item(
-            TableName=table_name,
+        response = table.put_item(
             Item=item,
             ConditionExpression='attribute_not_exists(PK)',
         )

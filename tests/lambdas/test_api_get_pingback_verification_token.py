@@ -1,4 +1,5 @@
-from py_aws_core.boto_clients import DynamoDBClientFactory
+from py_aws_core.boto_clients import DynamoDBClientFactory, DynamoTableFactory
+from botocore.stub import Stubber
 
 from src.lambdas import api_get_pingback_verification_token
 from src.layers.testing import CSTestFixture
@@ -8,9 +9,10 @@ class ApiGetPingbackVerificationTokenTests(CSTestFixture):
     def test_ok(self):
         mock_event = self.get_event_resource_json('event#api_get_pingback_verification_token.json')
 
-        boto_client = DynamoDBClientFactory.new_client()
-
-        captcha_service = self.get_mock_captcha_service(boto_client=boto_client)
+        table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+        stubber = Stubber(table.meta.client)
+        stubber.activate()
+        captcha_service = self.get_mock_captcha_service(table=table)
         val = api_get_pingback_verification_token.lambda_handler(
             event=mock_event,
             context=None,
@@ -31,3 +33,4 @@ class ApiGetPingbackVerificationTokenTests(CSTestFixture):
                 'statusCode': 200
             }
         )
+        stubber.assert_no_pending_responses()
