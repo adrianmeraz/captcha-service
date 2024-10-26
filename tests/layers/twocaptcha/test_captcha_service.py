@@ -1,10 +1,10 @@
 from unittest import mock
 
 import respx
-from py_aws_core.boto_clients import SSMClientFactory
+from botocore.stub import Stubber
+from py_aws_core.boto_clients import DynamoTableFactory
 from py_aws_core.clients import RetryClient
 
-from src.layers.captcha_service import CaptchaService
 from src.layers.db_service import DatabaseService
 from src.layers.testing import CSTestFixture
 from src.layers.twocaptcha import api_twocaptcha, tc_db_dynamo
@@ -33,8 +33,11 @@ class CaptchaServiceTests(CSTestFixture):
         )
 
         with RetryClient() as client:
-            boto_client = SSMClientFactory.new_client()
-            captcha_service = self.get_mock_captcha_service(boto_client=boto_client)
+            table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+            stubber = Stubber(table.meta.client)
+            stubber.activate()
+
+            captcha_service = self.get_mock_captcha_service(table=table)
             captcha_service.solve_captcha(
                 http_client=client,
                 site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
@@ -45,6 +48,8 @@ class CaptchaServiceTests(CSTestFixture):
         self.assertEqual(mocked_get_or_create_recaptcha_v2_event.call_count, 1)
         self.assertEqual(mocked_update_captcha_event_on_solve_attempt.call_count, 1)
         self.assertEqual(mocked_solve_captcha.call_count, 1)
+
+        stubber.assert_no_pending_responses()
 
     @mock.patch.object(tc_db_dynamo.CreateTCWebhookEvent, 'call')
     @mock.patch.object(DatabaseService, 'update_captcha_event_code')
@@ -62,8 +67,11 @@ class CaptchaServiceTests(CSTestFixture):
         mocked_update_captcha_event_code.return_value = True
         mocked_create_tc_webhook_event_call.return_value = True
 
-        boto_client = SSMClientFactory.new_client()
-        captcha_service = self.get_mock_captcha_service(boto_client=boto_client)
+        table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+        stubber = Stubber(table.meta.client)
+        stubber.activate()
+
+        captcha_service = self.get_mock_captcha_service(table=table)
 
         with RetryClient() as client:
             captcha_service.handle_webhook_event(
@@ -75,6 +83,8 @@ class CaptchaServiceTests(CSTestFixture):
 
         self.assertEqual(mocked_update_captcha_event_code.call_count, 1)
         self.assertEqual(mocked_create_tc_webhook_event_call.call_count, 1)
+
+        stubber.assert_no_pending_responses()
 
     @respx.mock
     @mock.patch.object(DatabaseService, 'update_captcha_event_webhook')
@@ -91,8 +101,11 @@ class CaptchaServiceTests(CSTestFixture):
             response_text=''
         )
 
-        boto_client = SSMClientFactory.new_client()
-        captcha_service = self.get_mock_captcha_service(boto_client=boto_client)
+        table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+        stubber = Stubber(table.meta.client)
+        stubber.activate()
+
+        captcha_service = self.get_mock_captcha_service(table=table)
 
         with RetryClient() as client:
             webhook_data = {
@@ -110,13 +123,19 @@ class CaptchaServiceTests(CSTestFixture):
         self.assertEqual(mocked_post_webhook.call_count, 1)
         self.assertEqual(mocked_update_captcha_event_webhook.call_count, 1)
 
+        stubber.assert_no_pending_responses()
+
     @respx.mock
     def test_get_verification_token_ok(self):
-        boto_client = SSMClientFactory.new_client()
-        captcha_service = self.get_mock_captcha_service(boto_client=boto_client)
+        table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+        stubber = Stubber(table.meta.client)
+        stubber.activate()
+
+        captcha_service = self.get_mock_captcha_service(table=table)
         r = captcha_service.get_verification_token()
 
         self.assertEqual(r, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c')
+        stubber.assert_no_pending_responses()
 
     @mock.patch.object(tc_db_dynamo.CreateTCCaptchaReport, 'call')
     @mock.patch.object(api_twocaptcha.ReportBadCaptcha, 'call')
@@ -129,8 +148,11 @@ class CaptchaServiceTests(CSTestFixture):
         mocked_create_tc_captcha_report.return_value = True
 
         with RetryClient() as client:
-            boto_client = SSMClientFactory.new_client()
-            captcha_service = self.get_mock_captcha_service(boto_client=boto_client)
+            table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+            stubber = Stubber(table.meta.client)
+            stubber.activate()
+
+            captcha_service = self.get_mock_captcha_service(table=table)
             captcha_service.report_bad_captcha_id(
                 http_client=client,
                 captcha_id='9991117777'
@@ -138,6 +160,8 @@ class CaptchaServiceTests(CSTestFixture):
 
         self.assertEqual(mocked_report_bad_captcha.call_count, 1)
         self.assertEqual(mocked_create_tc_captcha_report.call_count, 1)
+
+        stubber.assert_no_pending_responses()
 
     @mock.patch.object(tc_db_dynamo.CreateTCCaptchaReport, 'call')
     @mock.patch.object(api_twocaptcha.ReportGoodCaptcha, 'call')
@@ -150,8 +174,11 @@ class CaptchaServiceTests(CSTestFixture):
         mocked_create_tc_captcha_report.return_value = True
 
         with RetryClient() as client:
-            boto_client = SSMClientFactory.new_client()
-            captcha_service = self.get_mock_captcha_service(boto_client=boto_client)
+            table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+            stubber = Stubber(table.meta.client)
+            stubber.activate()
+
+            captcha_service = self.get_mock_captcha_service(table=table)
             captcha_service.report_good_captcha_id(
                 http_client=client,
                 captcha_id='9991117777'
@@ -159,3 +186,5 @@ class CaptchaServiceTests(CSTestFixture):
 
         self.assertEqual(mocked_report_good_captcha.call_count, 1)
         self.assertEqual(mocked_create_tc_captcha_report.call_count, 1)
+
+        stubber.assert_no_pending_responses()

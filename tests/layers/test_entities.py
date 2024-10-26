@@ -1,3 +1,5 @@
+from py_aws_core.dynamodb_api import DynamoDBAPI
+
 from src.layers import const, entities
 from src.layers.testing import CSTestFixture
 
@@ -10,7 +12,10 @@ class CaptchaEventTests(CSTestFixture):
 
     def test_props(self):
         _json = self.get_db_resource_json('db#update_captcha_event.json')
-        captcha_event = entities.CaptchaEvent(data=_json['Attributes'])
+
+        deserialized_json = DynamoDBAPI.deserialize_types(_json['Attributes'])
+
+        captcha_event = entities.CaptchaEvent(data=deserialized_json)
 
         self.assertTrue(captcha_event.can_retry_captcha)
         self.assertTrue(captcha_event.can_retry_webhook)

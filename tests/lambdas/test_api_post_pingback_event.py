@@ -1,6 +1,7 @@
 import respx
 from botocore.stub import Stubber
-from py_aws_core.boto_clients import DynamoDBClientFactory, DynamoTableFactory
+from py_aws_core.boto_clients import DynamoTableFactory
+
 from src.lambdas import api_post_pingback_event
 from src.layers.testing import CSTestFixture
 
