@@ -3,7 +3,6 @@ from py_aws_core import decorators
 from src.layers import exceptions
 from src.layers.containers import Container
 
-
 apigw_router = Container.apigw_router
 
 

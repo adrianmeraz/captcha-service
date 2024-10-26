@@ -1,7 +1,5 @@
-from msilib import Table
-
 from dependency_injector import containers, providers
-from py_aws_core.boto_clients import DynamoDBClientFactory, SSMClientFactory, DynamoTableFactory
+from py_aws_core.boto_clients import SSMClientFactory, DynamoTableFactory
 from py_aws_core.router import APIGatewayRouter
 
 from .captcha_service import CaptchaService
