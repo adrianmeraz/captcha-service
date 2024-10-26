@@ -1,7 +1,7 @@
 from importlib.resources import files
 from botocore.client import BaseClient
 
-from py_aws_core.boto_clients import DynamoTableFactory, SSMClientFactory
+from py_aws_core.boto_clients import SSMClientFactory
 
 from py_aws_core.testing import BaseTestFixture
 
@@ -41,7 +41,7 @@ class CSTestFixture(BaseTestFixture):
 
     @classmethod
     def get_mock_secrets(cls):
-        boto_client = SSMClientFactory.new_client()
+        boto_client = SSMClientFactory().new_client()
         return Secrets(
             app_name='big-service',
             boto_client=boto_client,

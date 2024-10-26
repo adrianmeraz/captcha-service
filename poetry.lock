@@ -337,13 +337,13 @@ files = [
 
 [[package]]
 name = "py-aws-core"
-version = "0.2.33"
+version = "0.2.36"
 description = "Core package for interfacing with AWS"
 optional = false
 python-versions = "<3.13,>=3.12"
 files = [
-    {file = "py_aws_core-0.2.33-py3-none-any.whl", hash = "sha256:5681e67cdada57071bbf7c98c3fcc18e0ee25f52988bea97460411de4cf957c4"},
-    {file = "py_aws_core-0.2.33.tar.gz", hash = "sha256:c1056b1d971569ef6a815e5d678bb2b197ee8ced55a43398a5f9d88acb5a23f5"},
+    {file = "py_aws_core-0.2.36-py3-none-any.whl", hash = "sha256:4a20313db4e3b5c6f950e417b8460de7e6d63c255bee939cf7e117ad55b8661d"},
+    {file = "py_aws_core-0.2.36.tar.gz", hash = "sha256:b994834d73d3faa193e88f999665466c530b98c45f0d4ec27c251450bff7e2fa"},
 ]
 
 [package.dependencies]

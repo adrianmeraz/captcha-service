@@ -1,10 +1,12 @@
 from urllib.parse import urlencode
 
 from botocore.client import BaseClient
+from py_aws_core.secrets_interface import IDynamoDBSecrets
 from py_aws_core.ssm_parameter_store import SSMParameterStore
 
 
-class Secrets(SSMParameterStore):
+class Secrets(SSMParameterStore, IDynamoDBSecrets):
+
     APP_NAME_KEY = 'APP_NAME'
     BASE_DOMAIN_NAME_KEY = 'BASE_DOMAIN_NAME'
     CAPTCHA_PASSWORD_KEY = 'CAPTCHA_PASSWORD'
@@ -55,7 +57,7 @@ class Secrets(SSMParameterStore):
 
     @property
     def dynamo_db_table_name(self) -> str:
-        return self.get_secret(self.DYNAMO_TABLE_NAME_KEY)
+        return self.get_table_name()
 
     @property
     def environment(self) -> str:
@@ -64,3 +66,6 @@ class Secrets(SSMParameterStore):
     @property
     def twocaptcha_pingback_token(self) -> str:
         return self.get_secret(self.TWOCAPTCHA_PINGBACK_TOKEN_KEY)
+
+    def get_table_name(self) -> str:
+        return self.get_secret(self.DYNAMO_TABLE_NAME_KEY)
