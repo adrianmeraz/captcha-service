@@ -1,6 +1,6 @@
 from importlib.resources import files
 
-from py_aws_core.boto_clients import SSMClientFactory
+from py_aws_core.boto_clients import SSMClient
 from py_aws_core.testing import BaseTestFixture
 
 from src.layers.captcha_service import CaptchaService
@@ -39,7 +39,7 @@ class CSTestFixture(BaseTestFixture):
 
     @classmethod
     def get_mock_secrets(cls):
-        boto_client = SSMClientFactory().new_client()
+        boto_client = SSMClient().boto_client
         return Secrets(
             app_name='big-service',
             boto_client=boto_client,

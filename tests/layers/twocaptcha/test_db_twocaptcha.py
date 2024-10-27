@@ -1,5 +1,5 @@
 from botocore.stub import Stubber
-from py_aws_core.boto_clients import DynamoTableFactory
+from py_aws_core.boto_clients import DynamoTable
 
 from src.layers.testing import CSTestFixture
 from src.layers.twocaptcha import tc_const as tc_const, tc_db_dynamo
@@ -10,7 +10,7 @@ class CreateTCWebhookEventTests(CSTestFixture):
 
     def test_DuplicateTCWebhookEvent(self):
         ddb_secrets = self.MockDynamoDBSecretsService()
-        table = DynamoTableFactory(ddb_secrets=ddb_secrets).new_client()
+        table = DynamoTable(ddb_secrets=ddb_secrets).table
         stubber = Stubber(table.meta.client)
         stubber.add_client_error(method='put_item', service_error_code='ConditionalCheckFailedException')
         stubber.activate()
@@ -29,7 +29,7 @@ class CreateTCWebhookEventTests(CSTestFixture):
 class CreateTCCaptchaReportTests(CSTestFixture):
     def test_DuplicateTCCaptchaReport(self):
         ddb_secrets = self.MockDynamoDBSecretsService()
-        table = DynamoTableFactory(ddb_secrets=ddb_secrets).new_client()
+        table = DynamoTable(ddb_secrets=ddb_secrets).table
 
         stubber = Stubber(table.meta.client)
         stubber.add_client_error(method='put_item', service_error_code='ConditionalCheckFailedException')

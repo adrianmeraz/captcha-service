@@ -1,5 +1,5 @@
-from py_aws_core.boto_clients import DynamoDBClientFactory, DynamoTableFactory
 from botocore.stub import Stubber
+from py_aws_core.boto_clients import DynamoTable
 
 from src.lambdas import api_get_pingback_verification_token
 from src.layers.testing import CSTestFixture
@@ -10,7 +10,7 @@ class ApiGetPingbackVerificationTokenTests(CSTestFixture):
         mock_event = self.get_event_resource_json('event#api_get_pingback_verification_token.json')
 
         ddb_secrets = self.MockDynamoDBSecretsService()
-        table = DynamoTableFactory(ddb_secrets=ddb_secrets).new_client()
+        table = DynamoTable(ddb_secrets=ddb_secrets).table
         stubber = Stubber(table.meta.client)
         stubber.activate()
         captcha_service = self.get_mock_captcha_service(table=table)

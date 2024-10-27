@@ -1,7 +1,7 @@
 from unittest import mock
 
 from botocore.stub import Stubber
-from py_aws_core.boto_clients import DynamoTableFactory
+from py_aws_core.boto_clients import DynamoTable
 
 from src.lambdas import api_post_report_good_captcha
 from src.layers.captcha_service import CaptchaService
@@ -20,7 +20,7 @@ class ApiPostReportGoodCaptchaTests(CSTestFixture):
         mock_event = self.get_event_resource_json('event#api_post_report_good_captcha.json')
 
         ddb_secrets = self.MockDynamoDBSecretsService()
-        table = DynamoTableFactory(ddb_secrets=ddb_secrets).new_client()
+        table = DynamoTable(ddb_secrets=ddb_secrets).table
         stubber = Stubber(table.meta.client)
         stubber.activate()
 

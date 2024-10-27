@@ -1,4 +1,4 @@
-from py_aws_core.boto_clients import SSMClientFactory
+from py_aws_core.boto_clients import SSMClient
 
 from src.layers.secrets import Secrets
 from src.layers.testing import CSTestFixture
@@ -11,7 +11,7 @@ class SecretsTests(CSTestFixture):
             'key2': 'value 456',
             'key3': 'xyzabc'
         }
-        boto_client = SSMClientFactory().new_client()
+        boto_client = SSMClient().boto_client
         secrets = Secrets(
             app_name='big-service',
             boto_client=boto_client,

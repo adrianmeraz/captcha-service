@@ -1,6 +1,6 @@
 import respx
 from botocore.stub import Stubber
-from py_aws_core.boto_clients import DynamoTableFactory
+from py_aws_core.boto_clients import DynamoTable
 
 from src.lambdas import event_handler
 from src.layers.testing import CSTestFixture
@@ -12,7 +12,7 @@ class EventHandlerTests(CSTestFixture):
         mock_event = self.get_event_resource_json('event#api_post_solve_captcha.json')
 
         ddb_secrets = self.MockDynamoDBSecretsService()
-        table = DynamoTableFactory(ddb_secrets=ddb_secrets).new_client()
+        table = DynamoTable(ddb_secrets=ddb_secrets).table
         stubber = Stubber(table.meta.client)
 
         update_item_json = self.get_db_resource_json('db#update_captcha_event.json')
@@ -55,7 +55,7 @@ class EventHandlerTests(CSTestFixture):
         mock_event = self.get_event_resource_json('event#api_post_pingback_event.json')
 
         ddb_secrets = self.MockDynamoDBSecretsService()
-        table = DynamoTableFactory(ddb_secrets=ddb_secrets).new_client()
+        table = DynamoTable(ddb_secrets=ddb_secrets).table
         stubber = Stubber(table.meta.client)
 
         put_item_json = self.get_db_resource_json('db#put_item.json')
