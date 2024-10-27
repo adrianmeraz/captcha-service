@@ -2,12 +2,11 @@ from . import const, dynamodb_api, entities
 from .db_interface import IDatabase
 from .twocaptcha import tc_const, tc_db_dynamo
 from .twocaptcha.db_interface import ITwoCaptchaDatabase
-from py_aws_core.boto_clients import DynamoTableFactory
 
 
 class DatabaseService(IDatabase, ITwoCaptchaDatabase):
-    def __init__(self, table_factory: DynamoTableFactory):
-        self._table = table_factory.new_client()
+    def __init__(self, table):
+        self._table = table
 
     def get_or_create_recaptcha_v2_event(
         self,

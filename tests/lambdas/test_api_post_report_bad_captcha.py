@@ -16,10 +16,10 @@ class ApiPostReportBadCaptchaTests(CSTestFixture):
         mocked_report_bad_captcha_id
     ):
         mocked_report_bad_captcha_id.return_value = True
-
         mock_event = self.get_event_resource_json('event#api_post_report_bad_captcha.json')
 
-        table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+        ddb_secrets = self.MockDynamoDBSecretsService()
+        table = DynamoTableFactory(ddb_secrets=ddb_secrets).new_client()
         stubber = Stubber(table.meta.client)
         stubber.activate()
 

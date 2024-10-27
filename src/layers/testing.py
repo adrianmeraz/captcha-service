@@ -1,8 +1,6 @@
 from importlib.resources import files
-from botocore.client import BaseClient
 
 from py_aws_core.boto_clients import SSMClientFactory
-
 from py_aws_core.testing import BaseTestFixture
 
 from src.layers.captcha_service import CaptchaService

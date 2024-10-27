@@ -12,7 +12,8 @@ class ApiPostPingbackEventTests(CSTestFixture):
     def test_ok(self):
         mock_event = self.get_event_resource_json('event#api_post_pingback_event.json')
 
-        table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+        ddb_secrets = self.MockDynamoDBSecretsService()
+        table = DynamoTableFactory(ddb_secrets=ddb_secrets).new_client()
         stubber = Stubber(table.meta.client)
 
         put_item_json = self.get_db_resource_json('db#put_item.json')

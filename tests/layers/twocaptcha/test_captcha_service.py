@@ -33,7 +33,8 @@ class CaptchaServiceTests(CSTestFixture):
         )
 
         with RetryClient() as client:
-            table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+            ddb_secrets = self.MockDynamoDBSecretsService()
+            table = DynamoTableFactory(ddb_secrets=ddb_secrets).new_client()
             stubber = Stubber(table.meta.client)
             stubber.activate()
 
@@ -67,7 +68,8 @@ class CaptchaServiceTests(CSTestFixture):
         mocked_update_captcha_event_code.return_value = True
         mocked_create_tc_webhook_event_call.return_value = True
 
-        table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+        ddb_secrets = self.MockDynamoDBSecretsService()
+        table = DynamoTableFactory(ddb_secrets=ddb_secrets).new_client()
         stubber = Stubber(table.meta.client)
         stubber.activate()
 
@@ -101,7 +103,8 @@ class CaptchaServiceTests(CSTestFixture):
             response_text=''
         )
 
-        table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+        ddb_secrets = self.MockDynamoDBSecretsService()
+        table = DynamoTableFactory(ddb_secrets=ddb_secrets).new_client()
         stubber = Stubber(table.meta.client)
         stubber.activate()
 
@@ -127,7 +130,8 @@ class CaptchaServiceTests(CSTestFixture):
 
     @respx.mock
     def test_get_verification_token_ok(self):
-        table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+        ddb_secrets = self.MockDynamoDBSecretsService()
+        table = DynamoTableFactory(ddb_secrets=ddb_secrets).new_client()
         stubber = Stubber(table.meta.client)
         stubber.activate()
 
@@ -148,7 +152,8 @@ class CaptchaServiceTests(CSTestFixture):
         mocked_create_tc_captcha_report.return_value = True
 
         with RetryClient() as client:
-            table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+            ddb_secrets = self.MockDynamoDBSecretsService()
+            table = DynamoTableFactory(ddb_secrets=ddb_secrets).new_client()
             stubber = Stubber(table.meta.client)
             stubber.activate()
 
@@ -174,7 +179,8 @@ class CaptchaServiceTests(CSTestFixture):
         mocked_create_tc_captcha_report.return_value = True
 
         with RetryClient() as client:
-            table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+            ddb_secrets = self.MockDynamoDBSecretsService()
+            table = DynamoTableFactory(ddb_secrets=ddb_secrets).new_client()
             stubber = Stubber(table.meta.client)
             stubber.activate()
 

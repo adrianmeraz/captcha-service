@@ -11,7 +11,7 @@ class SecretsTests(CSTestFixture):
             'key2': 'value 456',
             'key3': 'xyzabc'
         }
-        boto_client = SSMClientFactory.new_client()
+        boto_client = SSMClientFactory().new_client()
         secrets = Secrets(
             app_name='big-service',
             boto_client=boto_client,

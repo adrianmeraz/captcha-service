@@ -20,7 +20,8 @@ class ApiPostSolveCaptchaTests(CSTestFixture):
 
         mock_event = self.get_event_resource_json('event#api_post_solve_captcha.json')
 
-        table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+        ddb_secrets = self.MockDynamoDBSecretsService()
+        table = DynamoTableFactory(ddb_secrets=ddb_secrets).new_client()
         stubber = Stubber(table.meta.client)
         stubber.activate()
 

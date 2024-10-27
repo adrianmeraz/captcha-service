@@ -9,7 +9,8 @@ from src.layers.twocaptcha.exceptions import DuplicateTCCaptchaReport, Duplicate
 class CreateTCWebhookEventTests(CSTestFixture):
 
     def test_DuplicateTCWebhookEvent(self):
-        table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+        ddb_secrets = self.MockDynamoDBSecretsService()
+        table = DynamoTableFactory(ddb_secrets=ddb_secrets).new_client()
         stubber = Stubber(table.meta.client)
         stubber.add_client_error(method='put_item', service_error_code='ConditionalCheckFailedException')
         stubber.activate()
@@ -27,7 +28,8 @@ class CreateTCWebhookEventTests(CSTestFixture):
 
 class CreateTCCaptchaReportTests(CSTestFixture):
     def test_DuplicateTCCaptchaReport(self):
-        table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+        ddb_secrets = self.MockDynamoDBSecretsService()
+        table = DynamoTableFactory(ddb_secrets=ddb_secrets).new_client()
 
         stubber = Stubber(table.meta.client)
         stubber.add_client_error(method='put_item', service_error_code='ConditionalCheckFailedException')

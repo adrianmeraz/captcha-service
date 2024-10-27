@@ -11,7 +11,8 @@ class EventHandlerTests(CSTestFixture):
     def test_routing_api_post_solve_captcha_event_ok(self):
         mock_event = self.get_event_resource_json('event#api_post_solve_captcha.json')
 
-        table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+        ddb_secrets = self.MockDynamoDBSecretsService()
+        table = DynamoTableFactory(ddb_secrets=ddb_secrets).new_client()
         stubber = Stubber(table.meta.client)
 
         update_item_json = self.get_db_resource_json('db#update_captcha_event.json')
@@ -53,7 +54,8 @@ class EventHandlerTests(CSTestFixture):
     def test_routing_api_post_pingback_event_ok(self):
         mock_event = self.get_event_resource_json('event#api_post_pingback_event.json')
 
-        table = DynamoTableFactory.new_client(table_name='TEST_TABLE')
+        ddb_secrets = self.MockDynamoDBSecretsService()
+        table = DynamoTableFactory(ddb_secrets=ddb_secrets).new_client()
         stubber = Stubber(table.meta.client)
 
         put_item_json = self.get_db_resource_json('db#put_item.json')
