@@ -1,6 +1,6 @@
 from importlib.resources import files
 
-from py_aws_core.boto_clients import SSMClient
+from py_aws_core.boto_clients import SSMClient, DynamoTable
 from py_aws_core.testing import BaseTestFixture
 
 from src.layers.captcha_service import CaptchaService
@@ -32,17 +32,17 @@ class CSTestFixture(BaseTestFixture):
         return cls.get_resource_json(*descendants, path=cls.TEST_DB_RESOURCE_PATH)
 
     @classmethod
-    def get_mock_captcha_service(cls, table):
+    def get_mock_captcha_service(cls, dynamo_table: DynamoTable):
         secrets = cls.get_mock_secrets()
-        db_service = DatabaseService(table=table)
+        db_service = DatabaseService(dynamo_table=dynamo_table)
         return CaptchaService(db_service=db_service, secrets=secrets)
 
     @classmethod
     def get_mock_secrets(cls):
-        boto_client = SSMClient().boto_client
+        ssm_client = SSMClient()
         return Secrets(
+            ssm_client=ssm_client,
             app_name='big-service',
-            boto_client=boto_client,
             base_domain_name='ipsumlorem.com',
             captcha_password='test-password-1',
             dynamo_db_table_name='TEST_TABLE',
