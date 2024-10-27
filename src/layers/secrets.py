@@ -1,6 +1,6 @@
 from urllib.parse import urlencode
 
-from botocore.client import BaseClient
+from py_aws_core.boto_clients import SSMClient
 from py_aws_core.secrets_interface import IDynamoDBSecrets
 from py_aws_core.ssm_parameter_store import SSMParameterStore
 
@@ -16,7 +16,7 @@ class Secrets(SSMParameterStore, IDynamoDBSecrets):
 
     def __init__(
         self,
-        boto_client: BaseClient,
+        ssm_client: SSMClient,
         app_name: str = None,
         base_domain_name: str = None,
         captcha_password: str = None,
@@ -25,7 +25,7 @@ class Secrets(SSMParameterStore, IDynamoDBSecrets):
         twocaptcha_pingback_token: str = None
     ):
         super().__init__(
-            boto_client=boto_client,
+            boto_client=ssm_client.boto_client,
             cached_secrets={
                 self.APP_NAME_KEY: app_name,
                 self.BASE_DOMAIN_NAME_KEY: base_domain_name,

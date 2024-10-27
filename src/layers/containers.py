@@ -18,7 +18,7 @@ class Container(containers.DeclarativeContainer):
 
     apigw_router = APIGatewayRouter()
     ssm_client = providers.Factory(SSMClient)
-    secrets = providers.Singleton(Secrets, boto_client=ssm_client)
+    secrets = providers.Singleton(Secrets, ssm_client=ssm_client)
     dynamo_table = providers.Factory(DynamoTable, ddb_secrets=secrets)
     db_service = providers.Singleton(DatabaseService, dynamo_table=dynamo_table)
     captcha_service = providers.Singleton(CaptchaService, db_service=db_service, secrets=secrets)
