@@ -13,7 +13,7 @@ class CaptchaEventTests(CSTestFixture):
     def test_props(self):
         _json = self.get_db_resource_json('db#update_captcha_event.json')
 
-        deserialized_json = DynamoDBAPI.deserialize_types(_json['Attributes'])
+        deserialized_json = _json['Attributes']
 
         captcha_event = entities.CaptchaEvent(data=deserialized_json)
 

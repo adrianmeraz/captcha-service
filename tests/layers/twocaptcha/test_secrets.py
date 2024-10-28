@@ -11,10 +11,10 @@ class SecretsTests(CSTestFixture):
             'key2': 'value 456',
             'key3': 'xyzabc'
         }
-        boto_client = SSMClient().boto_client
+        ssm_client = SSMClient()
         secrets = Secrets(
+            ssm_client=ssm_client,
             app_name='big-service',
-            boto_client=boto_client,
             base_domain_name='ipsumlorem.com',
             captcha_password='test-password-1',
             dynamo_db_table_name='TEST_TABLE',
