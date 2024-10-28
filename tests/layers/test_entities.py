@@ -1,5 +1,3 @@
-from py_aws_core.dynamodb_api import DynamoDBAPI
-
 from src.layers import const, entities
 from src.layers.testing import CSTestFixture
 
