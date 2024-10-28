@@ -22,5 +22,19 @@
     "PK": "CAPTCHA_EVENT#RECAPTCHA_V2#77786017049",
     "CaptchaAttempts": "0",
     "CreatedAt": "2024-10-27T04:13:42+00:00"
+  },
+  "ResponseMetadata": {
+    "RequestId": "4DSMQQU61OHOC5FFEVMR3FUPMNVV4KQNSO5AEMVJF66Q9ASUAAJG",
+    "HTTPStatusCode": 200,
+    "HTTPHeaders": {
+      "server": "Server",
+      "date": "Mon, 28 Oct 2024 01:25:21 GMT",
+      "content-type": "application/x-amz-json-1.0",
+      "content-length": "864",
+      "connection": "keep-alive",
+      "x-amzn-requestid": "4DSMQQU61OHOC5FFEVMR3FUPMNVV4KQNSO5AEMVJF66Q9ASUAAJG",
+      "x-amz-crc32": "500375762"
+    },
+    "RetryAttempts": 0
   }
 }

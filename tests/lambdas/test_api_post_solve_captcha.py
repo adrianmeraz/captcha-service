@@ -25,7 +25,7 @@ class ApiPostSolveCaptchaTests(CSTestFixture):
         # stubber = Stubber(dynamo_table.table.meta.client)
         # stubber.activate()
 
-        captcha_service = self.get_mock_captcha_service(dynamo_table=dynamo_table)
+        captcha_service = self.get_mocked_captcha_service(dynamo_table=dynamo_table)
         val = api_post_solve_captcha.lambda_handler(event=mock_event, context=None, captcha_service=captcha_service)
         self.maxDiff = None
         self.assertEqual(

@@ -26,7 +26,7 @@ class IDatabase(ABC):
         code: str,
         *args,
         **kwargs
-    ):
+    ) -> entities.CaptchaEvent:
         pass
 
     @abstractmethod

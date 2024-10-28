@@ -36,7 +36,7 @@ class CaptchaServiceTests(CSTestFixture):
             ddb_secrets = self.MockDynamoDBSecretsService()
             dynamo_table = DynamoTable(ddb_secrets=ddb_secrets)
 
-            captcha_service = self.get_mock_captcha_service(dynamo_table=dynamo_table)
+            captcha_service = self.get_mocked_captcha_service(dynamo_table=dynamo_table)
             captcha_service.solve_captcha(
                 http_client=client,
                 site_key='6Le-wvkSVVABCPBMRTvw0Q4Muexq1bi0DJwx_mJ-',
@@ -71,7 +71,7 @@ class CaptchaServiceTests(CSTestFixture):
         stubber = Stubber(dynamo_table.table.meta.client)
         stubber.activate()
 
-        captcha_service = self.get_mock_captcha_service(dynamo_table=dynamo_table)
+        captcha_service = self.get_mocked_captcha_service(dynamo_table=dynamo_table)
 
         with RetryClient() as client:
             captcha_service.handle_webhook_event(
@@ -104,7 +104,7 @@ class CaptchaServiceTests(CSTestFixture):
         ddb_secrets = self.MockDynamoDBSecretsService()
         dynamo_table = DynamoTable(ddb_secrets=ddb_secrets)
 
-        captcha_service = self.get_mock_captcha_service(dynamo_table=dynamo_table)
+        captcha_service = self.get_mocked_captcha_service(dynamo_table=dynamo_table)
 
         with RetryClient() as client:
             webhook_data = {
@@ -129,7 +129,7 @@ class CaptchaServiceTests(CSTestFixture):
         stubber = Stubber(dynamo_table.table.meta.client)
         stubber.activate()
 
-        captcha_service = self.get_mock_captcha_service(dynamo_table=dynamo_table)
+        captcha_service = self.get_mocked_captcha_service(dynamo_table=dynamo_table)
         r = captcha_service.get_verification_token()
 
         self.assertEqual(r, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c')
@@ -151,7 +151,7 @@ class CaptchaServiceTests(CSTestFixture):
             stubber = Stubber(dynamo_table.table.meta.client)
             stubber.activate()
 
-            captcha_service = self.get_mock_captcha_service(dynamo_table=dynamo_table)
+            captcha_service = self.get_mocked_captcha_service(dynamo_table=dynamo_table)
             captcha_service.report_bad_captcha_id(
                 http_client=client,
                 captcha_id='9991117777'
@@ -178,7 +178,7 @@ class CaptchaServiceTests(CSTestFixture):
             stubber = Stubber(dynamo_table.table.meta.client)
             stubber.activate()
 
-            captcha_service = self.get_mock_captcha_service(dynamo_table=dynamo_table)
+            captcha_service = self.get_mocked_captcha_service(dynamo_table=dynamo_table)
             captcha_service.report_good_captcha_id(
                 http_client=client,
                 captcha_id='9991117777'

@@ -3,6 +3,7 @@ from importlib.resources import files
 from py_aws_core.boto_clients import SSMClient, DynamoTable
 from py_aws_core.testing import BaseTestFixture
 
+from src.layers.entities import CaptchaEvent
 from src.layers.captcha_service import CaptchaService
 from src.layers.db_service import DatabaseService
 from src.layers.secrets import Secrets
@@ -32,13 +33,42 @@ class CSTestFixture(BaseTestFixture):
         return cls.get_resource_json(*descendants, path=cls.TEST_DB_RESOURCE_PATH)
 
     @classmethod
-    def get_mock_captcha_service(cls, dynamo_table: DynamoTable):
-        secrets = cls.get_mock_secrets()
+    def get_mocked_captcha_event(cls):
+        return CaptchaEvent(
+            data={
+                "CaptchaId": "77786017049",
+                "Code": "",
+                "ExpiresAt": "",
+                "ProxyUrl": None,
+                "CaptchaStatus": "INIT",
+                "WebhookMaxAttempts": "3",
+                "CaptchaType": "RECAPTCHA_V2",
+                "PageUrl": "https://apps.migracioncolombia.gov.co/pre-registro/es/DatosBiograficos",
+                "ModifiedAt": "2024-10-27T04:13:42+00:00",
+                "Type": "CAPTCHA_EVENT",
+                "WebhookStatus": "INIT",
+                "WebhookData": {
+                    "session_id": "52829e6ef9804ef39b221c7d74859a0a"
+                },
+                "SiteKey": "6LeN_osaAAAAAL-8U6H1IWdcFCY9kDBS34OBYqL_",
+                "WebhookUrl": "https://co-checkmig-dev.mechnetworks.com/bio-post-captcha-token-webhook",
+                "CaptchaMaxAttempts": "3",
+                "SK": "CAPTCHA_EVENT#RECAPTCHA_V2#77786017049",
+                "WebhookAttempts": "0",
+                "PK": "CAPTCHA_EVENT#RECAPTCHA_V2#77786017049",
+                "CaptchaAttempts": "0",
+                "CreatedAt": "2024-10-27T04:13:42+00:00"
+            }
+        )
+
+    @classmethod
+    def get_mocked_captcha_service(cls, dynamo_table: DynamoTable):
+        secrets = cls.get_mocked_secrets()
         db_service = DatabaseService(dynamo_table=dynamo_table)
         return CaptchaService(db_service=db_service, secrets=secrets)
 
     @classmethod
-    def get_mock_secrets(cls):
+    def get_mocked_secrets(cls):
         ssm_client = SSMClient()
         return Secrets(
             ssm_client=ssm_client,

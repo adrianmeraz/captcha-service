@@ -31,13 +31,12 @@ def process_event(event: events.CSPostPingbackEvent, captcha_service: ICaptcha):
     :return:
     """
     with RetryClient() as client:
-        response = captcha_service.handle_webhook_event(
+        captcha_event = captcha_service.handle_webhook_event(
             http_client=client,
             captcha_id=event.id,
             code=event.code,
             rate=event.rate
         )
-        captcha_event = response.captcha_event
         if captcha_event.has_captcha_error and captcha_event.can_retry_captcha:
             captcha_service.solve_captcha(
                 http_client=client,

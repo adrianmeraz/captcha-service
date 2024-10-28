@@ -38,13 +38,13 @@ class DatabaseService(IDatabase, ITwoCaptchaDatabase):
         code: str,
         *args,
         **kwargs
-    ):
+    ) -> entities.CaptchaEvent:
         return dynamodb_api.UpdateCaptchaEventCode.call(
             table=self._table,
             captcha_id=captcha_id,
             status=status,
             code=code
-        )
+        ).captcha_event
 
     def update_captcha_event_on_solve_attempt(
         self,

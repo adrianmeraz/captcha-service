@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from . import entities
 
 from httpx import Client
 
@@ -21,7 +22,7 @@ class ICaptcha(ABC):
 
     @classmethod
     @abstractmethod
-    def handle_webhook_event(cls, *args, **kwargs):
+    def handle_webhook_event(cls, *args, **kwargs) -> entities.CaptchaEvent:
         pass
 
     @classmethod

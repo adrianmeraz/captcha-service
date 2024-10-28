@@ -1,6 +1,6 @@
 from httpx import Client
 
-from src.layers import logs, webhooks, exceptions, utils
+from src.layers import entities, logs, webhooks, exceptions, utils
 from src.layers.captcha_interface import ICaptcha
 from src.layers.db_interface import IDatabase
 from src.layers.dynamodb_api import const
@@ -50,7 +50,15 @@ class CaptchaService(ICaptcha):
             captcha_id=captcha_id
         )
 
-    def handle_webhook_event(self, http_client: Client, captcha_id: str, code: str, rate: str, *args, **kwargs):
+    def handle_webhook_event(
+        self,
+        http_client: Client,
+        captcha_id: str,
+        code: str,
+        rate: str,
+        *args,
+        **kwargs
+    ) -> entities.CaptchaEvent:
         self._db_service.create_webhook_event(
             captcha_id=captcha_id,
             code=code,

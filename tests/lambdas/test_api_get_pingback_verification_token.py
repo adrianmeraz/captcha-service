@@ -13,7 +13,7 @@ class ApiGetPingbackVerificationTokenTests(CSTestFixture):
         dynamo_table = DynamoTable(ddb_secrets=ddb_secrets)
         stubber = Stubber(dynamo_table.table.meta.client)
         stubber.activate()
-        captcha_service = self.get_mock_captcha_service(dynamo_table=dynamo_table)
+        captcha_service = self.get_mocked_captcha_service(dynamo_table=dynamo_table)
         val = api_get_pingback_verification_token.lambda_handler(
             event=mock_event,
             context=None,
