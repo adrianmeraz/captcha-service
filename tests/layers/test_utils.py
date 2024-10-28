@@ -1,0 +1,15 @@
+from unittest import TestCase
+
+from src.layers import utils
+
+
+class CaptchaEventTests(TestCase):
+    def test_key(self):
+        val = utils.is_valid_captcha_v2_token('ERROR_123')
+        self.assertFalse(val)
+
+        val = utils.is_valid_captcha_v2_token('INVALID_CAPTCHA')
+        self.assertFalse(val)
+
+        val = utils.is_valid_captcha_v2_token('03AFcWeA5CmLi9QDqlH9ZgsjhQUbYzpLV9M7cRfxiSYGbrsEw1vrhSLL0BHLedj6wp9p9hHX0HWhVd2nGXqd1TvvlDysesdAtW0vC-tEnj6YOTMsRHIi49xWF5IzIWAv7gTR84yHvII8fGmFyAl4nFGE3tC58lGrm_aYjKvUOu8xnJTmcIdXmrOAVb0zxJRzFPoJgYeWFRabjRa1yEsbiB_FoPXBRAYGU39_2X0bnUj29BqcTcLgK3fk30tLvEzLPDKnmM__NQKIyncT7ZkB2xKy5Qjst0xs8vD_BeINw2WobB2H_KBGZvU0ZHMDDmyBcPrneyt9RqbuIq-bKfXghzeWw75wqGIBO6rJOwRDXqEgFI94cpEMp22-pt8SNjR7WWTT6TwFVhfbx0EPhaUUyJ14rKyo0OFwcLMXJjPxat0DU53KXBT6KGKCBNFX9Q0XWuG9WNIEBX4RMm8EVuNjgrne4a8tc9k2YAOqB3lSTy1exwF4gcngGZPioEJeGR4UIF_ZyaMhh3u3pKafyS_X_yjCMLcmfac4DerzMV0LyjLvZ79ATJWmU5MUbXpEZ9jNrSfI66U0c5HR7xQj_1rEui3xU2pN4cmEVQEG-7LMNZ9_NSaiOAoGf3mzoM2yBV8W3iMujqbz-tKalnvE7q6BC1Q4dKsVKiVgBbvvBqBtyCHVOiRus4dSNJwdj8bw-EB_ov45udLnYUtCLdhLq35gpviQde0nem0RaANRTTGqnbmWIySuqGevl_2TAXbpFAX0HzZcylTc5yFWKitRwHiGl1ZbnOIfhBvaRPEtJaxTQVbL5l4DWQDBl6WU1EtIaytakAXE5rPMY9vPqXK6GCplk4QbSZzzdMWk8HdSN4YPO9Tzjf5dX4Sy9z1r316mlGZ5nBbhpy3PSgYvLl')
+        self.assertTrue(val)

@@ -1,0 +1,89 @@
+{
+  "resource": "/{proxy+}",
+  "path": "/solve-captcha",
+  "httpMethod": "POST",
+  "headers": {
+    "Accept": "*/*",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Content-Type": "application/json",
+    "Host": "captcha-service-dev.mechnetworks.com",
+    "Postman-Token": "190008c5-b6ae-4cf9-a813-f0042ca1cb18",
+    "User-Agent": "PostmanRuntime/7.42.0",
+    "X-Amzn-Trace-Id": "Root=1-66fe0ae2-5b40feef26aecb746e0d3584",
+    "X-Forwarded-For": "107.213.20.204",
+    "X-Forwarded-Port": "443",
+    "X-Forwarded-Proto": "https"
+  },
+  "multiValueHeaders": {
+    "Accept": [
+      "*/*"
+    ],
+    "Accept-Encoding": [
+      "gzip, deflate, br"
+    ],
+    "Content-Type": [
+      "application/json"
+    ],
+    "Host": [
+      "captcha-service-dev.mechnetworks.com"
+    ],
+    "Postman-Token": [
+      "190008c5-b6ae-4cf9-a813-f0042ca1cb18"
+    ],
+    "User-Agent": [
+      "PostmanRuntime/7.42.0"
+    ],
+    "X-Amzn-Trace-Id": [
+      "Root=1-66fe0ae2-5b40feef26aecb746e0d3584"
+    ],
+    "X-Forwarded-For": [
+      "107.213.20.204"
+    ],
+    "X-Forwarded-Port": [
+      "443"
+    ],
+    "X-Forwarded-Proto": [
+      "https"
+    ]
+  },
+  "queryStringParameters": null,
+  "multiValueQueryStringParameters": null,
+  "pathParameters": {
+    "proxy": "solve-captcha"
+  },
+  "stageVariables": null,
+  "requestContext": {
+    "resourceId": "yk9jvy",
+    "resourcePath": "/{proxy+}",
+    "operationName": "{proxy+}-ANY",
+    "httpMethod": "POST",
+    "extendedRequestId": "fDajZGDKvHcEJCQ=",
+    "requestTime": "03/Oct/2024:03:09:22 +0000",
+    "path": "/solve-captcha",
+    "accountId": "687272729792",
+    "protocol": "HTTP/1.1",
+    "stage": "dev",
+    "domainPrefix": "captcha-service-dev",
+    "requestTimeEpoch": 1727924962220,
+    "requestId": "eb9279b0-ebea-4690-a4bb-5b6a815d268c",
+    "identity": {
+      "cognitoIdentityPoolId": null,
+      "accountId": null,
+      "cognitoIdentityId": null,
+      "caller": null,
+      "sourceIp": "107.213.20.204",
+      "principalOrgId": null,
+      "accessKey": null,
+      "cognitoAuthenticationType": null,
+      "cognitoAuthenticationProvider": null,
+      "userArn": null,
+      "userAgent": "PostmanRuntime/7.42.0",
+      "user": null
+    },
+    "domainName": "captcha-service-dev.mechnetworks.com",
+    "deploymentId": "cqiksl",
+    "apiId": "wizxcynj40"
+  },
+  "body": "{\\r\\n    \"site_key\": \"6LeN_osaAAAAAL-8U6H1IWdcFCY9kDBS34OBYqL_\",\\r\\n    \"page_url\": \"https://apps.migracioncolombia.gov.co/pre-registro/es/DatosBiograficos\",\\r\\n    \"webhook_url\": \"https://co-checkmig-dev.mechnetworks.com/bio-post-captcha-token-webhook\",\\r\\n    \"webhook_data\": {\\r\\n        \"session_id\": \"52829e6ef9804ef39b221c7d74859a0a\"\\r\\n    }\\r\\n}",
+  "isBase64Encoded": false
+}

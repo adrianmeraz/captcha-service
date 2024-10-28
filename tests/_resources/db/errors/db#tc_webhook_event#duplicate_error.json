@@ -1,0 +1,21 @@
+{
+  "Error": {
+    "Message": "The conditional request failed",
+    "Code": "ConditionalCheckFailedException"
+  },
+  "ResponseMetadata": {
+    "RequestId": "OHKBHSF2GHGHAHK67KH6QELJ3NVV4KQNSO5AEMVJF66Q9ASUAAJG",
+    "HTTPStatusCode": 400,
+    "HTTPHeaders": {
+      "server": "Server",
+      "date": "Wed, 11 Sep 2024 20:31:21 GMT",
+      "content-type": "application/x-amz-json-1.0",
+      "content-length": "120",
+      "connection": "keep-alive",
+      "x-amzn-requestid": "OHKBHSF2GHGHAHK67KH6QELJ3NVV4KQNSO5AEMVJF66Q9ASUAAJG",
+      "x-amz-crc32": "396270901"
+    },
+    "RetryAttempts": 0
+  },
+  "message": "The conditional request failed"
+}

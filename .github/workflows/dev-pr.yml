@@ -15,30 +15,23 @@ jobs:
     name: Pull Dependencies, Build, Test, Upload Coverage
     runs-on: ubuntu-latest
     env:
-      APP_NAME: ${{ github.event.repository.name }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
+      APP_NAME:              ${{ github.event.repository.name }}
+      AWS_ACCESS_KEY_ID:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_REGION:            ${{ secrets.AWS_REGION }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      ENVIRONMENT: dev
-      GH_PAT: ${{ secrets.GH_PAT }}
+      ENVIRONMENT:           dev
+      GH_PAT:                ${{ secrets.GH_PAT }}
+      SHARED_APP_NAME:       expatmagic
+      TF_WORKDIR_PREFIX:     apps/${{ github.event.repository.name }}/environments
+      TF_REPO:               'adrianmeraz/am-terraform'
+      WORKFLOW_FILE:         '.github/workflows/dev-pr.yml'
     steps:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
-
-    # Empty prefixes not supported yet, pending this PR: https://github.com/aws-actions/aws-secretsmanager-get-secrets/pull/16
-    # Using EM for now
-    - name: Get Secrets
-      uses: aws-actions/aws-secretsmanager-get-secrets@v1
-      env:
-        SSM_SECRET_ID: ${{ env.APP_NAME }}/${{ env.ENVIRONMENT }}/secret
-      with:
-        secret-ids: |
-          EM,${{ env.SSM_SECRET_ID }}
-        parse-json-secrets: true
+        aws-region:            ${{ secrets.AWS_REGION }}
 
     - name: Checkout code
       uses: actions/checkout@v4
@@ -51,11 +44,12 @@ jobs:
         python-version: 3.12
 
     # https://www.peterbe.com/plog/install-python-poetry-github-actions-faster
-    - name: Load cached Poetry via ~/.local
+    - name: Load cached ~/.local
       uses: actions/cache@v4
       with:
         path: ~/.local
-        key: dotlocal-${{ runner.os }}-${{ hashFiles('.github/workflows/dev.yml') }}
+        key: dotlocal-${{ runner.os }}-${{ hashFiles(env.WORKFLOW_FILE) }}
+        restore-keys: dotlocal-${{ runner.os }}-
 
     - name: Install / Load Poetry
       uses: snok/install-poetry@v1
@@ -63,12 +57,13 @@ jobs:
         virtualenvs-create: true
         virtualenvs-in-project: true
 
-    - name: Load cached dependencies via .venv
+    - name: Load cached .venv
       id: cache-virtualenv
       uses: actions/cache@v4
       with:
         path: .venv
-        key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('.github/workflows/dev.yml') }}
+        key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles(env.WORKFLOW_FILE) }}
+        restore-keys: venv-${{ runner.os }}-
 
     - name: Install / Load Poetry dependencies
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
@@ -88,23 +83,32 @@ jobs:
       uses: actions/checkout@v4
       with:
         ref: main
-        repository: 'adrianmeraz/am-terraform'
-        token: ${{ secrets.GH_PAT }}
+        repository: ${{ env.TF_REPO }}
+        token: ${{ env.GH_PAT }}
 
-    - name: terraform plan
-      uses: dflook/terraform-plan@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-        SSM_SHARED_SECRET_ID: expatmagic/dev/shared/secret
-        LABEL: ${{ env.APP_NAME }}-${{ env.ENVIRONMENT }}
+    - name: Set Terraform Working Directory
+      run: |
+        echo "TF_WORKDIR=${{ env.TF_WORKDIR_PREFIX }}/${{ env.ENVIRONMENT }}" >> $GITHUB_ENV
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
       with:
-        add_github_comment: false
-        path: apps/${{ env.APP_NAME }}/environments/${{ env.ENVIRONMENT }}
-        label: ${{ env.LABEL }}
-        variables: |
-          app_name                       = "${{ env.APP_NAME }}"
-          aws_access_key                 = "${{ env.AWS_ACCESS_KEY_ID }}"
-          aws_region                     = "${{ env.AWS_REGION }}"
-          aws_secret_key                 = "${{ env.AWS_SECRET_ACCESS_KEY }}"
-          environment                    = "${{ env.ENVIRONMENT }}"
-          shared_secret_id               = "${{ env.SSM_SHARED_SECRET_ID }}"
+        terraform_version: 1.8.1
+
+    - name: Terraform Init
+      working-directory: ${{ env.TF_WORKDIR }}
+      id: tf-init
+      run: |
+        terraform init
+
+    - name: Terraform Plan
+      working-directory: ${{ env.TF_WORKDIR }}
+      id: tf-plan
+      run: |
+        terraform plan -input=false -parallelism=50 \
+          -var app_name="${{ env.APP_NAME }}" \
+          -var aws_access_key="${{ env.AWS_ACCESS_KEY_ID }}" \
+          -var aws_region="${{ env.AWS_REGION }}" \
+          -var aws_secret_key="${{ env.AWS_SECRET_ACCESS_KEY }}" \
+          -var environment="${{ env.ENVIRONMENT }}" \
+          -var shared_app_name="${{ env.SHARED_APP_NAME }}"

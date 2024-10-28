@@ -1,0 +1,81 @@
+{
+  "resource": "/{proxy+}",
+  "path": "/pingback-event",
+  "httpMethod": "POST",
+  "headers": {
+    "Accept": "*/*",
+    "Cache-Control": "no-cache",
+    "Content-Type": "application/x-www-form-urlencoded",
+    "Host": "captcha-service-dev.mechnetworks.com",
+    "X-Amzn-Trace-Id": "Root=1-66fef20d-61520dec659edc445bdb6363",
+    "X-Forwarded-For": "65.108.225.110",
+    "X-Forwarded-Port": "443",
+    "X-Forwarded-Proto": "https"
+  },
+  "multiValueHeaders": {
+    "Accept": [
+      "*/*"
+    ],
+    "Cache-Control": [
+      "no-cache"
+    ],
+    "Content-Type": [
+      "application/x-www-form-urlencoded"
+    ],
+    "Host": [
+      "captcha-service-dev.mechnetworks.com"
+    ],
+    "X-Amzn-Trace-Id": [
+      "Root=1-66fef20d-61520dec659edc445bdb6363"
+    ],
+    "X-Forwarded-For": [
+      "65.108.225.110"
+    ],
+    "X-Forwarded-Port": [
+      "443"
+    ],
+    "X-Forwarded-Proto": [
+      "https"
+    ]
+  },
+  "queryStringParameters": null,
+  "multiValueQueryStringParameters": null,
+  "pathParameters": {
+    "proxy": "pingback-event"
+  },
+  "stageVariables": null,
+  "requestContext": {
+    "resourceId": "yk9jvy",
+    "resourcePath": "/{proxy+}",
+    "operationName": "{proxy+}-ANY",
+    "httpMethod": "POST",
+    "extendedRequestId": "fFrCFGsIPHcEeFg=",
+    "requestTime": "03/Oct/2024:19:35:41 +0000",
+    "path": "/pingback-event",
+    "accountId": "687272729792",
+    "protocol": "HTTP/1.1",
+    "stage": "dev",
+    "domainPrefix": "captcha-service-dev",
+    "requestTimeEpoch": 1727984141003,
+    "requestId": "ff955cbe-c31d-43a0-b986-e9425c3da1b1",
+    "identity": {
+      "cognitoIdentityPoolId": null,
+      "accountId": null,
+      "cognitoIdentityId": null,
+      "caller": null,
+      "sourceIp": "65.108.225.110",
+      "principalOrgId": null,
+      "accessKey": null,
+      "cognitoAuthenticationType": null,
+      "cognitoAuthenticationProvider": null,
+      "userArn": null,
+      "userAgent": null,
+      "user": null
+    },
+    "domainName": "captcha-service-dev.mechnetworks.com",
+    "deploymentId": "cqiksl",
+    "apiId": "wizxcynj40"
+  },
+  "body": "id=77589594072&code=03AFcWeA6eAFbXJqsNEzZFoQO3lXmmeQCS6yxF9vjbj18iOkw5cPJaRcLSenhMUq3DSLaXjatGgT5OsGJ2AMVDoLZBjmZ81QXxf77OR474c1wXBzGeeQSA6pT_oRygSKFd-u7ASeqL-xfwx_PDHQbDYDp-E8YHLe2TPcDvsWmGTVJ2un0hsJr8GvX9iy4iHatifLyVTgTjneGaLEUT8I6nt3c5Zu6w9lDETpYThZuvCSGXKM7ElBHLzMzk4a9ML-ZzUsb8WCgyr1odle1Z-LiBVTWaKYCPe-hsiPMp9qohSP9nUdDiSI7prOhjNLPe2_MvslpzMaadPThHwQmjhTaD9SFdhHoN2FUSD1KFhlRDuO5nqAFrLCz4YN9B0gQQbf2AlcFPHf4zXXEBSaFeLbGcmpOCKHPunwA8M5gYcfc_AP8l_om4axdbJmjaiUv4Lhki6gBqSoD9SycmCinbpzIRFANV4hqE72TGIgMTQdquhPoRIoUU74TShfjNz6aPh2WpUqAbqk-7JSYPifvOQQfEptnTnQJy28-p0QpG4QQWPoS9EneYbbS0EMTGUyzR-xzPuQNOX02dpmrzvGla8bFyXpov3Vhhro856A4ZqjeZ9d-QJ2IGdOLxb36LNWBxINfpo5cTmcMIUnt2YybjLWSEsEWD7OHeluEXUPiIt6nqH-8mhyAqtnWqDjl0-eZC16qQNBisDNsVb8i6TLGs8snIR_-uSb9GYHzUoJRMSaBxX0bp-G30KV0q_f1knPYeyS94lW0pBtg6C0HioTZuG_mtOZxdFPB-DBkT-Bo2nGzc9Vwjvj9gPajVU-HA-ukQYDzgXhgWweiYNvJngmxxRAjNMdq-qnMcRE1uOAj-yOF_QEKp2JfZLMuXnmLW-chf_sxF2mSeQRAvSIo2Um66xzyJSpJjxGUSvUlkoOjbx7WkmGGwat8a9RumMOVjhjuoSjyf-vKkP-NtyiH-FQ0300FIoSZ4JClIFc0fcQ&rate=0.00299",
+  "isBase64Encoded": false
+}

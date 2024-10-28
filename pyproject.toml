@@ -1,19 +1,15 @@
 [tool.poetry]
 name = "captcha-service"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 authors = ["services <services@rydeas.com>"]
 readme = "README.md"
 package-mode = true
 
 [tool.poetry.dependencies]
-boto3 = "~1.34"
-coverage = "~7.6"
 python = "~3.12"
-python-dotenv = "~1.0"
-httpx = "^0.27"
-respx = "^0.21.1"
-py-aws-core = "~0.1"
+py-aws-core = "~0.2"
+dependency-injector = "^4.42.0"
 
 
 [build-system]
